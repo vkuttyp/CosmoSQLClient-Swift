@@ -265,7 +265,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         let msg = PGFrontend.query(rendered, allocator: channel.allocator)
         try await send(msg)
         var rowsAffected = 0
-        var pendingError: Error?
+        var pendingError: (any Error)?
         // Drain until ReadyForQuery so the connection stays clean after errors
         loop: while true {
             let m = try await receiveMessage()
@@ -301,7 +301,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         var allSets:    [[SQLRow]] = []
         var current:    [SQLRow]   = []
         var columns:    [PGColumnDesc] = []
-        var pendingError: Error?
+        var pendingError: (any Error)?
 
         loop: while true {
             let m = try await receiveMessage()
@@ -394,7 +394,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
     private func collectResults() async throws -> [SQLRow] {
         var columns: [PGColumnDesc] = []
         var rows: [SQLRow] = []
-        var pendingError: Error?
+        var pendingError: (any Error)?
 
         loop: while true {
             let msg = try await receiveMessage()
