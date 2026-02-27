@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-15, ubuntu-24.04]
-        swift: ["5.10", "6.0"]
+        swift: ["5.9", "6.0"]
         exclude:
           # macOS 15 ships with Swift 6 (Xcode 16); skip redundant 5.10 run
           - os: macos-15

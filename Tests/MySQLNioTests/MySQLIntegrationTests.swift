@@ -1286,7 +1286,7 @@ final class MySQLQueryMultiTests: XCTestCase {
 
 // MARK: - Connection Pool Tests
 
-final class MySQLPoolTests: XCTestCase {
+final class MySQLPoolTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
