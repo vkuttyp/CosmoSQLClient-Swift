@@ -2,7 +2,7 @@ import XCTest
 import NIOCore
 @testable import MySQLNio
 
-final class MySQLFramingTests: XCTestCase {
+final class MySQLFramingTests: XCTestCase, @unchecked Sendable {
 
     func testPacketBuildAndRead() {
         let allocator = ByteBufferAllocator()
@@ -36,7 +36,7 @@ final class MySQLFramingTests: XCTestCase {
     }
 }
 
-final class MySQLDecoderTests: XCTestCase {
+final class MySQLDecoderTests: XCTestCase, @unchecked Sendable {
 
     func testNativePasswordHash() {
         // The hash should be 20 bytes

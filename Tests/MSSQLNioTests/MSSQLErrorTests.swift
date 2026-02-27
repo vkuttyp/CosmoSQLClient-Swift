@@ -4,7 +4,7 @@ import SQLNioCore
 
 // ── Error handling integration tests ─────────────────────────────────────────
 
-final class MSSQLErrorTests: XCTestCase {
+final class MSSQLErrorTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         try skipUnlessIntegration()

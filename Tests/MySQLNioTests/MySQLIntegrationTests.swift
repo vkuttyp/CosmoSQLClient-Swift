@@ -86,7 +86,7 @@ private extension SQLValue {
 
 // MARK: - Connection Tests
 
-final class MySQLConnectionTests: XCTestCase {
+final class MySQLConnectionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -135,7 +135,7 @@ final class MySQLConnectionTests: XCTestCase {
 
 // MARK: - Basic Query Tests
 
-final class MySQLBasicQueryTests: XCTestCase {
+final class MySQLBasicQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -199,11 +199,12 @@ final class MySQLBasicQueryTests: XCTestCase {
             try await MySQLTestDatabase.withConnection { conn in
                 let rows = try await conn.query("SELECT 3.14 AS pi", [])
                 let piVal = rows[0]["pi"]
-                let pi = piVal.asDouble()
-                    ?? piVal.asFloat().map { Double($0) }
-                    ?? piVal.asDecimal().map { NSDecimalNumber(decimal: $0).doubleValue }
-                    ?? piVal.asString().flatMap { Double($0) }
-                    ?? 0
+                let pi: Double
+                if let d = piVal.asDouble() { pi = d }
+                else if let f = piVal.asFloat() { pi = Double(f) }
+                else if let dec = piVal.asDecimal() { pi = NSDecimalNumber(decimal: dec).doubleValue }
+                else if let s = piVal.asString(), let d = Double(s) { pi = d }
+                else { pi = 0 }
                 XCTAssertEqual(pi, 3.14, accuracy: 0.01)
             }
         }
@@ -258,7 +259,7 @@ final class MySQLBasicQueryTests: XCTestCase {
 
 // MARK: - Parameterized Query Tests
 
-final class MySQLParameterizedTests: XCTestCase {
+final class MySQLParameterizedTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -327,7 +328,7 @@ final class MySQLParameterizedTests: XCTestCase {
 
 // MARK: - Data Type Tests
 
-final class MySQLDataTypeTests: XCTestCase {
+final class MySQLDataTypeTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -486,7 +487,7 @@ final class MySQLDataTypeTests: XCTestCase {
 
 // MARK: - Table Query Tests
 
-final class MySQLTableQueryTests: XCTestCase {
+final class MySQLTableQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -626,7 +627,7 @@ final class MySQLTableQueryTests: XCTestCase {
 
 // MARK: - DML Tests (INSERT / UPDATE / DELETE)
 
-final class MySQLDMLTests: XCTestCase {
+final class MySQLDMLTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -746,7 +747,7 @@ final class MySQLDMLTests: XCTestCase {
 
 // MARK: - Transaction Tests (raw SQL)
 
-final class MySQLTransactionTests: XCTestCase {
+final class MySQLTransactionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -809,7 +810,7 @@ final class MySQLTransactionTests: XCTestCase {
 
 // MARK: - Error Handling Tests
 
-final class MySQLErrorTests: XCTestCase {
+final class MySQLErrorTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -883,7 +884,7 @@ final class MySQLErrorTests: XCTestCase {
 
 // MARK: - Stored Procedure Tests
 
-final class MySQLProcedureTests: XCTestCase {
+final class MySQLProcedureTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -967,7 +968,7 @@ final class MySQLProcedureTests: XCTestCase {
 
 // MARK: - Decodable Tests
 
-final class MySQLDecodableTests: XCTestCase {
+final class MySQLDecodableTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1012,7 +1013,7 @@ final class MySQLDecodableTests: XCTestCase {
 
 // MARK: - Concurrent Query Tests
 
-final class MySQLConcurrencyTests: XCTestCase {
+final class MySQLConcurrencyTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1051,7 +1052,7 @@ final class MySQLConcurrencyTests: XCTestCase {
 
 // MARK: - Advanced Query Tests
 
-final class MySQLAdvancedQueryTests: XCTestCase {
+final class MySQLAdvancedQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1154,7 +1155,7 @@ final class MySQLAdvancedQueryTests: XCTestCase {
 
 // MARK: - Transaction API Tests
 
-final class MySQLTransactionAPITests: XCTestCase {
+final class MySQLTransactionAPITests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1227,7 +1228,7 @@ final class MySQLTransactionAPITests: XCTestCase {
 
 // MARK: - Multiple Result Sets Tests
 
-final class MySQLQueryMultiTests: XCTestCase {
+final class MySQLQueryMultiTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1385,7 +1386,7 @@ final class MySQLPoolTests: XCTestCase, @unchecked Sendable {
 
 // MARK: - Bulk Insert Tests
 
-final class MySQLBulkInsertTests: XCTestCase {
+final class MySQLBulkInsertTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1443,7 +1444,7 @@ final class MySQLBulkInsertTests: XCTestCase {
 
 // MARK: - DataTable Tests
 
-final class MySQLDataTableTests: XCTestCase {
+final class MySQLDataTableTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessMySQL() }
 
@@ -1476,7 +1477,7 @@ final class MySQLDataTableTests: XCTestCase {
 
 // MARK: - Backup & Restore Tests
 
-final class MySQLBackupTests: XCTestCase {
+final class MySQLBackupTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         try XCTSkipUnless(MySQLTestDatabase.isAvailable,

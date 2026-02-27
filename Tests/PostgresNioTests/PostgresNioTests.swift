@@ -2,7 +2,7 @@ import XCTest
 import NIOCore
 @testable import PostgresNio
 
-final class PostgresFramingTests: XCTestCase {
+final class PostgresFramingTests: XCTestCase, @unchecked Sendable {
 
     func testStartupMessageFormat() {
         let buf = PGFrontend.startup(user: "alice", database: "mydb",
@@ -33,7 +33,7 @@ final class PostgresFramingTests: XCTestCase {
     }
 }
 
-final class PostgresDecoderTests: XCTestCase {
+final class PostgresDecoderTests: XCTestCase, @unchecked Sendable {
 
     func testMD5PasswordHashing() {
         // Known vector from PostgreSQL docs

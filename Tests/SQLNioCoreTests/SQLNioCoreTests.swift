@@ -1,7 +1,7 @@
 import XCTest
 import SQLNioCore
 
-final class SQLValueTests: XCTestCase {
+final class SQLValueTests: XCTestCase, @unchecked Sendable {
 
     func testLiteralInit() {
         let n: SQLValue = nil
@@ -33,7 +33,7 @@ final class SQLValueTests: XCTestCase {
     }
 }
 
-final class SQLRowTests: XCTestCase {
+final class SQLRowTests: XCTestCase, @unchecked Sendable {
 
     func testIndexAccess() {
         let cols = [SQLColumn(name: "id"), SQLColumn(name: "name")]
@@ -57,7 +57,7 @@ final class SQLRowTests: XCTestCase {
     }
 }
 
-final class SQLErrorTests: XCTestCase {
+final class SQLErrorTests: XCTestCase, @unchecked Sendable {
 
     func testDescriptions() {
         let e = SQLError.serverError(code: 1045, message: "Access denied")

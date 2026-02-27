@@ -9,7 +9,7 @@ import SQLNioCore
 //   • Decimal precision (MONEY / DECIMAL / NUMERIC)
 //   • INFO/PRINT message surfacing
 
-final class MSSQLNewFeatureTests: XCTestCase {
+final class MSSQLNewFeatureTests: XCTestCase, @unchecked Sendable {
 
     // ── Decimal / MONEY precision ─────────────────────────────────────────────
 

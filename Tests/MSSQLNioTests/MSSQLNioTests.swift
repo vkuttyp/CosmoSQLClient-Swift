@@ -3,7 +3,7 @@ import NIOCore
 import NIOEmbedded
 @testable import MSSQLNio
 
-final class TDSPacketTests: XCTestCase {
+final class TDSPacketTests: XCTestCase, @unchecked Sendable {
 
     func testHeaderRoundtrip() throws {
         var allocator = ByteBufferAllocator()
@@ -45,7 +45,7 @@ final class TDSPacketTests: XCTestCase {
     }
 }
 
-final class TDSDecoderTests: XCTestCase {
+final class TDSDecoderTests: XCTestCase, @unchecked Sendable {
 
     func testDecodeColMetadata() throws {
         // Build a minimal COLMETADATA token

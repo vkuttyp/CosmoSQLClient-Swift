@@ -4,7 +4,7 @@ import SQLNioCore
 
 // ── Tests for TEXT/NTEXT/IMAGE, SQLDataTable, bulkInsert, checkReachability ──
 
-final class MSSQLAdvancedFeatureTests: XCTestCase {
+final class MSSQLAdvancedFeatureTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         try skipUnlessIntegration()

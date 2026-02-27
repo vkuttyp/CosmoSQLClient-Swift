@@ -4,7 +4,7 @@ import SQLNioCore
 
 // ── Query scenario integration tests ─────────────────────────────────────────
 
-final class MSSQLQueryTests: XCTestCase {
+final class MSSQLQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         try skipUnlessIntegration()
@@ -337,7 +337,7 @@ final class MSSQLQueryTests: XCTestCase {
 
 // MARK: - Backup & Restore Tests
 
-final class MSSQLBackupTests: XCTestCase {
+final class MSSQLBackupTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 

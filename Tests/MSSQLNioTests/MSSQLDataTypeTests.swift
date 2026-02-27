@@ -23,7 +23,7 @@ import SQLNioCore
 //   NVARCHAR (0xE7) → .string   VARCHAR  (0xA7) → .string
 //   UUID     (0x24) → .uuid
 
-final class MSSQLDataTypeTests: XCTestCase {
+final class MSSQLDataTypeTests: XCTestCase, @unchecked Sendable {
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 

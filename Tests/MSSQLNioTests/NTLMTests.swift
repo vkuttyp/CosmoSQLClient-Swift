@@ -15,7 +15,7 @@ import XCTest
 //   MSSQL_NTLM_HOST=winserver MSSQL_NTLM_USER=testuser MSSQL_NTLM_PASS=secret
 //   MSSQL_NTLM_DOMAIN=CONTOSO swift test --filter NTLMTests.testNTLMConnection
 
-final class NTLMTests: XCTestCase {
+final class NTLMTests: XCTestCase, @unchecked Sendable {
 
     // MARK: - MD4 tests (RFC 1320 §A.5 test vectors)
 

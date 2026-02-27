@@ -51,7 +51,7 @@ private func makeTestSchema(_ conn: SQLiteConnection) async throws {
 
 // MARK: - Connection Tests
 
-final class SQLiteConnectionTests: XCTestCase {
+final class SQLiteConnectionTests: XCTestCase, @unchecked Sendable {
 
     func testOpenMemory() {
         withConn { conn in
@@ -104,7 +104,7 @@ final class SQLiteConnectionTests: XCTestCase {
 
 // MARK: - Basic Query Tests
 
-final class SQLiteBasicQueryTests: XCTestCase {
+final class SQLiteBasicQueryTests: XCTestCase, @unchecked Sendable {
 
     func testSelectScalar() {
         withConn { conn in
@@ -175,7 +175,7 @@ final class SQLiteBasicQueryTests: XCTestCase {
 
 // MARK: - Parameter Tests
 
-final class SQLiteParameterTests: XCTestCase {
+final class SQLiteParameterTests: XCTestCase, @unchecked Sendable {
 
     func testQuestionMarkParam() {
         withConn { conn in
@@ -243,7 +243,7 @@ final class SQLiteParameterTests: XCTestCase {
 
 // MARK: - DDL + DML Tests
 
-final class SQLiteDMLTests: XCTestCase {
+final class SQLiteDMLTests: XCTestCase, @unchecked Sendable {
 
     func testCreateTableAndInsert() {
         withConn { conn in
@@ -334,7 +334,7 @@ final class SQLiteDMLTests: XCTestCase {
 
 // MARK: - Data Type Tests
 
-final class SQLiteDataTypeTests: XCTestCase {
+final class SQLiteDataTypeTests: XCTestCase, @unchecked Sendable {
 
     private func typeConn(_ body: @escaping @Sendable (SQLiteConnection) async throws -> Void) {
         withConn { conn in
@@ -423,7 +423,7 @@ final class SQLiteDataTypeTests: XCTestCase {
 
 // MARK: - Transaction Tests
 
-final class SQLiteTransactionTests: XCTestCase {
+final class SQLiteTransactionTests: XCTestCase, @unchecked Sendable {
 
     func testCommit() {
         withConn { conn in
@@ -495,7 +495,7 @@ final class SQLiteTransactionTests: XCTestCase {
 
 // MARK: - Advanced Query Tests
 
-final class SQLiteAdvancedQueryTests: XCTestCase {
+final class SQLiteAdvancedQueryTests: XCTestCase, @unchecked Sendable {
 
     func testOrderBy() {
         withConn { conn in
@@ -622,7 +622,7 @@ final class SQLiteAdvancedQueryTests: XCTestCase {
 
 // MARK: - Multi-statement Tests
 
-final class SQLiteMultiQueryTests: XCTestCase {
+final class SQLiteMultiQueryTests: XCTestCase, @unchecked Sendable {
 
     func testQueryMultiBasic() {
         withConn { conn in
@@ -652,7 +652,7 @@ final class SQLiteMultiQueryTests: XCTestCase {
 
 // MARK: - Error Tests
 
-final class SQLiteErrorTests: XCTestCase {
+final class SQLiteErrorTests: XCTestCase, @unchecked Sendable {
 
     func testSyntaxError() {
         withConn { conn in
@@ -706,7 +706,7 @@ final class SQLiteErrorTests: XCTestCase {
 
 // MARK: - Decodable Tests
 
-final class SQLiteDecodableTests: XCTestCase {
+final class SQLiteDecodableTests: XCTestCase, @unchecked Sendable {
 
     struct User: Decodable {
         let id:   Int64
@@ -742,7 +742,7 @@ final class SQLiteDecodableTests: XCTestCase {
 
 // MARK: - DataTable Tests
 
-final class SQLiteDataTableTests: XCTestCase {
+final class SQLiteDataTableTests: XCTestCase, @unchecked Sendable {
 
     func testAsDataTable() {
         withConn { conn in
@@ -763,7 +763,7 @@ final class SQLiteDataTableTests: XCTestCase {
 
 // MARK: - Pool Tests
 
-final class SQLitePoolTests: XCTestCase {
+final class SQLitePoolTests: XCTestCase, @unchecked Sendable {
 
     func testPoolBasicUsage() {
         let exp = XCTestExpectation(description: "pool")
@@ -866,7 +866,7 @@ final class SQLitePoolTests: XCTestCase {
 
 // MARK: - SQLDatabase Protocol Tests
 
-final class SQLiteSQLDatabaseTests: XCTestCase {
+final class SQLiteSQLDatabaseTests: XCTestCase, @unchecked Sendable {
 
     func testConformsToSQLDatabase() {
         let exp = XCTestExpectation(description: "protocol")
@@ -902,7 +902,7 @@ final class SQLiteSQLDatabaseTests: XCTestCase {
 
 // MARK: - Backup & Restore Tests
 
-final class SQLiteBackupTests: XCTestCase {
+final class SQLiteBackupTests: XCTestCase, @unchecked Sendable {
 
     // MARK: Native binary backup
 

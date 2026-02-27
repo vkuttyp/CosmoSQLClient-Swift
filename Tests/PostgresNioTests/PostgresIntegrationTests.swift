@@ -75,7 +75,7 @@ extension XCTestCase {
 
 // MARK: - Connection Tests
 
-final class PGConnectionTests: XCTestCase {
+final class PGConnectionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -115,7 +115,7 @@ final class PGConnectionTests: XCTestCase {
 
 // MARK: - Basic Query Tests
 
-final class PGBasicQueryTests: XCTestCase {
+final class PGBasicQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -222,7 +222,7 @@ final class PGBasicQueryTests: XCTestCase {
 
 // MARK: - Parameterized Query Tests
 
-final class PGParameterizedTests: XCTestCase {
+final class PGParameterizedTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -287,7 +287,7 @@ final class PGParameterizedTests: XCTestCase {
 
 // MARK: - Data Type Tests
 
-final class PGDataTypeTests: XCTestCase {
+final class PGDataTypeTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -450,7 +450,7 @@ final class PGDataTypeTests: XCTestCase {
 
 // MARK: - Table Query Tests
 
-final class PGTableQueryTests: XCTestCase {
+final class PGTableQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -594,7 +594,7 @@ final class PGTableQueryTests: XCTestCase {
 
 // MARK: - DML Tests (INSERT / UPDATE / DELETE)
 
-final class PGDMLTests: XCTestCase {
+final class PGDMLTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -720,7 +720,7 @@ final class PGDMLTests: XCTestCase {
 
 // MARK: - Transaction Tests
 
-final class PGTransactionTests: XCTestCase {
+final class PGTransactionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -784,7 +784,7 @@ final class PGTransactionTests: XCTestCase {
 
 // MARK: - Error Handling Tests
 
-final class PGErrorTests: XCTestCase {
+final class PGErrorTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -873,7 +873,7 @@ final class PGErrorTests: XCTestCase {
 
 // MARK: - Function Call Tests
 
-final class PGFunctionTests: XCTestCase {
+final class PGFunctionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -950,7 +950,7 @@ final class PGFunctionTests: XCTestCase {
 
 // MARK: - Decodable Tests
 
-final class PGDecodableTests: XCTestCase {
+final class PGDecodableTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -996,7 +996,7 @@ final class PGDecodableTests: XCTestCase {
 
 // MARK: - Concurrent Query Tests
 
-final class PGConcurrencyTests: XCTestCase {
+final class PGConcurrencyTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1036,7 +1036,7 @@ final class PGConcurrencyTests: XCTestCase {
 
 // MARK: - Advanced Query Tests
 
-final class PGAdvancedQueryTests: XCTestCase {
+final class PGAdvancedQueryTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1157,7 +1157,7 @@ final class PGAdvancedQueryTests: XCTestCase {
 
 // MARK: - Transaction API Tests (new)
 
-final class PGTransactionAPITests: XCTestCase {
+final class PGTransactionAPITests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1230,7 +1230,7 @@ final class PGTransactionAPITests: XCTestCase {
 
 // MARK: - Multiple Result Sets Tests (new)
 
-final class PGQueryMultiTests: XCTestCase {
+final class PGQueryMultiTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1288,7 +1288,7 @@ final class PGQueryMultiTests: XCTestCase {
 
 // MARK: - Connection Pool Tests (new)
 
-final class PGPoolTests: XCTestCase {
+final class PGPoolTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1388,7 +1388,7 @@ final class PGPoolTests: XCTestCase {
 
 // MARK: - Bulk Insert Tests (new)
 
-final class PGBulkInsertTests: XCTestCase {
+final class PGBulkInsertTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1447,7 +1447,7 @@ final class PGBulkInsertTests: XCTestCase {
 
 // MARK: - Notice Callback Tests (new)
 
-final class PGNoticeTests: XCTestCase {
+final class PGNoticeTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 
@@ -1488,7 +1488,7 @@ final class PGNoticeTests: XCTestCase {
 
 // MARK: - Backup & Restore Tests
 
-final class PGBackupTests: XCTestCase {
+final class PGBackupTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessPG() }
 

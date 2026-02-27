@@ -14,7 +14,7 @@ import SQLNioCore
 
 // MARK: - Basic Query Tests
 
-final class SQLClientCompatBasicTests: XCTestCase {
+final class SQLClientCompatBasicTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 
@@ -237,7 +237,7 @@ final class SQLClientCompatBasicTests: XCTestCase {
 
 // MARK: - Transaction Tests
 
-final class SQLClientCompatTransactionTests: XCTestCase {
+final class SQLClientCompatTransactionTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 
@@ -298,7 +298,7 @@ final class SQLClientCompatTransactionTests: XCTestCase {
 
 // MARK: - Stored Procedure / RPC Tests
 
-final class SQLClientCompatProcTests: XCTestCase {
+final class SQLClientCompatProcTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 
@@ -447,7 +447,7 @@ final class SQLClientCompatProcTests: XCTestCase {
 
 // MARK: - Bulk Insert Tests
 
-final class SQLClientCompatBulkTests: XCTestCase {
+final class SQLClientCompatBulkTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 
@@ -503,7 +503,7 @@ final class SQLClientCompatBulkTests: XCTestCase {
 
 // MARK: - Connection Pool Tests
 
-final class SQLClientCompatPoolTests: XCTestCase {
+final class SQLClientCompatPoolTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws { try skipUnlessIntegration() }
 

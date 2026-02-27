@@ -4,7 +4,7 @@ import SQLNioCore
 
 // ── Stored procedure integration tests ───────────────────────────────────────
 
-final class MSSQLStoredProcTests: XCTestCase {
+final class MSSQLStoredProcTests: XCTestCase, @unchecked Sendable {
 
     override func setUp() async throws {
         try skipUnlessIntegration()
