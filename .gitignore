@@ -12,3 +12,4 @@ PosBackend/
 
 # Downloaded CI logs
 logs_*/
+frpc.toml
