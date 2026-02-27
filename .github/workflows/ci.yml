@@ -121,6 +121,14 @@ jobs:
             echo "Waiting for SQL Server... ($i/30)"; sleep 5
           done
 
+      - name: Seed SQL Server database
+        run: |
+          container_id=$(docker ps --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" \
+            --format "{{.ID}}" | head -1)
+          docker cp Tests/Resources/mssql_seed.sql "$container_id:/tmp/seed.sql"
+          docker exec "$container_id" /opt/mssql-tools18/bin/sqlcmd \
+            -S localhost -U sa -P 'aBCD111!' -C -i /tmp/seed.sql
+
       - name: Run MSSQL tests
         env:
           MSSQL_TEST_HOST: "127.0.0.1"

@@ -14,8 +14,9 @@ CREATE TABLE IF NOT EXISTS employees (
     id            SERIAL PRIMARY KEY,
     department_id INT  NOT NULL REFERENCES departments(id),
     name          TEXT NOT NULL,
-    email         TEXT NOT NULL UNIQUE,
-    salary        NUMERIC(10,2) DEFAULT 0
+    email         TEXT UNIQUE,
+    salary        NUMERIC(10,2) DEFAULT 0,
+    is_manager    BOOLEAN       DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS type_samples (
@@ -57,23 +58,23 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- ─── Seed data ────────────────────────────────────────────────────────────────
 
 INSERT INTO departments (name, budget, active) VALUES
-    ('Engineering',  500000.00, TRUE),
+    ('Engineering',  1500000.00, TRUE),
     ('Marketing',    200000.00, TRUE),
     ('Sales',        350000.00, TRUE),
     ('HR',           150000.00, TRUE),
-    ('Finance',      250000.00, TRUE);
+    ('Operations',   250000.00, TRUE);
 
 -- 8 employees: 3 in Engineering (id=1), others distributed
 -- Alice Johnson is alphabetically first in dept=1 and highest paid overall
-INSERT INTO employees (department_id, name, email, salary) VALUES
-    (1, 'Alice Johnson',   'alice@example.com',   120000.00),
-    (1, 'Bob Smith',       'bob@example.com',      95000.00),
-    (1, 'Charlie Brown',   'charlie@example.com',  88000.00),
-    (2, 'Diana Prince',    'diana@example.com',    75000.00),
-    (2, 'Eve Adams',       'eve@example.com',      72000.00),
-    (3, 'Frank Castle',    'frank@example.com',    80000.00),
-    (4, 'Grace Hopper',    'grace@example.com',    70000.00),
-    (5, 'Hank Pym',        'hank@example.com',     85000.00);
+INSERT INTO employees (department_id, name, email, salary, is_manager) VALUES
+    (1, 'Alice Johnson',   'alice@example.com',   120000.00, TRUE),
+    (1, 'Bob Smith',       'bob@example.com',      95000.00, FALSE),
+    (1, 'Charlie Brown',   'charlie@example.com',  88000.00, FALSE),
+    (2, 'Diana Prince',    'diana@example.com',    75000.00, TRUE),
+    (2, 'Eve Adams',       'eve@example.com',      72000.00, FALSE),
+    (3, 'Frank Castle',    'frank@example.com',    80000.00, FALSE),
+    (4, 'Grace Hopper',    'grace@example.com',    70000.00, FALSE),
+    (5, 'Hank Pym',        'hank@example.com',     85000.00, FALSE);
 
 INSERT INTO type_samples (col_bool, col_int2, col_int4, col_int8,
     col_float4, col_float8, col_numeric, col_text, col_varchar,
@@ -101,3 +102,29 @@ INSERT INTO order_items (order_id, product_id, quantity) VALUES
     (1, 3, 1),
     (2, 3, 1),
     (3, 5, 3);
+
+-- ─── Functions ────────────────────────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION add_numbers(a INTEGER, b INTEGER) RETURNS INTEGER AS $$
+BEGIN
+    RETURN a + b;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_department_budget(dept_id INTEGER) RETURNS NUMERIC AS $$
+DECLARE
+    result NUMERIC;
+BEGIN
+    SELECT budget INTO result FROM departments WHERE id = dept_id;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_employee_count(dept_id INTEGER) RETURNS INTEGER AS $$
+DECLARE
+    cnt INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO cnt FROM employees WHERE department_id = dept_id;
+    RETURN cnt;
+END;
+$$ LANGUAGE plpgsql;

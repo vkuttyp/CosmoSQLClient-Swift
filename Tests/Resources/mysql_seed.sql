@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS employees (
     name          VARCHAR(100) NOT NULL,
     email         VARCHAR(150) NOT NULL UNIQUE,
     salary        DECIMAL(10,2) DEFAULT 0.00,
+    is_manager    TINYINT(1)   DEFAULT 0,
     FOREIGN KEY (department_id) REFERENCES departments(id)
 );
 
@@ -61,23 +62,23 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- ─── Seed data ────────────────────────────────────────────────────────────────
 
 INSERT INTO departments (name, budget, active) VALUES
-    ('Engineering',  500000.00, 1),
+    ('Engineering',  1500000.00, 1),
     ('Marketing',    200000.00, 1),
     ('Sales',        350000.00, 1),
     ('HR',           150000.00, 1),
-    ('Finance',      250000.00, 1);
+    ('Operations',   250000.00, 1);
 
 -- 8 employees: 3 in Engineering (dept=1), 1 or 2 in each other dept
 -- Alice Johnson is alphabetically first in dept=1 and has the highest salary overall
-INSERT INTO employees (department_id, name, email, salary) VALUES
-    (1, 'Alice Johnson',   'alice@example.com',   120000.00),
-    (1, 'Bob Smith',       'bob@example.com',      95000.00),
-    (1, 'Charlie Brown',   'charlie@example.com',  88000.00),
-    (2, 'Diana Prince',    'diana@example.com',    75000.00),
-    (2, 'Eve Adams',       'eve@example.com',      72000.00),
-    (3, 'Frank Castle',    'frank@example.com',    80000.00),
-    (4, 'Grace Hopper',    'grace@example.com',    70000.00),
-    (5, 'Hank Pym',        'hank@example.com',     85000.00);
+INSERT INTO employees (department_id, name, email, salary, is_manager) VALUES
+    (1, 'Alice Johnson',   'alice@example.com',   120000.00, 1),
+    (1, 'Bob Smith',       'bob@example.com',      95000.00, 0),
+    (1, 'Charlie Brown',   'charlie@example.com',  88000.00, 0),
+    (2, 'Diana Prince',    'diana@example.com',    75000.00, 1),
+    (2, 'Eve Adams',       'eve@example.com',      72000.00, 0),
+    (3, 'Frank Castle',    'frank@example.com',    80000.00, 0),
+    (4, 'Grace Hopper',    'grace@example.com',    70000.00, 0),
+    (5, 'Hank Pym',        'hank@example.com',     85000.00, 0);
 
 INSERT INTO type_samples (col_bool, col_tinyint, col_smallint, col_int, col_bigint,
     col_float, col_double, col_decimal, col_varchar, col_text, col_date, col_datetime)
@@ -103,3 +104,24 @@ INSERT INTO order_items (order_id, product_id, quantity) VALUES
     (1, 3, 1),
     (2, 3, 1),
     (3, 5, 3);
+
+-- ─── Stored procedures ────────────────────────────────────────────────────────
+
+DELIMITER $$
+
+CREATE PROCEDURE add_numbers(IN a INT, IN b INT, OUT result INT)
+BEGIN
+    SET result = a + b;
+END$$
+
+CREATE PROCEDURE get_department_budget(IN dept_id INT, OUT budget DECIMAL(12,2))
+BEGIN
+    SELECT d.budget INTO budget FROM departments d WHERE d.id = dept_id;
+END$$
+
+CREATE PROCEDURE get_employee_count(IN dept_id INT, OUT cnt INT)
+BEGIN
+    SELECT COUNT(*) INTO cnt FROM employees WHERE department_id = dept_id;
+END$$
+
+DELIMITER ;
