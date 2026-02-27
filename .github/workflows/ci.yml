@@ -109,20 +109,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-mssql-
 
-      - name: Install mssql-tools18
-        run: |
-          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-            | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
-          curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
-            | sudo tee /etc/apt/sources.list.d/msprod.list
-          sudo apt-get update -q
-          ACCEPT_EULA=Y sudo apt-get install -y -q mssql-tools18 unixodbc-dev
-          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
-
       - name: Create test database
         run: |
+          container_id=$(docker ps --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" \
+            --format "{{.ID}}" | head -1)
           for i in $(seq 1 30); do
-            /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \
+            docker exec "$container_id" /opt/mssql-tools18/bin/sqlcmd \
+              -S localhost -U sa -P 'aBCD111!' -C \
               -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb" \
               2>/dev/null && echo "SQL Server ready." && break
             echo "Waiting for SQL Server... ($i/30)"; sleep 5
