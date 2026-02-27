@@ -1,6 +1,20 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
+// SQLite is provided by the Apple SDK on Darwin; on Linux we need a system library.
+#if canImport(Darwin)
+let sqliteSystemLibTargets: [Target] = []
+let sqliteNioExtraDeps:       [Target.Dependency] = []
+let sqliteNioLinkerSettings:  [LinkerSetting] = [.linkedLibrary("sqlite3")]
+#else
+let sqliteSystemLibTargets: [Target] = [
+    .systemLibrary(name: "CSQLite", pkgConfig: "sqlite3",
+                   providers: [.apt(["libsqlite3-dev"])]),
+]
+let sqliteNioExtraDeps:       [Target.Dependency] = [.target(name: "CSQLite")]
+let sqliteNioLinkerSettings:  [LinkerSetting] = []
+#endif
+
 let package = Package(
     name: "sql-nio",
     platforms: [
@@ -86,9 +100,9 @@ let package = Package(
                 .product(name: "NIOCore",   package: "swift-nio"),
                 .product(name: "NIOPosix",  package: "swift-nio"),
                 .product(name: "Logging",   package: "swift-log"),
-            ],
+            ] + sqliteNioExtraDeps,
             swiftSettings: swiftSettings,
-            linkerSettings: [.linkedLibrary("sqlite3")]
+            linkerSettings: sqliteNioLinkerSettings
         ),
 
         // ── Tests ─────────────────────────────────────────────────────────────
@@ -130,7 +144,7 @@ let package = Package(
             ],
             swiftSettings: swiftSettings
         ),
-    ]
+    ] + sqliteSystemLibTargets
 )
 
 var swiftSettings: [SwiftSetting] { [

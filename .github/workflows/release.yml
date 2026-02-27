@@ -21,6 +21,8 @@ jobs:
       - uses: swift-actions/setup-swift@v2
         with:
           swift-version: "6.0"
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
       - run: swift test --filter SQLiteNioTests
       - run: swift test --filter SQLNioCoreTests
 
@@ -44,6 +46,8 @@ jobs:
       - uses: swift-actions/setup-swift@v2
         with:
           swift-version: "6.0"
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
       - name: Run PostgreSQL tests
         env:
           PG_TEST_HOST: "127.0.0.1"
@@ -73,6 +77,8 @@ jobs:
       - uses: swift-actions/setup-swift@v2
         with:
           swift-version: "6.0"
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
       - name: Run MySQL tests
         env:
           MYSQL_TEST_HOST: "127.0.0.1"
@@ -101,6 +107,8 @@ jobs:
       - uses: swift-actions/setup-swift@v2
         with:
           swift-version: "6.0"
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
       - name: Create test database
         run: |
           until /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \

@@ -59,6 +59,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-${{ matrix.swift }}-
 
+      - name: Install SQLite (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libsqlite3-dev
+
       - name: Build
         run: swift build --configuration debug 2>&1
 
@@ -97,6 +101,9 @@ jobs:
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -137,7 +144,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U pguser -d PostgresNioTestDb"
+          --health-cmd "pg_isready -U pguser"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
@@ -149,6 +156,9 @@ jobs:
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -195,6 +205,9 @@ jobs:
         uses: swift-actions/setup-swift@v2
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
