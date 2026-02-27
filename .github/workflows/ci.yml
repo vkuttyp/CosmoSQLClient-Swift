@@ -109,11 +109,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-mssql-
 
+      - name: Install mssql-tools18
+        run: |
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
+            | sudo tee /etc/apt/sources.list.d/msprod.list
+          sudo apt-get update -q
+          ACCEPT_EULA=Y sudo apt-get install -y -q mssql-tools18 unixodbc-dev
+          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
+
       - name: Create test database
         run: |
-          until /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \
-            -Q "CREATE DATABASE MSSQLNioTestDb" 2>/dev/null; do
-            echo "Waiting for SQL Server..."; sleep 3
+          for i in $(seq 1 30); do
+            /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \
+              -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb" \
+              2>/dev/null && echo "SQL Server ready." && break
+            echo "Waiting for SQL Server... ($i/30)"; sleep 5
           done
 
       - name: Run MSSQL tests
@@ -164,6 +176,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-pg-
 
+      - name: Seed PostgreSQL database
+        run: |
+          PGPASSWORD=pgPass123 psql -h 127.0.0.1 -U pguser -d PostgresNioTestDb \
+            -f Tests/Resources/postgres_seed.sql
+
       - name: Run PostgreSQL tests
         env:
           PG_TEST_HOST: "127.0.0.1"
@@ -212,6 +229,10 @@ jobs:
           key: ${{ runner.os }}-spm-mysql-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-mysql-
+
+      - name: Seed MySQL database
+        run: |
+          mysql -h 127.0.0.1 -u mysqluser -pmysqlPass123 MySQLNioTestDb < Tests/Resources/mysql_seed.sql
 
       - name: Run MySQL tests
         env:

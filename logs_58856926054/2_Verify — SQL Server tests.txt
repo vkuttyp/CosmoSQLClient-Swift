@@ -1,0 +1,891 @@
+﻿2026-02-27T22:50:55.7083151Z Current runner version: '2.331.0'
+2026-02-27T22:50:55.7105950Z ##[group]Runner Image Provisioner
+2026-02-27T22:50:55.7106770Z Hosted Compute Agent
+2026-02-27T22:50:55.7107656Z Version: 20260213.493
+2026-02-27T22:50:55.7108487Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-02-27T22:50:55.7109155Z Build Date: 2026-02-13T00:28:41Z
+2026-02-27T22:50:55.7109887Z Worker ID: {c02260d7-7d5d-40e6-a7c8-ebeefab28079}
+2026-02-27T22:50:55.7110561Z Azure Region: westus
+2026-02-27T22:50:55.7111102Z ##[endgroup]
+2026-02-27T22:50:55.7112496Z ##[group]Operating System
+2026-02-27T22:50:55.7113242Z Ubuntu
+2026-02-27T22:50:55.7113686Z 24.04.3
+2026-02-27T22:50:55.7114134Z LTS
+2026-02-27T22:50:55.7114959Z ##[endgroup]
+2026-02-27T22:50:55.7116444Z ##[group]Runner Image
+2026-02-27T22:50:55.7117776Z Image: ubuntu-24.04
+2026-02-27T22:50:55.7119323Z Version: 20260224.36.1
+2026-02-27T22:50:55.7121517Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260224.36/images/ubuntu/Ubuntu2404-Readme.md
+2026-02-27T22:50:55.7123097Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260224.36
+2026-02-27T22:50:55.7124017Z ##[endgroup]
+2026-02-27T22:50:55.7125052Z ##[group]GITHUB_TOKEN Permissions
+2026-02-27T22:50:55.7126884Z Contents: write
+2026-02-27T22:50:55.7127872Z Metadata: read
+2026-02-27T22:50:55.7128496Z ##[endgroup]
+2026-02-27T22:50:55.7130699Z Secret source: Actions
+2026-02-27T22:50:55.7131679Z Prepare workflow directory
+2026-02-27T22:50:55.7555377Z Prepare all required actions
+2026-02-27T22:50:55.7593806Z Getting action download info
+2026-02-27T22:50:56.2078383Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-02-27T22:50:56.3392518Z Download action repository 'swift-actions/setup-swift@v2' (SHA:7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a)
+2026-02-27T22:50:57.3246133Z Complete job name: Verify — SQL Server tests
+2026-02-27T22:50:57.3762667Z ##[group]Checking docker version
+2026-02-27T22:50:57.3775871Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+2026-02-27T22:50:57.4631668Z '1.48'
+2026-02-27T22:50:57.4644579Z Docker daemon API version: '1.48'
+2026-02-27T22:50:57.4645407Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+2026-02-27T22:50:57.4800537Z '1.48'
+2026-02-27T22:50:57.4813009Z Docker client API version: '1.48'
+2026-02-27T22:50:57.4818334Z ##[endgroup]
+2026-02-27T22:50:57.4821854Z ##[group]Clean up resources from previous jobs
+2026-02-27T22:50:57.4826817Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=be9100"
+2026-02-27T22:50:57.4966639Z ##[command]/usr/bin/docker network prune --force --filter "label=be9100"
+2026-02-27T22:50:57.5093221Z ##[endgroup]
+2026-02-27T22:50:57.5093788Z ##[group]Create local container network
+2026-02-27T22:50:57.5104588Z ##[command]/usr/bin/docker network create --label be9100 github_network_c8ac1951f5ac4be6b6fc08aa0ba9428b
+2026-02-27T22:50:57.5679461Z ad1454499e492660c60c4e19b4aa9c514cfd6e8e5bba0500d0b2d81c7f533d65
+2026-02-27T22:50:57.5698173Z ##[endgroup]
+2026-02-27T22:50:57.5723492Z ##[group]Starting mssql service container
+2026-02-27T22:50:57.5744472Z ##[command]/usr/bin/docker pull mcr.microsoft.com/mssql/server:2022-latest
+2026-02-27T22:50:57.7007096Z 2022-latest: Pulling from mssql/server
+2026-02-27T22:50:57.7013317Z cb5e374be662: Pulling fs layer
+2026-02-27T22:50:57.7015663Z b84a32a4ecd5: Pulling fs layer
+2026-02-27T22:50:57.7016684Z 6cadd823cd10: Pulling fs layer
+2026-02-27T22:50:57.8883578Z cb5e374be662: Verifying Checksum
+2026-02-27T22:50:57.8887238Z cb5e374be662: Download complete
+2026-02-27T22:50:58.0817948Z 6cadd823cd10: Verifying Checksum
+2026-02-27T22:50:58.0822189Z 6cadd823cd10: Download complete
+2026-02-27T22:50:59.2320890Z cb5e374be662: Pull complete
+2026-02-27T22:50:59.7372535Z b84a32a4ecd5: Verifying Checksum
+2026-02-27T22:50:59.7373211Z b84a32a4ecd5: Download complete
+2026-02-27T22:51:08.2482209Z b84a32a4ecd5: Pull complete
+2026-02-27T22:51:10.9351716Z 6cadd823cd10: Pull complete
+2026-02-27T22:51:10.9388577Z Digest: sha256:0ec7739e1c5ec2f57861facbe1f2b74f1d3e147c7c97edf91eeea920c5944d9c
+2026-02-27T22:51:10.9402046Z Status: Downloaded newer image for mcr.microsoft.com/mssql/server:2022-latest
+2026-02-27T22:51:10.9410317Z mcr.microsoft.com/mssql/server:2022-latest
+2026-02-27T22:51:10.9474806Z ##[command]/usr/bin/docker create --name c91157ffc6944f23a73d7cc8344f5020_mcrmicrosoftcommssqlserver2022latest_36c1cb --label be9100 --network github_network_c8ac1951f5ac4be6b6fc08aa0ba9428b --network-alias mssql -p 1433:1433 --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'aBCD111!' -Q 'SELECT 1' -C" --health-interval 10s --health-retries 15 -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=aBCD111!" -e "MSSQL_PID=Developer" -e GITHUB_ACTIONS=true -e CI=true mcr.microsoft.com/mssql/server:2022-latest
+2026-02-27T22:51:10.9739237Z ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:10.9762824Z ##[command]/usr/bin/docker start ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:11.1801100Z ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:11.1821438Z ##[command]/usr/bin/docker ps --all --filter id=ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+2026-02-27T22:51:11.1979134Z ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f Up Less than a second (health: starting)
+2026-02-27T22:51:11.2004018Z ##[command]/usr/bin/docker port ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:11.2140134Z 1433/tcp -> 0.0.0.0:1433
+2026-02-27T22:51:11.2140708Z 1433/tcp -> [::]:1433
+2026-02-27T22:51:11.2189114Z ##[endgroup]
+2026-02-27T22:51:11.2197088Z ##[group]Waiting for all services to be ready
+2026-02-27T22:51:11.2211179Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:11.2351681Z starting
+2026-02-27T22:51:11.2372980Z mssql service is starting, waiting 2 seconds before checking again.
+2026-02-27T22:51:13.2379731Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:13.2512245Z starting
+2026-02-27T22:51:13.2526047Z mssql service is starting, waiting 4 seconds before checking again.
+2026-02-27T22:51:17.3808261Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:17.3929907Z starting
+2026-02-27T22:51:17.3951277Z mssql service is starting, waiting 7 seconds before checking again.
+2026-02-27T22:51:25.0110960Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:51:25.0243839Z healthy
+2026-02-27T22:51:25.0261603Z mssql service is healthy.
+2026-02-27T22:51:25.0262284Z ##[endgroup]
+2026-02-27T22:51:25.0528747Z ##[group]Run actions/checkout@v4
+2026-02-27T22:51:25.0529451Z with:
+2026-02-27T22:51:25.0529660Z   repository: vkuttyp/sql-nio
+2026-02-27T22:51:25.0530087Z   token: ***
+2026-02-27T22:51:25.0530296Z   ssh-strict: true
+2026-02-27T22:51:25.0530483Z   ssh-user: git
+2026-02-27T22:51:25.0530678Z   persist-credentials: true
+2026-02-27T22:51:25.0530887Z   clean: true
+2026-02-27T22:51:25.0531076Z   sparse-checkout-cone-mode: true
+2026-02-27T22:51:25.0531310Z   fetch-depth: 1
+2026-02-27T22:51:25.0531481Z   fetch-tags: false
+2026-02-27T22:51:25.0531664Z   show-progress: true
+2026-02-27T22:51:25.0531842Z   lfs: false
+2026-02-27T22:51:25.0532008Z   submodules: false
+2026-02-27T22:51:25.0532193Z   set-safe-directory: true
+2026-02-27T22:51:25.0532620Z ##[endgroup]
+2026-02-27T22:51:25.1616464Z Syncing repository: vkuttyp/sql-nio
+2026-02-27T22:51:25.1617891Z ##[group]Getting Git version info
+2026-02-27T22:51:25.1618278Z Working directory is '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:51:25.1619149Z [command]/usr/bin/git version
+2026-02-27T22:51:25.1681543Z git version 2.53.0
+2026-02-27T22:51:25.1708095Z ##[endgroup]
+2026-02-27T22:51:25.1724167Z Temporarily overriding HOME='/home/runner/work/_temp/10396460-1c93-4996-8363-636901d3c966' before making global git config changes
+2026-02-27T22:51:25.1725617Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-27T22:51:25.1738829Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:51:25.1778040Z Deleting the contents of '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:51:25.1781669Z ##[group]Initializing the repository
+2026-02-27T22:51:25.1785989Z [command]/usr/bin/git init /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:51:25.1885090Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-02-27T22:51:25.1885870Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-02-27T22:51:25.1886839Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-02-27T22:51:25.1887753Z hint: call:
+2026-02-27T22:51:25.1888059Z hint:
+2026-02-27T22:51:25.1888483Z hint: 	git config --global init.defaultBranch <name>
+2026-02-27T22:51:25.1889032Z hint:
+2026-02-27T22:51:25.1889513Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-02-27T22:51:25.1890358Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-02-27T22:51:25.1891049Z hint:
+2026-02-27T22:51:25.1891361Z hint: 	git branch -m <name>
+2026-02-27T22:51:25.1891629Z hint:
+2026-02-27T22:51:25.1891933Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-02-27T22:51:25.1892491Z Initialized empty Git repository in /home/runner/work/sql-nio/sql-nio/.git/
+2026-02-27T22:51:25.1901172Z [command]/usr/bin/git remote add origin https://github.com/vkuttyp/sql-nio
+2026-02-27T22:51:25.1935009Z ##[endgroup]
+2026-02-27T22:51:25.1935592Z ##[group]Disabling automatic garbage collection
+2026-02-27T22:51:25.1939337Z [command]/usr/bin/git config --local gc.auto 0
+2026-02-27T22:51:25.1968473Z ##[endgroup]
+2026-02-27T22:51:25.1968920Z ##[group]Setting up auth
+2026-02-27T22:51:25.1975098Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-27T22:51:25.2005326Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-27T22:51:25.2343691Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-27T22:51:25.2373053Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-27T22:51:25.2606577Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-27T22:51:25.2637975Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-27T22:51:25.2882554Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-02-27T22:51:25.2917098Z ##[endgroup]
+2026-02-27T22:51:25.2917851Z ##[group]Fetching the repository
+2026-02-27T22:51:25.2926246Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2bda17def7f3c2f6e10788fa8790bfdc1697a7de:refs/tags/v1.0.3
+2026-02-27T22:51:25.8831539Z From https://github.com/vkuttyp/sql-nio
+2026-02-27T22:51:25.8832342Z  * [new ref]         2bda17def7f3c2f6e10788fa8790bfdc1697a7de -> v1.0.3
+2026-02-27T22:51:25.8860978Z ##[endgroup]
+2026-02-27T22:51:25.8861621Z ##[group]Determining the checkout info
+2026-02-27T22:51:25.8864195Z ##[endgroup]
+2026-02-27T22:51:25.8869879Z [command]/usr/bin/git sparse-checkout disable
+2026-02-27T22:51:25.8912130Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-02-27T22:51:25.8938367Z ##[group]Checking out the ref
+2026-02-27T22:51:25.8943071Z [command]/usr/bin/git checkout --progress --force refs/tags/v1.0.3
+2026-02-27T22:51:25.9041746Z Note: switching to 'refs/tags/v1.0.3'.
+2026-02-27T22:51:25.9042112Z 
+2026-02-27T22:51:25.9042422Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-02-27T22:51:25.9043216Z changes and commit them, and you can discard any commits you make in this
+2026-02-27T22:51:25.9044043Z state without impacting any branches by switching back to a branch.
+2026-02-27T22:51:25.9044540Z 
+2026-02-27T22:51:25.9044879Z If you want to create a new branch to retain commits you create, you may
+2026-02-27T22:51:25.9045669Z do so (now or later) by using -c with the switch command. Example:
+2026-02-27T22:51:25.9046124Z 
+2026-02-27T22:51:25.9046286Z   git switch -c <new-branch-name>
+2026-02-27T22:51:25.9046591Z 
+2026-02-27T22:51:25.9046755Z Or undo this operation with:
+2026-02-27T22:51:25.9047038Z 
+2026-02-27T22:51:25.9047172Z   git switch -
+2026-02-27T22:51:25.9047601Z 
+2026-02-27T22:51:25.9048518Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-02-27T22:51:25.9049096Z 
+2026-02-27T22:51:25.9049585Z HEAD is now at 2bda17d fix: add @unchecked Sendable to all test classes for Swift 6 compatibility
+2026-02-27T22:51:25.9055584Z ##[endgroup]
+2026-02-27T22:51:25.9094619Z [command]/usr/bin/git log -1 --format=%H
+2026-02-27T22:51:25.9117767Z 2bda17def7f3c2f6e10788fa8790bfdc1697a7de
+2026-02-27T22:51:25.9282054Z ##[group]Run swift-actions/setup-swift@v2
+2026-02-27T22:51:25.9282345Z with:
+2026-02-27T22:51:25.9282522Z   swift-version: 6.0
+2026-02-27T22:51:25.9282727Z ##[endgroup]
+2026-02-27T22:51:26.3425989Z [command]/usr/bin/file /home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0
+2026-02-27T22:51:26.4068718Z /home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0: PGP public key block Public-Key (old)
+2026-02-27T22:51:26.4154594Z [command]/usr/bin/bash -c cat "/home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0" | gpg --import
+2026-02-27T22:51:26.4536618Z gpg: directory '/home/runner/.gnupg' created
+2026-02-27T22:51:26.4540955Z gpg: keybox '/home/runner/.gnupg/pubring.kbx' created
+2026-02-27T22:51:26.4666836Z gpg: /home/runner/.gnupg/trustdb.gpg: trustdb created
+2026-02-27T22:51:26.4668985Z gpg: key D441C977412B37AD: public key "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5093796Z gpg: key 9F597F4D21A56D5F: public key "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5105941Z gpg: key 63BC1CFE91D306C6: public key "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5118801Z gpg: key EF5430F071E1B235: public key "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5131686Z gpg: key 7638F1FB2B2B08C4: public key "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5144624Z gpg: key 925CC1CCED3D1561: public key "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5156918Z gpg: key FAF6989E1BC16FEA: public key "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5192943Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:51:26.5206792Z gpg: key F167DF1ACF9CE069: public key "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:51:26.5220117Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:51:26.5233518Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:51:26.5246582Z gpg: key EF80A866B47A981F: public key "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:51:26.5260421Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:51:26.5268022Z gpg: Total number processed: 13
+2026-02-27T22:51:26.5268456Z gpg:               imported: 9
+2026-02-27T22:51:26.5268828Z gpg:         new signatures: 4
+2026-02-27T22:51:26.5302830Z [command]/usr/bin/gpg --keyserver hkp://keyserver.ubuntu.com --refresh-keys Swift
+2026-02-27T22:51:26.6023642Z gpg: refreshing 9 keys from hkp://keyserver.ubuntu.com
+2026-02-27T22:51:31.0680605Z gpg: key EF80A866B47A981F: "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:31.0690911Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:31.0696042Z gpg: key FAF6989E1BC16FEA: "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0711414Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0717297Z gpg: key 7638F1FB2B2B08C4: "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0723162Z gpg: key EF5430F071E1B235: "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0728187Z gpg: key 63BC1CFE91D306C6: "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0733756Z gpg: key 9F597F4D21A56D5F: "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0738400Z gpg: key D441C977412B37AD: "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0739628Z gpg: Total number processed: 9
+2026-02-27T22:51:31.0740028Z gpg:              unchanged: 9
+2026-02-27T22:51:39.8324682Z [command]/usr/bin/gpg --verify /home/runner/work/_temp/925dc860-2a33-45ea-b163-16bb2f73c910 /home/runner/work/_temp/bcad7a32-5187-47f4-83b6-811b8110a6e4
+2026-02-27T22:51:40.9725686Z gpg: Signature made Thu Dec 12 01:43:03 2024 UTC
+2026-02-27T22:51:40.9726088Z gpg:                using RSA key EF80A866B47A981F
+2026-02-27T22:51:40.9728479Z gpg: Good signature from "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" [unknown]
+2026-02-27T22:51:40.9729754Z gpg: WARNING: This key is not certified with a trusted signature!
+2026-02-27T22:51:40.9730570Z gpg:          There is no indication that the signature belongs to the owner.
+2026-02-27T22:51:40.9731466Z Primary key fingerprint: 52BB 7E3D E28A 71BE 22EC  05FF EF80 A866 B47A 981F
+2026-02-27T22:51:40.9808623Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/bba7a9a6-7bf7-47d0-95a2-f8d36cdf2eef -f /home/runner/work/_temp/bcad7a32-5187-47f4-83b6-811b8110a6e4
+2026-02-27T22:52:04.6194945Z [command]/opt/hostedtoolcache/swift-Ubuntu/6.0.3/x64/usr/bin/swift --version
+2026-02-27T22:52:04.8443435Z Swift version 6.0.3 (swift-6.0.3-RELEASE)
+2026-02-27T22:52:04.8444033Z Target: x86_64-unknown-linux-gnu
+2026-02-27T22:52:04.8589169Z ##[group]Run sudo apt-get install -y libsqlite3-dev
+2026-02-27T22:52:04.8589642Z [36;1msudo apt-get install -y libsqlite3-dev[0m
+2026-02-27T22:52:04.8649858Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:52:04.8650157Z ##[endgroup]
+2026-02-27T22:52:04.8991692Z Reading package lists...
+2026-02-27T22:52:05.0762083Z Building dependency tree...
+2026-02-27T22:52:05.0770585Z Reading state information...
+2026-02-27T22:52:05.2649640Z libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.5).
+2026-02-27T22:52:05.2650469Z 0 upgraded, 0 newly installed, 0 to remove and 25 not upgraded.
+2026-02-27T22:52:05.2701661Z ##[group]Run until /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \
+2026-02-27T22:52:05.2702306Z [36;1muntil /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \[0m
+2026-02-27T22:52:05.2702779Z [36;1m  -Q "CREATE DATABASE MSSQLNioTestDb" 2>/dev/null; do[0m
+2026-02-27T22:52:05.2703346Z [36;1m  echo "Waiting for SQL Server..."; sleep 3[0m
+2026-02-27T22:52:05.2703611Z [36;1mdone[0m
+2026-02-27T22:52:05.2755406Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:52:05.2755651Z ##[endgroup]
+2026-02-27T22:52:05.2830056Z Waiting for SQL Server...
+2026-02-27T22:52:08.2858363Z Waiting for SQL Server...
+2026-02-27T22:52:11.2879927Z Waiting for SQL Server...
+2026-02-27T22:52:14.2902423Z Waiting for SQL Server...
+2026-02-27T22:52:17.2922856Z Waiting for SQL Server...
+2026-02-27T22:52:20.2945804Z Waiting for SQL Server...
+2026-02-27T22:52:23.2966516Z Waiting for SQL Server...
+2026-02-27T22:52:26.2986361Z Waiting for SQL Server...
+2026-02-27T22:52:29.3010221Z Waiting for SQL Server...
+2026-02-27T22:52:32.3032865Z Waiting for SQL Server...
+2026-02-27T22:52:35.3054173Z Waiting for SQL Server...
+2026-02-27T22:52:38.3076913Z Waiting for SQL Server...
+2026-02-27T22:52:41.3098883Z Waiting for SQL Server...
+2026-02-27T22:52:44.3121062Z Waiting for SQL Server...
+2026-02-27T22:52:47.3142248Z Waiting for SQL Server...
+2026-02-27T22:52:50.3165195Z Waiting for SQL Server...
+2026-02-27T22:52:53.3187874Z Waiting for SQL Server...
+2026-02-27T22:52:56.3208947Z Waiting for SQL Server...
+2026-02-27T22:52:59.3233000Z Waiting for SQL Server...
+2026-02-27T22:53:02.3256811Z Waiting for SQL Server...
+2026-02-27T22:53:05.3281069Z Waiting for SQL Server...
+2026-02-27T22:53:08.3304412Z Waiting for SQL Server...
+2026-02-27T22:53:11.3328255Z Waiting for SQL Server...
+2026-02-27T22:53:14.3354222Z Waiting for SQL Server...
+2026-02-27T22:53:17.3376141Z Waiting for SQL Server...
+2026-02-27T22:53:20.3398331Z Waiting for SQL Server...
+2026-02-27T22:53:23.3421355Z Waiting for SQL Server...
+2026-02-27T22:53:26.3444228Z Waiting for SQL Server...
+2026-02-27T22:53:29.3465243Z Waiting for SQL Server...
+2026-02-27T22:53:32.3486022Z Waiting for SQL Server...
+2026-02-27T22:53:35.3506782Z Waiting for SQL Server...
+2026-02-27T22:53:38.3528838Z Waiting for SQL Server...
+2026-02-27T22:53:41.3552882Z Waiting for SQL Server...
+2026-02-27T22:53:44.3575996Z Waiting for SQL Server...
+2026-02-27T22:53:47.3598046Z Waiting for SQL Server...
+2026-02-27T22:53:50.3620803Z Waiting for SQL Server...
+2026-02-27T22:53:53.3643167Z Waiting for SQL Server...
+2026-02-27T22:53:56.3663979Z Waiting for SQL Server...
+2026-02-27T22:53:59.3686281Z Waiting for SQL Server...
+2026-02-27T22:54:02.3705607Z Waiting for SQL Server...
+2026-02-27T22:54:05.3728348Z Waiting for SQL Server...
+2026-02-27T22:54:08.3751139Z Waiting for SQL Server...
+2026-02-27T22:54:11.3773409Z Waiting for SQL Server...
+2026-02-27T22:54:14.3794239Z Waiting for SQL Server...
+2026-02-27T22:54:17.3815988Z Waiting for SQL Server...
+2026-02-27T22:54:20.3835931Z Waiting for SQL Server...
+2026-02-27T22:54:23.3858671Z Waiting for SQL Server...
+2026-02-27T22:54:26.3881359Z Waiting for SQL Server...
+2026-02-27T22:54:29.3903702Z Waiting for SQL Server...
+2026-02-27T22:54:32.3922962Z Waiting for SQL Server...
+2026-02-27T22:54:35.3943442Z Waiting for SQL Server...
+2026-02-27T22:54:38.3964600Z Waiting for SQL Server...
+2026-02-27T22:54:41.3986299Z Waiting for SQL Server...
+2026-02-27T22:54:44.4009578Z Waiting for SQL Server...
+2026-02-27T22:54:47.4030585Z Waiting for SQL Server...
+2026-02-27T22:54:50.4051731Z Waiting for SQL Server...
+2026-02-27T22:54:53.4075890Z Waiting for SQL Server...
+2026-02-27T22:54:56.4097108Z Waiting for SQL Server...
+2026-02-27T22:54:59.4117292Z Waiting for SQL Server...
+2026-02-27T22:55:02.4137267Z Waiting for SQL Server...
+2026-02-27T22:55:05.4158870Z Waiting for SQL Server...
+2026-02-27T22:55:08.4181057Z Waiting for SQL Server...
+2026-02-27T22:55:11.4203340Z Waiting for SQL Server...
+2026-02-27T22:55:14.4225638Z Waiting for SQL Server...
+2026-02-27T22:55:17.4248911Z Waiting for SQL Server...
+2026-02-27T22:55:20.4271042Z Waiting for SQL Server...
+2026-02-27T22:55:23.4293348Z Waiting for SQL Server...
+2026-02-27T22:55:26.4314933Z Waiting for SQL Server...
+2026-02-27T22:55:29.4337598Z Waiting for SQL Server...
+2026-02-27T22:55:32.4359758Z Waiting for SQL Server...
+2026-02-27T22:55:35.4383897Z Waiting for SQL Server...
+2026-02-27T22:55:38.4407142Z Waiting for SQL Server...
+2026-02-27T22:55:41.4430463Z Waiting for SQL Server...
+2026-02-27T22:55:44.4453887Z Waiting for SQL Server...
+2026-02-27T22:55:47.4477036Z Waiting for SQL Server...
+2026-02-27T22:55:50.4499743Z Waiting for SQL Server...
+2026-02-27T22:55:53.4523758Z Waiting for SQL Server...
+2026-02-27T22:55:56.4546370Z Waiting for SQL Server...
+2026-02-27T22:55:59.4567975Z Waiting for SQL Server...
+2026-02-27T22:56:02.4588422Z Waiting for SQL Server...
+2026-02-27T22:56:05.4610924Z Waiting for SQL Server...
+2026-02-27T22:56:08.4632701Z Waiting for SQL Server...
+2026-02-27T22:56:11.4652872Z Waiting for SQL Server...
+2026-02-27T22:56:14.4674393Z Waiting for SQL Server...
+2026-02-27T22:56:17.4694034Z Waiting for SQL Server...
+2026-02-27T22:56:20.4716914Z Waiting for SQL Server...
+2026-02-27T22:56:23.4741520Z Waiting for SQL Server...
+2026-02-27T22:56:26.4764453Z Waiting for SQL Server...
+2026-02-27T22:56:29.4789730Z Waiting for SQL Server...
+2026-02-27T22:56:32.4811214Z Waiting for SQL Server...
+2026-02-27T22:56:35.4837611Z Waiting for SQL Server...
+2026-02-27T22:56:38.4860325Z Waiting for SQL Server...
+2026-02-27T22:56:41.4884488Z Waiting for SQL Server...
+2026-02-27T22:56:44.4907596Z Waiting for SQL Server...
+2026-02-27T22:56:47.4932060Z Waiting for SQL Server...
+2026-02-27T22:56:50.4956610Z Waiting for SQL Server...
+2026-02-27T22:56:53.4980170Z Waiting for SQL Server...
+2026-02-27T22:56:56.5003942Z Waiting for SQL Server...
+2026-02-27T22:56:59.5028246Z Waiting for SQL Server...
+2026-02-27T22:57:02.5052979Z Waiting for SQL Server...
+2026-02-27T22:57:05.5077692Z Waiting for SQL Server...
+2026-02-27T22:57:08.5100787Z Waiting for SQL Server...
+2026-02-27T22:57:11.5125387Z Waiting for SQL Server...
+2026-02-27T22:57:14.5148828Z Waiting for SQL Server...
+2026-02-27T22:57:17.5171439Z Waiting for SQL Server...
+2026-02-27T22:57:20.5195782Z Waiting for SQL Server...
+2026-02-27T22:57:23.5219034Z Waiting for SQL Server...
+2026-02-27T22:57:26.5240188Z Waiting for SQL Server...
+2026-02-27T22:57:29.5261790Z Waiting for SQL Server...
+2026-02-27T22:57:32.5282344Z Waiting for SQL Server...
+2026-02-27T22:57:35.5304779Z Waiting for SQL Server...
+2026-02-27T22:57:38.5326709Z Waiting for SQL Server...
+2026-02-27T22:57:41.5351276Z Waiting for SQL Server...
+2026-02-27T22:57:44.5371914Z Waiting for SQL Server...
+2026-02-27T22:57:47.5396823Z Waiting for SQL Server...
+2026-02-27T22:57:50.5420935Z Waiting for SQL Server...
+2026-02-27T22:57:53.5443474Z Waiting for SQL Server...
+2026-02-27T22:57:56.5464715Z Waiting for SQL Server...
+2026-02-27T22:57:59.5587118Z ##[error]The operation was canceled.
+2026-02-27T22:57:59.5675107Z Post job cleanup.
+2026-02-27T22:57:59.6671628Z [command]/usr/bin/git version
+2026-02-27T22:57:59.6709314Z git version 2.53.0
+2026-02-27T22:57:59.6758801Z Temporarily overriding HOME='/home/runner/work/_temp/46c16944-bd45-427d-af70-9e783091908d' before making global git config changes
+2026-02-27T22:57:59.6761861Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-27T22:57:59.6766421Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:57:59.6813140Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-27T22:57:59.6851199Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-27T22:57:59.7102658Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-27T22:57:59.7124748Z http.https://github.com/.extraheader
+2026-02-27T22:57:59.7138843Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-02-27T22:57:59.7171245Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-27T22:57:59.7410566Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-27T22:57:59.7442645Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-27T22:57:59.7776567Z Print service container logs: c91157ffc6944f23a73d7cc8344f5020_mcrmicrosoftcommssqlserver2022latest_36c1cb
+2026-02-27T22:57:59.7782382Z ##[command]/usr/bin/docker logs --details ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:57:59.7916230Z  SQL Server 2022 will run as non-root by default.
+2026-02-27T22:57:59.7917942Z  This container is running as user mssql.
+2026-02-27T22:57:59.7923785Z  To learn more visit https://go.microsoft.com/fwlink/?linkid=2099216.
+2026-02-27T22:57:59.7925001Z  2026-02-27 22:51:12.99 Server      Setup step is copying system data file 'C:\templatedata\master.mdf' to '/var/opt/mssql/data/master.mdf'.
+2026-02-27T22:57:59.7925984Z  
+2026-02-27T22:57:59.7928447Z 2026-02-27 22:51:13.01 Server      Did not find an existing master data file /var/opt/mssql/data/master.mdf, copying the missing default master and other system database files. If you have moved the database location, but not moved the database files, startup may fail. To repair: shutdown SQL Server, move the master database to configured location, and restart.
+2026-02-27T22:57:59.7930874Z  
+2026-02-27T22:57:59.7931725Z 2026-02-27 22:51:13.01 Server      Setup step is copying system data file 'C:\templatedata\mastlog.ldf' to '/var/opt/mssql/data/mastlog.ldf'.
+2026-02-27T22:57:59.7932801Z  
+2026-02-27T22:57:59.7933610Z 2026-02-27 22:51:13.02 Server      Setup step is copying system data file 'C:\templatedata\model.mdf' to '/var/opt/mssql/data/model.mdf'.
+2026-02-27T22:57:59.7934568Z  
+2026-02-27T22:57:59.7935401Z 2026-02-27 22:51:13.02 Server      Setup step is copying system data file 'C:\templatedata\modellog.ldf' to '/var/opt/mssql/data/modellog.ldf'.
+2026-02-27T22:57:59.7936372Z  
+2026-02-27T22:57:59.7937172Z 2026-02-27 22:51:13.03 Server      Setup step is copying system data file 'C:\templatedata\msdbdata.mdf' to '/var/opt/mssql/data/msdbdata.mdf'.
+2026-02-27T22:57:59.7938364Z  
+2026-02-27T22:57:59.7939241Z 2026-02-27 22:51:13.05 Server      Setup step is copying system data file 'C:\templatedata\msdblog.ldf' to '/var/opt/mssql/data/msdblog.ldf'.
+2026-02-27T22:57:59.7940281Z  
+2026-02-27T22:57:59.7941392Z 2026-02-27 22:51:13.05 Server      Setup step is FORCE copying system data file 'C:\templatedata\model_replicatedmaster.mdf' to '/var/opt/mssql/data/model_replicatedmaster.mdf'.
+2026-02-27T22:57:59.7942631Z  
+2026-02-27T22:57:59.7943646Z 2026-02-27 22:51:13.05 Server      Setup step is FORCE copying system data file 'C:\templatedata\model_replicatedmaster.ldf' to '/var/opt/mssql/data/model_replicatedmaster.ldf'.
+2026-02-27T22:57:59.7944769Z  
+2026-02-27T22:57:59.7967694Z 2026-02-27 22:51:13.06 Server      Setup step is FORCE copying system data file 'C:\templatedata\model_msdbdata.mdf' to '/var/opt/mssql/data/model_msdbdata.mdf'.
+2026-02-27T22:57:59.7968835Z  
+2026-02-27T22:57:59.7969673Z 2026-02-27 22:51:13.07 Server      Setup step is FORCE copying system data file 'C:\templatedata\model_msdblog.ldf' to '/var/opt/mssql/data/model_msdblog.ldf'.
+2026-02-27T22:57:59.7970293Z  
+2026-02-27T22:57:59.7970655Z 2026-02-27 22:51:13.08 Server      Microsoft SQL Server 2022 (RTM-CU23) (KB5078297) - 16.0.4236.2 (X64) 
+2026-02-27T22:57:59.7971059Z  
+2026-02-27T22:57:59.7971209Z 	Jan 22 2026 17:50:56 
+2026-02-27T22:57:59.7971401Z  
+2026-02-27T22:57:59.7971731Z 	Copyright (C) 2022 Microsoft Corporation
+2026-02-27T22:57:59.7971986Z  
+2026-02-27T22:57:59.7972223Z 	Developer Edition (64-bit) on Linux (Ubuntu 22.04.5 LTS) <X64>
+2026-02-27T22:57:59.7972704Z  
+2026-02-27T22:57:59.7972913Z 2026-02-27 22:51:13.09 Server      UTC adjustment: 0:00
+2026-02-27T22:57:59.7973266Z  
+2026-02-27T22:57:59.7973525Z 2026-02-27 22:51:13.09 Server      (c) Microsoft Corporation.
+2026-02-27T22:57:59.7973919Z  
+2026-02-27T22:57:59.7974361Z 2026-02-27 22:51:13.09 Server      All rights reserved.
+2026-02-27T22:57:59.7974754Z  
+2026-02-27T22:57:59.7974976Z 2026-02-27 22:51:13.09 Server      Server process ID is 436.
+2026-02-27T22:57:59.7975256Z  
+2026-02-27T22:57:59.7975758Z 2026-02-27 22:51:13.09 Server      Logging SQL Server messages in file '/var/opt/mssql/log/errorlog'.
+2026-02-27T22:57:59.7976181Z  
+2026-02-27T22:57:59.7976402Z 2026-02-27 22:51:13.09 Server      Registry startup parameters: 
+2026-02-27T22:57:59.7976691Z  
+2026-02-27T22:57:59.7976867Z 	 -d /var/opt/mssql/data/master.mdf
+2026-02-27T22:57:59.7977092Z  
+2026-02-27T22:57:59.7977258Z 	 -l /var/opt/mssql/data/mastlog.ldf
+2026-02-27T22:57:59.7977718Z  
+2026-02-27T22:57:59.7977893Z 	 -e /var/opt/mssql/log/errorlog
+2026-02-27T22:57:59.7978098Z  
+2026-02-27T22:57:59.7978992Z 2026-02-27 22:51:13.09 Server      SQL Server detected 1 sockets with 2 cores per socket and 4 logical processors per socket, 4 total logical processors; using 4 logical processors based on SQL Server licensing. This is an informational message; no user action is required.
+2026-02-27T22:57:59.7979964Z  
+2026-02-27T22:57:59.7980436Z 2026-02-27 22:51:13.10 Server      SQL Server is starting at normal priority base (=7). This is an informational message only. No user action is required.
+2026-02-27T22:57:59.7981022Z  
+2026-02-27T22:57:59.7981582Z 2026-02-27 22:51:13.10 Server      Detected 12792 MB of RAM, 12326 MB of available memory, 12326 MB of available page file. This is an informational message; no user action is required.
+2026-02-27T22:57:59.7982245Z  
+2026-02-27T22:57:59.7982507Z 2026-02-27 22:51:13.10 Server      Using conventional memory in the memory manager.
+2026-02-27T22:57:59.7982846Z  
+2026-02-27T22:57:59.7983100Z 2026-02-27 22:51:13.10 Server      Detected pause instruction latency: 49 cycles.
+2026-02-27T22:57:59.7983433Z  
+2026-02-27T22:57:59.7983967Z 2026-02-27 22:51:13.10 Server      SQL Server detected the following NUMA node configuration (NUMA Node number 0, Processor Group number 0, CPU Mask 0x000000000000000f).
+2026-02-27T22:57:59.7984589Z  
+2026-02-27T22:57:59.7984806Z 2026-02-27 22:51:13.11 Server      Page exclusion bitmap is enabled.
+2026-02-27T22:57:59.7985107Z  
+2026-02-27T22:57:59.7985408Z 2026-02-27 22:51:13.14 Server      Buffer pool extension is not supported on Linux platform.
+2026-02-27T22:57:59.7985781Z  
+2026-02-27T22:57:59.7986068Z 2026-02-27 22:51:13.14 Server      Buffer Pool: Allocating 16777216 bytes for 1970923 hashPages.
+2026-02-27T22:57:59.7986441Z  
+2026-02-27T22:57:59.7986748Z 2026-02-27 22:51:13.26 Server      Buffer pool extension is already disabled. No action is necessary.
+2026-02-27T22:57:59.7987143Z  
+2026-02-27T22:57:59.7987601Z 2026-02-27 22:51:13.64 Server      Installing Client TLS certificates to the store.
+2026-02-27T22:57:59.7987979Z  
+2026-02-27T22:57:59.7988393Z 2026-02-27 22:51:13.64 Server      CPU vectorization level(s) detected:  SSE SSE2 SSE3 SSSE3 SSE41 SSE42 AVX AVX2 POPCNT BMI1 BMI2
+2026-02-27T22:57:59.7988898Z  
+2026-02-27T22:57:59.7990839Z 2026-02-27 22:51:13.69 Server      Successfully initialized the TLS configuration. Allowed TLS protocol versions are ['1.0 1.1 1.2']. Allowed TLS ciphers are ['ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:!DHE-RSA-AES256-GCM-SHA384:!DHE-RSA-AES128-GCM-SHA256:!DHE-RSA-AES256-SHA:!DHE-RSA-AES128-SHA'].
+2026-02-27T22:57:59.7993484Z  
+2026-02-27T22:57:59.7993910Z 2026-02-27 22:51:13.71 Server      Query Store settings initialized with enabled = 1, 
+2026-02-27T22:57:59.7994273Z  
+2026-02-27T22:57:59.7994777Z 2026-02-27 22:51:13.72 Server      The maximum number of dedicated administrator connections for this instance is '1'
+2026-02-27T22:57:59.7995241Z  
+2026-02-27T22:57:59.7996136Z 2026-02-27 22:51:13.72 Server      Node configuration: node 0: CPU mask: 0x000000000000000f:0 Active CPU mask: 0x000000000000000f:0. This message provides a description of the NUMA configuration for this computer. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.7997559Z  
+2026-02-27T22:57:59.7998469Z 2026-02-27 22:51:13.73 Server      Using dynamic lock allocation.  Initial allocation of 2500 Lock blocks and 5000 Lock Owner blocks per node.  This is an informational message only.  No user action is required.
+2026-02-27T22:57:59.7999238Z  
+2026-02-27T22:57:59.7999496Z 2026-02-27 22:51:13.76 Server      In-Memory OLTP initialized on lowend machine.
+2026-02-27T22:57:59.7999834Z  
+2026-02-27T22:57:59.8000119Z 2026-02-27 22:51:13.77 Server      [INFO] Created Extended Events session 'hkenginexesession'
+2026-02-27T22:57:59.8000490Z  
+2026-02-27T22:57:59.8001373Z 2026-02-27 22:51:13.77 Server      Database Instant File Initialization: enabled. For security and performance considerations see the topic 'Database Instant File Initialization' in SQL Server Books Online. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8002416Z  
+2026-02-27T22:57:59.8002591Z ForceFlush is enabled for this instance. 
+2026-02-27T22:57:59.8002829Z  
+2026-02-27T22:57:59.8003217Z 2026-02-27 22:51:13.79 Server      Total Log Writer threads: 2. This is an informational message; no user action is required.
+2026-02-27T22:57:59.8003697Z  
+2026-02-27T22:57:59.8003947Z 2026-02-27 22:51:13.79 Server      clwb is selected for pmem flush operation.
+2026-02-27T22:57:59.8004272Z  
+2026-02-27T22:57:59.8004497Z 2026-02-27 22:51:13.80 Server      Software Usage Metrics is disabled.
+2026-02-27T22:57:59.8004793Z  
+2026-02-27T22:57:59.8005723Z Failed to open password policy registry path. Using default password policy values.2026-02-27 22:51:13.81 spid20s     [1]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8006722Z  
+2026-02-27T22:57:59.8006941Z 2026-02-27 22:51:13.82 spid20s     Starting up database 'master'.
+2026-02-27T22:57:59.8007232Z  
+2026-02-27T22:57:59.8007717Z 2026-02-27 22:51:13.84 Server      CLR version v4.0.30319 loaded.
+2026-02-27T22:57:59.8008028Z  
+2026-02-27T22:57:59.8008230Z ForceFlush feature is enabled for log durability.
+2026-02-27T22:57:59.8008490Z  
+2026-02-27T22:57:59.8008841Z 2026-02-27 22:51:13.90 spid20s     Converting database 'master' from version 927 to the current version 957.
+2026-02-27T22:57:59.8009264Z  
+2026-02-27T22:57:59.8009608Z 2026-02-27 22:51:13.90 spid20s     Database 'master' running the upgrade step from version 927 to version 928.
+2026-02-27T22:57:59.8010036Z  
+2026-02-27T22:57:59.8010366Z 2026-02-27 22:51:13.93 spid20s     Database 'master' running the upgrade step from version 928 to version 929.
+2026-02-27T22:57:59.8010787Z  
+2026-02-27T22:57:59.8011121Z 2026-02-27 22:51:13.94 spid20s     Database 'master' running the upgrade step from version 929 to version 930.
+2026-02-27T22:57:59.8011536Z  
+2026-02-27T22:57:59.8011877Z 2026-02-27 22:51:13.94 spid20s     Database 'master' running the upgrade step from version 930 to version 931.
+2026-02-27T22:57:59.8012290Z  
+2026-02-27T22:57:59.8012627Z 2026-02-27 22:51:13.95 spid20s     Database 'master' running the upgrade step from version 931 to version 932.
+2026-02-27T22:57:59.8013048Z  
+2026-02-27T22:57:59.8013376Z 2026-02-27 22:51:13.95 spid20s     Database 'master' running the upgrade step from version 932 to version 933.
+2026-02-27T22:57:59.8013794Z  
+2026-02-27T22:57:59.8014125Z 2026-02-27 22:51:13.96 spid20s     Database 'master' running the upgrade step from version 933 to version 934.
+2026-02-27T22:57:59.8014537Z  
+2026-02-27T22:57:59.8014875Z 2026-02-27 22:51:13.96 spid20s     Database 'master' running the upgrade step from version 934 to version 935.
+2026-02-27T22:57:59.8015306Z  
+2026-02-27T22:57:59.8015648Z 2026-02-27 22:51:13.97 spid20s     Database 'master' running the upgrade step from version 935 to version 936.
+2026-02-27T22:57:59.8016209Z  
+2026-02-27T22:57:59.8016538Z 2026-02-27 22:51:13.98 spid20s     Database 'master' running the upgrade step from version 936 to version 937.
+2026-02-27T22:57:59.8016963Z  
+2026-02-27T22:57:59.8017586Z 2026-02-27 22:51:13.98 spid20s     Database 'master' running the upgrade step from version 937 to version 938.
+2026-02-27T22:57:59.8018031Z  
+2026-02-27T22:57:59.8018375Z 2026-02-27 22:51:13.99 spid20s     Database 'master' running the upgrade step from version 938 to version 939.
+2026-02-27T22:57:59.8018793Z  
+2026-02-27T22:57:59.8019130Z 2026-02-27 22:51:13.99 spid20s     Database 'master' running the upgrade step from version 939 to version 940.
+2026-02-27T22:57:59.8019557Z  
+2026-02-27T22:57:59.8019885Z 2026-02-27 22:51:14.00 spid20s     Database 'master' running the upgrade step from version 940 to version 941.
+2026-02-27T22:57:59.8020307Z  
+2026-02-27T22:57:59.8020638Z 2026-02-27 22:51:14.00 spid20s     Database 'master' running the upgrade step from version 941 to version 942.
+2026-02-27T22:57:59.8021060Z  
+2026-02-27T22:57:59.8021394Z 2026-02-27 22:51:14.01 spid20s     Database 'master' running the upgrade step from version 942 to version 943.
+2026-02-27T22:57:59.8021808Z  
+2026-02-27T22:57:59.8022148Z 2026-02-27 22:51:14.03 spid20s     Database 'master' running the upgrade step from version 943 to version 944.
+2026-02-27T22:57:59.8022570Z  
+2026-02-27T22:57:59.8022895Z 2026-02-27 22:51:14.04 spid20s     Database 'master' running the upgrade step from version 944 to version 945.
+2026-02-27T22:57:59.8023315Z  
+2026-02-27T22:57:59.8023651Z 2026-02-27 22:51:14.06 spid20s     Database 'master' running the upgrade step from version 945 to version 946.
+2026-02-27T22:57:59.8024071Z  
+2026-02-27T22:57:59.8024404Z 2026-02-27 22:51:14.08 spid20s     Database 'master' running the upgrade step from version 946 to version 947.
+2026-02-27T22:57:59.8024822Z  
+2026-02-27T22:57:59.8025159Z 2026-02-27 22:51:14.08 spid20s     Database 'master' running the upgrade step from version 947 to version 948.
+2026-02-27T22:57:59.8025601Z  
+2026-02-27T22:57:59.8025931Z 2026-02-27 22:51:14.09 spid20s     Database 'master' running the upgrade step from version 948 to version 949.
+2026-02-27T22:57:59.8026349Z  
+2026-02-27T22:57:59.8026685Z 2026-02-27 22:51:14.09 spid20s     Database 'master' running the upgrade step from version 949 to version 950.
+2026-02-27T22:57:59.8027103Z  
+2026-02-27T22:57:59.8027665Z 2026-02-27 22:51:14.10 spid20s     Database 'master' running the upgrade step from version 950 to version 951.
+2026-02-27T22:57:59.8028094Z  
+2026-02-27T22:57:59.8028435Z 2026-02-27 22:51:14.11 spid20s     Database 'master' running the upgrade step from version 951 to version 952.
+2026-02-27T22:57:59.8028860Z  
+2026-02-27T22:57:59.8029194Z 2026-02-27 22:51:14.11 spid20s     Database 'master' running the upgrade step from version 952 to version 953.
+2026-02-27T22:57:59.8029617Z  
+2026-02-27T22:57:59.8029951Z 2026-02-27 22:51:14.12 spid20s     Database 'master' running the upgrade step from version 953 to version 954.
+2026-02-27T22:57:59.8030373Z  
+2026-02-27T22:57:59.8030705Z 2026-02-27 22:51:14.12 spid20s     Database 'master' running the upgrade step from version 954 to version 955.
+2026-02-27T22:57:59.8031130Z  
+2026-02-27T22:57:59.8031478Z 2026-02-27 22:51:14.13 spid20s     Database 'master' running the upgrade step from version 955 to version 956.
+2026-02-27T22:57:59.8031906Z  
+2026-02-27T22:57:59.8032235Z 2026-02-27 22:51:14.15 spid20s     Database 'master' running the upgrade step from version 956 to version 957.
+2026-02-27T22:57:59.8032660Z  
+2026-02-27T22:57:59.8032949Z 2026-02-27 22:51:14.16 Server      Common language runtime (CLR) functionality initialized.
+2026-02-27T22:57:59.8033321Z  
+2026-02-27T22:57:59.8033563Z 2026-02-27 22:51:14.17 Server      External governance manager initialized
+2026-02-27T22:57:59.8033876Z  
+2026-02-27T22:57:59.8034535Z 2026-02-27 22:51:14.19 spid22s     [32767]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8035402Z  
+2026-02-27T22:57:59.8035639Z 2026-02-27 22:51:14.20 spid30s     Password policy update was successful.
+2026-02-27T22:57:59.8035987Z  
+2026-02-27T22:57:59.8036230Z 2026-02-27 22:51:14.20 spid22s     Starting up database 'mssqlsystemresource'.
+2026-02-27T22:57:59.8036673Z  
+2026-02-27T22:57:59.8037152Z 2026-02-27 22:51:14.20 spid22s     The resource database build version is 16.00.4236. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8037945Z  
+2026-02-27T22:57:59.8038800Z 2026-02-27 22:51:14.22 spid20s     [32762]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8039522Z  
+2026-02-27T22:57:59.8040136Z 2026-02-27 22:51:14.23 spid22s     [3]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8040842Z  
+2026-02-27T22:57:59.8041091Z 2026-02-27 22:51:14.23 spid20s     Starting up database 'model_replicatedmaster'.
+2026-02-27T22:57:59.8041429Z  
+2026-02-27T22:57:59.8041635Z 2026-02-27 22:51:14.23 spid22s     Starting up database 'model'.
+2026-02-27T22:57:59.8041917Z  
+2026-02-27T22:57:59.8042257Z 2026-02-27 22:51:14.28 spid22s     Converting database 'model' from version 927 to the current version 957.
+2026-02-27T22:57:59.8042677Z  
+2026-02-27T22:57:59.8043008Z 2026-02-27 22:51:14.28 spid22s     Database 'model' running the upgrade step from version 927 to version 928.
+2026-02-27T22:57:59.8043985Z  
+2026-02-27T22:57:59.8044325Z 2026-02-27 22:51:14.29 spid22s     Database 'model' running the upgrade step from version 928 to version 929.
+2026-02-27T22:57:59.8044743Z  
+2026-02-27T22:57:59.8045148Z 2026-02-27 22:51:14.29 spid20s     Converting database 'model_replicatedmaster' from version 927 to the current version 957.
+2026-02-27T22:57:59.8045897Z  
+2026-02-27T22:57:59.8046410Z 2026-02-27 22:51:14.29 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 927 to version 928.
+2026-02-27T22:57:59.8047229Z  
+2026-02-27T22:57:59.8048129Z 2026-02-27 22:51:14.30 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 928 to version 929.
+2026-02-27T22:57:59.8048936Z  
+2026-02-27T22:57:59.8049482Z 2026-02-27 22:51:14.31 spid22s     Database 'model' running the upgrade step from version 929 to version 930.
+2026-02-27T22:57:59.8050171Z  
+2026-02-27T22:57:59.8050722Z 2026-02-27 22:51:14.32 spid22s     Database 'model' running the upgrade step from version 930 to version 931.
+2026-02-27T22:57:59.8051443Z  
+2026-02-27T22:57:59.8052006Z 2026-02-27 22:51:14.32 spid22s     Database 'model' running the upgrade step from version 931 to version 932.
+2026-02-27T22:57:59.8052754Z  
+2026-02-27T22:57:59.8053339Z 2026-02-27 22:51:14.32 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 929 to version 930.
+2026-02-27T22:57:59.8054032Z  
+2026-02-27T22:57:59.8054517Z 2026-02-27 22:51:14.32 spid22s     Database 'model' running the upgrade step from version 932 to version 933.
+2026-02-27T22:57:59.8055230Z  
+2026-02-27T22:57:59.8055808Z 2026-02-27 22:51:14.33 spid22s     Database 'model' running the upgrade step from version 933 to version 934.
+2026-02-27T22:57:59.8056531Z  
+2026-02-27T22:57:59.8057096Z 2026-02-27 22:51:14.33 spid22s     Database 'model' running the upgrade step from version 934 to version 935.
+2026-02-27T22:57:59.8058041Z  
+2026-02-27T22:57:59.8058794Z 2026-02-27 22:51:14.33 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 930 to version 931.
+2026-02-27T22:57:59.8059323Z  
+2026-02-27T22:57:59.8059668Z 2026-02-27 22:51:14.33 spid22s     Database 'model' running the upgrade step from version 935 to version 936.
+2026-02-27T22:57:59.8060095Z  
+2026-02-27T22:57:59.8060436Z 2026-02-27 22:51:14.34 spid22s     Database 'model' running the upgrade step from version 936 to version 937.
+2026-02-27T22:57:59.8061045Z  
+2026-02-27T22:57:59.8061450Z 2026-02-27 22:51:14.34 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 931 to version 932.
+2026-02-27T22:57:59.8061934Z  
+2026-02-27T22:57:59.8062370Z 2026-02-27 22:51:14.34 spid22s     Database 'model' running the upgrade step from version 937 to version 938.
+2026-02-27T22:57:59.8062794Z  
+2026-02-27T22:57:59.8063184Z 2026-02-27 22:51:14.34 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 932 to version 933.
+2026-02-27T22:57:59.8063668Z  
+2026-02-27T22:57:59.8063999Z 2026-02-27 22:51:14.34 spid22s     Database 'model' running the upgrade step from version 938 to version 939.
+2026-02-27T22:57:59.8064411Z  
+2026-02-27T22:57:59.8064817Z 2026-02-27 22:51:14.35 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 933 to version 934.
+2026-02-27T22:57:59.8065296Z  
+2026-02-27T22:57:59.8065631Z 2026-02-27 22:51:14.35 spid22s     Database 'model' running the upgrade step from version 939 to version 940.
+2026-02-27T22:57:59.8066069Z  
+2026-02-27T22:57:59.8066460Z 2026-02-27 22:51:14.35 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 934 to version 935.
+2026-02-27T22:57:59.8066945Z  
+2026-02-27T22:57:59.8067497Z 2026-02-27 22:51:14.35 spid22s     Database 'model' running the upgrade step from version 940 to version 941.
+2026-02-27T22:57:59.8067935Z  
+2026-02-27T22:57:59.8068344Z 2026-02-27 22:51:14.36 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 935 to version 936.
+2026-02-27T22:57:59.8068827Z  
+2026-02-27T22:57:59.8069167Z 2026-02-27 22:51:14.36 spid22s     Database 'model' running the upgrade step from version 941 to version 942.
+2026-02-27T22:57:59.8069589Z  
+2026-02-27T22:57:59.8069984Z 2026-02-27 22:51:14.36 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 936 to version 937.
+2026-02-27T22:57:59.8070475Z  
+2026-02-27T22:57:59.8070807Z 2026-02-27 22:51:14.36 spid22s     Database 'model' running the upgrade step from version 942 to version 943.
+2026-02-27T22:57:59.8071230Z  
+2026-02-27T22:57:59.8071630Z 2026-02-27 22:51:14.36 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 937 to version 938.
+2026-02-27T22:57:59.8072124Z  
+2026-02-27T22:57:59.8072524Z 2026-02-27 22:51:14.37 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 938 to version 939.
+2026-02-27T22:57:59.8073008Z  
+2026-02-27T22:57:59.8073401Z 2026-02-27 22:51:14.37 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 939 to version 940.
+2026-02-27T22:57:59.8073891Z  
+2026-02-27T22:57:59.8074289Z 2026-02-27 22:51:14.38 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 940 to version 941.
+2026-02-27T22:57:59.8074763Z  
+2026-02-27T22:57:59.8075098Z 2026-02-27 22:51:14.38 spid22s     Database 'model' running the upgrade step from version 943 to version 944.
+2026-02-27T22:57:59.8075519Z  
+2026-02-27T22:57:59.8075916Z 2026-02-27 22:51:14.38 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 941 to version 942.
+2026-02-27T22:57:59.8076398Z  
+2026-02-27T22:57:59.8076728Z 2026-02-27 22:51:14.38 spid22s     Database 'model' running the upgrade step from version 944 to version 945.
+2026-02-27T22:57:59.8077156Z  
+2026-02-27T22:57:59.8077699Z 2026-02-27 22:51:14.38 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 942 to version 943.
+2026-02-27T22:57:59.8078184Z  
+2026-02-27T22:57:59.8078518Z 2026-02-27 22:51:14.39 spid22s     Database 'model' running the upgrade step from version 945 to version 946.
+2026-02-27T22:57:59.8079125Z  
+2026-02-27T22:57:59.8079488Z 2026-02-27 22:51:14.39 spid22s     Database 'model' running the upgrade step from version 946 to version 947.
+2026-02-27T22:57:59.8079920Z  
+2026-02-27T22:57:59.8080251Z 2026-02-27 22:51:14.40 spid22s     Database 'model' running the upgrade step from version 947 to version 948.
+2026-02-27T22:57:59.8080823Z  
+2026-02-27T22:57:59.8081162Z 2026-02-27 22:51:14.40 spid22s     Database 'model' running the upgrade step from version 948 to version 949.
+2026-02-27T22:57:59.8081575Z  
+2026-02-27T22:57:59.8082016Z 2026-02-27 22:51:14.40 spid22s     Database 'model' running the upgrade step from version 949 to version 950.
+2026-02-27T22:57:59.8082440Z  
+2026-02-27T22:57:59.8082766Z 2026-02-27 22:51:14.41 spid22s     Database 'model' running the upgrade step from version 950 to version 951.
+2026-02-27T22:57:59.8083187Z  
+2026-02-27T22:57:59.8083586Z 2026-02-27 22:51:14.41 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 943 to version 944.
+2026-02-27T22:57:59.8084183Z  
+2026-02-27T22:57:59.8084851Z 2026-02-27 22:51:14.41 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 944 to version 945.
+2026-02-27T22:57:59.8085409Z  
+2026-02-27T22:57:59.8085759Z 2026-02-27 22:51:14.42 spid22s     Database 'model' running the upgrade step from version 951 to version 952.
+2026-02-27T22:57:59.8086203Z  
+2026-02-27T22:57:59.8086545Z 2026-02-27 22:51:14.42 spid22s     Database 'model' running the upgrade step from version 952 to version 953.
+2026-02-27T22:57:59.8086978Z  
+2026-02-27T22:57:59.8087504Z 2026-02-27 22:51:14.42 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 945 to version 946.
+2026-02-27T22:57:59.8088028Z  
+2026-02-27T22:57:59.8088382Z 2026-02-27 22:51:14.43 spid22s     Database 'model' running the upgrade step from version 953 to version 954.
+2026-02-27T22:57:59.8088799Z  
+2026-02-27T22:57:59.8089220Z 2026-02-27 22:51:14.43 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 946 to version 947.
+2026-02-27T22:57:59.8089718Z  
+2026-02-27T22:57:59.8090053Z 2026-02-27 22:51:14.43 spid22s     Database 'model' running the upgrade step from version 954 to version 955.
+2026-02-27T22:57:59.8090484Z  
+2026-02-27T22:57:59.8090891Z 2026-02-27 22:51:14.43 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 947 to version 948.
+2026-02-27T22:57:59.8091385Z  
+2026-02-27T22:57:59.8091728Z 2026-02-27 22:51:14.44 spid22s     Database 'model' running the upgrade step from version 955 to version 956.
+2026-02-27T22:57:59.8092146Z  
+2026-02-27T22:57:59.8092566Z 2026-02-27 22:51:14.44 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 948 to version 949.
+2026-02-27T22:57:59.8093064Z  
+2026-02-27T22:57:59.8093472Z 2026-02-27 22:51:14.44 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 949 to version 950.
+2026-02-27T22:57:59.8093969Z  
+2026-02-27T22:57:59.8094381Z 2026-02-27 22:51:14.45 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 950 to version 951.
+2026-02-27T22:57:59.8094871Z  
+2026-02-27T22:57:59.8095209Z 2026-02-27 22:51:14.45 spid22s     Database 'model' running the upgrade step from version 956 to version 957.
+2026-02-27T22:57:59.8095619Z  
+2026-02-27T22:57:59.8096030Z 2026-02-27 22:51:14.46 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 951 to version 952.
+2026-02-27T22:57:59.8096517Z  
+2026-02-27T22:57:59.8096910Z 2026-02-27 22:51:14.46 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 952 to version 953.
+2026-02-27T22:57:59.8097489Z  
+2026-02-27T22:57:59.8097885Z 2026-02-27 22:51:14.47 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 953 to version 954.
+2026-02-27T22:57:59.8098361Z  
+2026-02-27T22:57:59.8098756Z 2026-02-27 22:51:14.47 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 954 to version 955.
+2026-02-27T22:57:59.8099240Z  
+2026-02-27T22:57:59.8099634Z 2026-02-27 22:51:14.48 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 955 to version 956.
+2026-02-27T22:57:59.8100121Z  
+2026-02-27T22:57:59.8100517Z 2026-02-27 22:51:14.49 spid20s     Database 'model_replicatedmaster' running the upgrade step from version 956 to version 957.
+2026-02-27T22:57:59.8101197Z  
+2026-02-27T22:57:59.8101941Z 2026-02-27 22:51:14.53 spid20s     [32761]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8102675Z  
+2026-02-27T22:57:59.8102914Z 2026-02-27 22:51:14.53 spid20s     Starting up database 'model_msdb'.
+2026-02-27T22:57:59.8103221Z  
+2026-02-27T22:57:59.8103573Z 2026-02-27 22:51:14.57 spid20s     Converting database 'model_msdb' from version 927 to the current version 957.
+2026-02-27T22:57:59.8104010Z  
+2026-02-27T22:57:59.8104366Z 2026-02-27 22:51:14.58 spid20s     Database 'model_msdb' running the upgrade step from version 927 to version 928.
+2026-02-27T22:57:59.8104809Z  
+2026-02-27T22:57:59.8105156Z 2026-02-27 22:51:14.58 spid20s     Database 'model_msdb' running the upgrade step from version 928 to version 929.
+2026-02-27T22:57:59.8105593Z  
+2026-02-27T22:57:59.8105943Z 2026-02-27 22:51:14.60 spid20s     Database 'model_msdb' running the upgrade step from version 929 to version 930.
+2026-02-27T22:57:59.8106395Z  
+2026-02-27T22:57:59.8106733Z 2026-02-27 22:51:14.61 spid20s     Database 'model_msdb' running the upgrade step from version 930 to version 931.
+2026-02-27T22:57:59.8107176Z  
+2026-02-27T22:57:59.8107673Z 2026-02-27 22:51:14.61 spid20s     Database 'model_msdb' running the upgrade step from version 931 to version 932.
+2026-02-27T22:57:59.8108110Z  
+2026-02-27T22:57:59.8108459Z 2026-02-27 22:51:14.62 spid20s     Database 'model_msdb' running the upgrade step from version 932 to version 933.
+2026-02-27T22:57:59.8108890Z  
+2026-02-27T22:57:59.8109240Z 2026-02-27 22:51:14.62 spid20s     Database 'model_msdb' running the upgrade step from version 933 to version 934.
+2026-02-27T22:57:59.8109674Z  
+2026-02-27T22:57:59.8110015Z 2026-02-27 22:51:14.62 spid20s     Database 'model_msdb' running the upgrade step from version 934 to version 935.
+2026-02-27T22:57:59.8110461Z  
+2026-02-27T22:57:59.8110816Z 2026-02-27 22:51:14.63 spid20s     Database 'model_msdb' running the upgrade step from version 935 to version 936.
+2026-02-27T22:57:59.8111248Z  
+2026-02-27T22:57:59.8111617Z 2026-02-27 22:51:14.63 spid20s     Database 'model_msdb' running the upgrade step from version 936 to version 937.
+2026-02-27T22:57:59.8112069Z  
+2026-02-27T22:57:59.8112418Z 2026-02-27 22:51:14.63 spid20s     Database 'model_msdb' running the upgrade step from version 937 to version 938.
+2026-02-27T22:57:59.8112858Z  
+2026-02-27T22:57:59.8113201Z 2026-02-27 22:51:14.64 spid20s     Database 'model_msdb' running the upgrade step from version 938 to version 939.
+2026-02-27T22:57:59.8113643Z  
+2026-02-27T22:57:59.8114008Z 2026-02-27 22:51:14.64 spid20s     Database 'model_msdb' running the upgrade step from version 939 to version 940.
+2026-02-27T22:57:59.8114441Z  
+2026-02-27T22:57:59.8114796Z 2026-02-27 22:51:14.64 spid20s     Database 'model_msdb' running the upgrade step from version 940 to version 941.
+2026-02-27T22:57:59.8115238Z  
+2026-02-27T22:57:59.8115592Z 2026-02-27 22:51:14.64 spid20s     Database 'model_msdb' running the upgrade step from version 941 to version 942.
+2026-02-27T22:57:59.8116028Z  
+2026-02-27T22:57:59.8116375Z 2026-02-27 22:51:14.65 spid20s     Database 'model_msdb' running the upgrade step from version 942 to version 943.
+2026-02-27T22:57:59.8116810Z  
+2026-02-27T22:57:59.8117146Z 2026-02-27 22:51:14.65 spid30s     A self-generated certificate was successfully loaded for encryption.
+2026-02-27T22:57:59.8117692Z  
+2026-02-27T22:57:59.8117989Z 2026-02-27 22:51:14.66 spid30s     Server is listening on [ 'any' <ipv6> 1433] accept sockets 1.
+2026-02-27T22:57:59.8118367Z  
+2026-02-27T22:57:59.8118655Z 2026-02-27 22:51:14.66 spid30s     Server is listening on [ 'any' <ipv4> 1433] accept sockets 1.
+2026-02-27T22:57:59.8119036Z  
+2026-02-27T22:57:59.8119318Z 2026-02-27 22:51:14.66 Server      Server is listening on [ ::1 <ipv6> 1434] accept sockets 1.
+2026-02-27T22:57:59.8119899Z  
+2026-02-27T22:57:59.8120366Z 2026-02-27 22:51:14.66 Server      Server is listening on [ 127.0.0.1 <ipv4> 1434] accept sockets 1.
+2026-02-27T22:57:59.8120749Z  
+2026-02-27T22:57:59.8121145Z 2026-02-27 22:51:14.66 Server      Dedicated admin connection support was established for listening locally on port 1434.
+2026-02-27T22:57:59.8121720Z  
+2026-02-27T22:57:59.8122090Z 2026-02-27 22:51:14.67 spid20s     Database 'model_msdb' running the upgrade step from version 943 to version 944.
+2026-02-27T22:57:59.8122530Z  
+2026-02-27T22:57:59.8122811Z 2026-02-27 22:51:14.67 spid30s     Server is listening on [ ::1 <ipv6> 1431] accept sockets 1.
+2026-02-27T22:57:59.8123183Z  
+2026-02-27T22:57:59.8123482Z 2026-02-27 22:51:14.67 spid30s     Server is listening on [ 127.0.0.1 <ipv4> 1431] accept sockets 1.
+2026-02-27T22:57:59.8123860Z  
+2026-02-27T22:57:59.8124213Z 2026-02-27 22:51:14.67 spid20s     Database 'model_msdb' running the upgrade step from version 944 to version 945.
+2026-02-27T22:57:59.8124645Z  
+2026-02-27T22:57:59.8125100Z 2026-02-27 22:51:14.67 spid30s     SQL Server is now ready for client connections. This is an informational message; no user action is required.
+2026-02-27T22:57:59.8125640Z  
+2026-02-27T22:57:59.8125991Z 2026-02-27 22:51:14.68 spid20s     Database 'model_msdb' running the upgrade step from version 945 to version 946.
+2026-02-27T22:57:59.8126443Z  
+2026-02-27T22:57:59.8126800Z 2026-02-27 22:51:14.68 spid20s     Database 'model_msdb' running the upgrade step from version 946 to version 947.
+2026-02-27T22:57:59.8127242Z  
+2026-02-27T22:57:59.8127723Z 2026-02-27 22:51:14.69 spid20s     Database 'model_msdb' running the upgrade step from version 947 to version 948.
+2026-02-27T22:57:59.8128162Z  
+2026-02-27T22:57:59.8128518Z 2026-02-27 22:51:14.69 spid20s     Database 'model_msdb' running the upgrade step from version 948 to version 949.
+2026-02-27T22:57:59.8128964Z  
+2026-02-27T22:57:59.8129312Z 2026-02-27 22:51:14.69 spid20s     Database 'model_msdb' running the upgrade step from version 949 to version 950.
+2026-02-27T22:57:59.8129767Z  
+2026-02-27T22:57:59.8130124Z 2026-02-27 22:51:14.70 spid20s     Database 'model_msdb' running the upgrade step from version 950 to version 951.
+2026-02-27T22:57:59.8130558Z  
+2026-02-27T22:57:59.8130924Z 2026-02-27 22:51:14.70 spid20s     Database 'model_msdb' running the upgrade step from version 951 to version 952.
+2026-02-27T22:57:59.8131360Z  
+2026-02-27T22:57:59.8131716Z 2026-02-27 22:51:14.71 spid20s     Database 'model_msdb' running the upgrade step from version 952 to version 953.
+2026-02-27T22:57:59.8132165Z  
+2026-02-27T22:57:59.8132515Z 2026-02-27 22:51:14.71 spid20s     Database 'model_msdb' running the upgrade step from version 953 to version 954.
+2026-02-27T22:57:59.8132959Z  
+2026-02-27T22:57:59.8133299Z 2026-02-27 22:51:14.71 spid20s     Database 'model_msdb' running the upgrade step from version 954 to version 955.
+2026-02-27T22:57:59.8133753Z  
+2026-02-27T22:57:59.8134113Z 2026-02-27 22:51:14.72 spid20s     Database 'model_msdb' running the upgrade step from version 955 to version 956.
+2026-02-27T22:57:59.8134562Z  
+2026-02-27T22:57:59.8134916Z 2026-02-27 22:51:14.74 spid20s     Database 'model_msdb' running the upgrade step from version 956 to version 957.
+2026-02-27T22:57:59.8135359Z  
+2026-02-27T22:57:59.8135617Z 2026-02-27 22:51:14.77 spid35s     Attribute synchronization initialized
+2026-02-27T22:57:59.8135943Z  
+2026-02-27T22:57:59.8136189Z 2026-02-27 22:51:14.77 spid20s     Resource governor reconfiguration succeeded.
+2026-02-27T22:57:59.8136527Z  
+2026-02-27T22:57:59.8136782Z 2026-02-27 22:51:14.77 spid35s     Attribute synchronization manager initialized
+2026-02-27T22:57:59.8137110Z  
+2026-02-27T22:57:59.8137634Z 2026-02-27 22:51:14.77 spid20s     SQL Server Audit is starting the audits. This is an informational message. No user action is required.
+2026-02-27T22:57:59.8138147Z  
+2026-02-27T22:57:59.8138574Z 2026-02-27 22:51:14.77 spid20s     SQL Server Audit has started the audits. This is an informational message. No user action is required.
+2026-02-27T22:57:59.8139206Z  
+2026-02-27T22:57:59.8139439Z 2026-02-27 22:51:14.79 spid20s     SQL Trace ID 1 was started by login "sa".
+2026-02-27T22:57:59.8139757Z  
+2026-02-27T22:57:59.8140267Z 2026-02-27 22:51:14.79 spid20s     Server name is 'ade416d7130a'. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8140757Z  
+2026-02-27T22:57:59.8140967Z 2026-02-27 22:51:14.81 spid22s     Clearing tempdb database.
+2026-02-27T22:57:59.8141243Z  
+2026-02-27T22:57:59.8141741Z 2026-02-27 22:51:14.81 spid44s     Always On: The availability replica manager is starting. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8142323Z  
+2026-02-27T22:57:59.8142943Z 2026-02-27 22:51:14.81 spid43s     [4]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8143654Z  
+2026-02-27T22:57:59.8144345Z 2026-02-27 22:51:14.82 spid44s     Always On: The availability replica manager is waiting for the instance of SQL Server to allow client connections. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8145115Z  
+2026-02-27T22:57:59.8145330Z 2026-02-27 22:51:14.82 spid43s     Starting up database 'msdb'.
+2026-02-27T22:57:59.8145633Z  
+2026-02-27T22:57:59.8145963Z 2026-02-27 22:51:14.89 spid43s     Converting database 'msdb' from version 927 to the current version 957.
+2026-02-27T22:57:59.8146381Z  
+2026-02-27T22:57:59.8146708Z 2026-02-27 22:51:14.89 spid43s     Database 'msdb' running the upgrade step from version 927 to version 928.
+2026-02-27T22:57:59.8147125Z  
+2026-02-27T22:57:59.8147602Z 2026-02-27 22:51:14.90 spid43s     Database 'msdb' running the upgrade step from version 928 to version 929.
+2026-02-27T22:57:59.8148017Z  
+2026-02-27T22:57:59.8148643Z 2026-02-27 22:51:14.92 spid22s     [2]. Feature Status: PVS: 0. CTR: 0. ConcurrentPFSUpdate: 1. ConcurrentGAMUpdate: 1. ConcurrentSGAMUpdate: 1, CleanupUnderUserTransaction: 0. TranLevelPVS: 0
+2026-02-27T22:57:59.8149362Z  
+2026-02-27T22:57:59.8149577Z 2026-02-27 22:51:14.92 spid22s     Starting up database 'tempdb'.
+2026-02-27T22:57:59.8149871Z  
+2026-02-27T22:57:59.8150198Z 2026-02-27 22:51:14.93 spid43s     Database 'msdb' running the upgrade step from version 929 to version 930.
+2026-02-27T22:57:59.8150650Z  
+2026-02-27T22:57:59.8150977Z 2026-02-27 22:51:14.94 spid43s     Database 'msdb' running the upgrade step from version 930 to version 931.
+2026-02-27T22:57:59.8151385Z  
+2026-02-27T22:57:59.8151708Z 2026-02-27 22:51:14.94 spid43s     Database 'msdb' running the upgrade step from version 931 to version 932.
+2026-02-27T22:57:59.8152127Z  
+2026-02-27T22:57:59.8152446Z 2026-02-27 22:51:14.95 spid43s     Database 'msdb' running the upgrade step from version 932 to version 933.
+2026-02-27T22:57:59.8152857Z  
+2026-02-27T22:57:59.8153176Z 2026-02-27 22:51:14.95 spid43s     Database 'msdb' running the upgrade step from version 933 to version 934.
+2026-02-27T22:57:59.8153590Z  
+2026-02-27T22:57:59.8153922Z 2026-02-27 22:51:14.95 spid43s     Database 'msdb' running the upgrade step from version 934 to version 935.
+2026-02-27T22:57:59.8154330Z  
+2026-02-27T22:57:59.8154657Z 2026-02-27 22:51:14.96 spid43s     Database 'msdb' running the upgrade step from version 935 to version 936.
+2026-02-27T22:57:59.8155075Z  
+2026-02-27T22:57:59.8155399Z 2026-02-27 22:51:14.96 spid43s     Database 'msdb' running the upgrade step from version 936 to version 937.
+2026-02-27T22:57:59.8155813Z  
+2026-02-27T22:57:59.8156133Z 2026-02-27 22:51:14.97 spid43s     Database 'msdb' running the upgrade step from version 937 to version 938.
+2026-02-27T22:57:59.8156546Z  
+2026-02-27T22:57:59.8156870Z 2026-02-27 22:51:14.97 spid43s     Database 'msdb' running the upgrade step from version 938 to version 939.
+2026-02-27T22:57:59.8157275Z  
+2026-02-27T22:57:59.8157636Z 2026-02-27 22:51:14.97 spid22s     The tempdb database has 1 data file(s).
+2026-02-27T22:57:59.8157948Z  
+2026-02-27T22:57:59.8158268Z 2026-02-27 22:51:14.97 spid43s     Database 'msdb' running the upgrade step from version 939 to version 940.
+2026-02-27T22:57:59.8158807Z  
+2026-02-27T22:57:59.8159105Z 2026-02-27 22:51:14.98 spid44s     The Service Broker endpoint is in disabled or stopped state.
+2026-02-27T22:57:59.8159493Z  
+2026-02-27T22:57:59.8159923Z 2026-02-27 22:51:14.98 spid43s     Database 'msdb' running the upgrade step from version 940 to version 941.
+2026-02-27T22:57:59.8160480Z  
+2026-02-27T22:57:59.8160868Z 2026-02-27 22:51:14.98 spid44s     The Database Mirroring endpoint is in disabled or stopped state.
+2026-02-27T22:57:59.8161289Z  
+2026-02-27T22:57:59.8161626Z 2026-02-27 22:51:14.98 spid43s     Database 'msdb' running the upgrade step from version 941 to version 942.
+2026-02-27T22:57:59.8162044Z  
+2026-02-27T22:57:59.8162370Z 2026-02-27 22:51:14.98 spid43s     Database 'msdb' running the upgrade step from version 942 to version 943.
+2026-02-27T22:57:59.8162786Z  
+2026-02-27T22:57:59.8163017Z 2026-02-27 22:51:14.99 spid44s     Service Broker manager has started.
+2026-02-27T22:57:59.8163324Z  
+2026-02-27T22:57:59.8163658Z 2026-02-27 22:51:15.00 spid43s     Database 'msdb' running the upgrade step from version 943 to version 944.
+2026-02-27T22:57:59.8164077Z  
+2026-02-27T22:57:59.8164404Z 2026-02-27 22:51:15.00 spid43s     Database 'msdb' running the upgrade step from version 944 to version 945.
+2026-02-27T22:57:59.8164821Z  
+2026-02-27T22:57:59.8165145Z 2026-02-27 22:51:15.01 spid43s     Database 'msdb' running the upgrade step from version 945 to version 946.
+2026-02-27T22:57:59.8165559Z  
+2026-02-27T22:57:59.8165884Z 2026-02-27 22:51:15.02 spid43s     Database 'msdb' running the upgrade step from version 946 to version 947.
+2026-02-27T22:57:59.8166297Z  
+2026-02-27T22:57:59.8166621Z 2026-02-27 22:51:15.02 spid43s     Database 'msdb' running the upgrade step from version 947 to version 948.
+2026-02-27T22:57:59.8167038Z  
+2026-02-27T22:57:59.8167527Z 2026-02-27 22:51:15.03 spid43s     Database 'msdb' running the upgrade step from version 948 to version 949.
+2026-02-27T22:57:59.8167954Z  
+2026-02-27T22:57:59.8168276Z 2026-02-27 22:51:15.03 spid43s     Database 'msdb' running the upgrade step from version 949 to version 950.
+2026-02-27T22:57:59.8168691Z  
+2026-02-27T22:57:59.8169028Z 2026-02-27 22:51:15.03 spid43s     Database 'msdb' running the upgrade step from version 950 to version 951.
+2026-02-27T22:57:59.8169437Z  
+2026-02-27T22:57:59.8169768Z 2026-02-27 22:51:15.04 spid43s     Database 'msdb' running the upgrade step from version 951 to version 952.
+2026-02-27T22:57:59.8170184Z  
+2026-02-27T22:57:59.8170504Z 2026-02-27 22:51:15.05 spid43s     Database 'msdb' running the upgrade step from version 952 to version 953.
+2026-02-27T22:57:59.8170926Z  
+2026-02-27T22:57:59.8171243Z 2026-02-27 22:51:15.05 spid43s     Database 'msdb' running the upgrade step from version 953 to version 954.
+2026-02-27T22:57:59.8171657Z  
+2026-02-27T22:57:59.8171984Z 2026-02-27 22:51:15.06 spid43s     Database 'msdb' running the upgrade step from version 954 to version 955.
+2026-02-27T22:57:59.8172398Z  
+2026-02-27T22:57:59.8172724Z 2026-02-27 22:51:15.06 spid43s     Database 'msdb' running the upgrade step from version 955 to version 956.
+2026-02-27T22:57:59.8173141Z  
+2026-02-27T22:57:59.8173468Z 2026-02-27 22:51:15.07 spid43s     Database 'msdb' running the upgrade step from version 956 to version 957.
+2026-02-27T22:57:59.8173884Z  
+2026-02-27T22:57:59.8174270Z 2026-02-27 22:51:15.10 spid20s     Recovery is complete. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8174747Z  
+2026-02-27T22:57:59.8175098Z 2026-02-27 22:51:15.11 spid28s     The default language (LCID 0) has been set for engine and full-text services.
+2026-02-27T22:57:59.8175522Z  
+2026-02-27T22:57:59.8175761Z 2026-02-27 22:51:15.21 spid28s     The tempdb database has 4 data file(s).
+2026-02-27T22:57:59.8176077Z  
+2026-02-27T22:57:59.8176557Z 2026-02-27 22:56:21.71 spid70      Attempting to load library 'xplog70.dll' into memory. This is an informational message only. No user action is required.
+2026-02-27T22:57:59.8177270Z  
+2026-02-27T22:57:59.8177973Z 2026-02-27 22:56:21.73 spid70      Using 'xplog70.dll' version '2022.160.4236' to execute extended stored procedure 'xp_msver'. This is an informational message only; no user action is required.
+2026-02-27T22:57:59.8178667Z  
+2026-02-27T22:57:59.8179000Z 2026-02-27 22:57:38.89 spid70      Using 'dbghelp.dll' version '4.0.5'
+2026-02-27T22:57:59.8185949Z Stop and remove container: c91157ffc6944f23a73d7cc8344f5020_mcrmicrosoftcommssqlserver2022latest_36c1cb
+2026-02-27T22:57:59.8191299Z ##[command]/usr/bin/docker rm --force ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:58:00.0331890Z ade416d7130a39d2b53cca376be76de921a131864fc23413c1640c86271e376f
+2026-02-27T22:58:00.0371205Z Remove container network: github_network_c8ac1951f5ac4be6b6fc08aa0ba9428b
+2026-02-27T22:58:00.0376076Z ##[command]/usr/bin/docker network rm github_network_c8ac1951f5ac4be6b6fc08aa0ba9428b
+2026-02-27T22:58:00.1385347Z github_network_c8ac1951f5ac4be6b6fc08aa0ba9428b
+2026-02-27T22:58:00.1449644Z Cleaning up orphan processes

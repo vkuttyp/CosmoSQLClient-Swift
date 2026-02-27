@@ -1,0 +1,31 @@
+﻿2026-02-27T22:50:55.7407620Z Current runner version: '2.331.0'
+2026-02-27T22:50:55.7432344Z ##[group]Runner Image Provisioner
+2026-02-27T22:50:55.7433188Z Hosted Compute Agent
+2026-02-27T22:50:55.7433786Z Version: 20260213.493
+2026-02-27T22:50:55.7434421Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-02-27T22:50:55.7435089Z Build Date: 2026-02-13T00:28:41Z
+2026-02-27T22:50:55.7435836Z Worker ID: {25a67d6b-83f2-439f-ab55-9182dc3fce12}
+2026-02-27T22:50:55.7436513Z Azure Region: westus
+2026-02-27T22:50:55.7437063Z ##[endgroup]
+2026-02-27T22:50:55.7438516Z ##[group]Operating System
+2026-02-27T22:50:55.7439116Z Ubuntu
+2026-02-27T22:50:55.7439597Z 24.04.3
+2026-02-27T22:50:55.7440006Z LTS
+2026-02-27T22:50:55.7440577Z ##[endgroup]
+2026-02-27T22:50:55.7441367Z ##[group]Runner Image
+2026-02-27T22:50:55.7441920Z Image: ubuntu-24.04
+2026-02-27T22:50:55.7442483Z Version: 20260224.36.1
+2026-02-27T22:50:55.7443486Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260224.36/images/ubuntu/Ubuntu2404-Readme.md
+2026-02-27T22:50:55.7445169Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260224.36
+2026-02-27T22:50:55.7446053Z ##[endgroup]
+2026-02-27T22:50:55.7447083Z ##[group]GITHUB_TOKEN Permissions
+2026-02-27T22:50:55.7448804Z Contents: write
+2026-02-27T22:50:55.7449419Z Metadata: read
+2026-02-27T22:50:55.7450022Z ##[endgroup]
+2026-02-27T22:50:55.7452249Z Secret source: Actions
+2026-02-27T22:50:55.7453231Z Prepare workflow directory
+2026-02-27T22:50:55.7872627Z Prepare all required actions
+2026-02-27T22:50:55.7925339Z Getting action download info
+2026-02-27T22:50:56.2188856Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-02-27T22:50:56.3761091Z Download action repository 'swift-actions/setup-swift@v2' (SHA:7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a)
+2026-02-27T22:50:57.3011946Z Complete job name: Verify — MySQL tests

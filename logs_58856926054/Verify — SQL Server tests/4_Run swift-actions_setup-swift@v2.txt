@@ -1,0 +1,50 @@
+﻿2026-02-27T22:51:25.9282045Z ##[group]Run swift-actions/setup-swift@v2
+2026-02-27T22:51:25.9282342Z with:
+2026-02-27T22:51:25.9282519Z   swift-version: 6.0
+2026-02-27T22:51:25.9282715Z ##[endgroup]
+2026-02-27T22:51:26.3425952Z [command]/usr/bin/file /home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0
+2026-02-27T22:51:26.4068691Z /home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0: PGP public key block Public-Key (old)
+2026-02-27T22:51:26.4154578Z [command]/usr/bin/bash -c cat "/home/runner/work/_temp/0b71d4b0-b374-4cd3-abb9-3500236696a0" | gpg --import
+2026-02-27T22:51:26.4536602Z gpg: directory '/home/runner/.gnupg' created
+2026-02-27T22:51:26.4540939Z gpg: keybox '/home/runner/.gnupg/pubring.kbx' created
+2026-02-27T22:51:26.4666821Z gpg: /home/runner/.gnupg/trustdb.gpg: trustdb created
+2026-02-27T22:51:26.4668971Z gpg: key D441C977412B37AD: public key "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5093712Z gpg: key 9F597F4D21A56D5F: public key "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5105927Z gpg: key 63BC1CFE91D306C6: public key "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5118788Z gpg: key EF5430F071E1B235: public key "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5131673Z gpg: key 7638F1FB2B2B08C4: public key "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5144609Z gpg: key 925CC1CCED3D1561: public key "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5156906Z gpg: key FAF6989E1BC16FEA: public key "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:51:26.5192929Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:51:26.5206765Z gpg: key F167DF1ACF9CE069: public key "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:51:26.5220104Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:51:26.5233503Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:51:26.5246568Z gpg: key EF80A866B47A981F: public key "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:51:26.5260398Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:51:26.5268007Z gpg: Total number processed: 13
+2026-02-27T22:51:26.5268452Z gpg:               imported: 9
+2026-02-27T22:51:26.5268825Z gpg:         new signatures: 4
+2026-02-27T22:51:26.5302816Z [command]/usr/bin/gpg --keyserver hkp://keyserver.ubuntu.com --refresh-keys Swift
+2026-02-27T22:51:26.6023623Z gpg: refreshing 9 keys from hkp://keyserver.ubuntu.com
+2026-02-27T22:51:31.0680521Z gpg: key EF80A866B47A981F: "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:31.0690898Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:31.0696030Z gpg: key FAF6989E1BC16FEA: "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0711403Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0717286Z gpg: key 7638F1FB2B2B08C4: "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0723148Z gpg: key EF5430F071E1B235: "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0728175Z gpg: key 63BC1CFE91D306C6: "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0733313Z gpg: key 9F597F4D21A56D5F: "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0738386Z gpg: key D441C977412B37AD: "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:31.0739616Z gpg: Total number processed: 9
+2026-02-27T22:51:31.0740024Z gpg:              unchanged: 9
+2026-02-27T22:51:39.8324637Z [command]/usr/bin/gpg --verify /home/runner/work/_temp/925dc860-2a33-45ea-b163-16bb2f73c910 /home/runner/work/_temp/bcad7a32-5187-47f4-83b6-811b8110a6e4
+2026-02-27T22:51:40.9725654Z gpg: Signature made Thu Dec 12 01:43:03 2024 UTC
+2026-02-27T22:51:40.9726085Z gpg:                using RSA key EF80A866B47A981F
+2026-02-27T22:51:40.9728462Z gpg: Good signature from "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" [unknown]
+2026-02-27T22:51:40.9729748Z gpg: WARNING: This key is not certified with a trusted signature!
+2026-02-27T22:51:40.9730566Z gpg:          There is no indication that the signature belongs to the owner.
+2026-02-27T22:51:40.9731431Z Primary key fingerprint: 52BB 7E3D E28A 71BE 22EC  05FF EF80 A866 B47A 981F
+2026-02-27T22:51:40.9808607Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/bba7a9a6-7bf7-47d0-95a2-f8d36cdf2eef -f /home/runner/work/_temp/bcad7a32-5187-47f4-83b6-811b8110a6e4
+2026-02-27T22:52:04.6194903Z [command]/opt/hostedtoolcache/swift-Ubuntu/6.0.3/x64/usr/bin/swift --version
+2026-02-27T22:52:04.8443394Z Swift version 6.0.3 (swift-6.0.3-RELEASE)
+2026-02-27T22:52:04.8444028Z Target: x86_64-unknown-linux-gnu

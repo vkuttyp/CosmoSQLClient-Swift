@@ -1,0 +1,88 @@
+﻿2026-02-27T22:51:16.8012002Z ##[group]Run actions/checkout@v4
+2026-02-27T22:51:16.8012574Z with:
+2026-02-27T22:51:16.8012758Z   repository: vkuttyp/sql-nio
+2026-02-27T22:51:16.8013155Z   token: ***
+2026-02-27T22:51:16.8013330Z   ssh-strict: true
+2026-02-27T22:51:16.8013519Z   ssh-user: git
+2026-02-27T22:51:16.8013709Z   persist-credentials: true
+2026-02-27T22:51:16.8013921Z   clean: true
+2026-02-27T22:51:16.8014110Z   sparse-checkout-cone-mode: true
+2026-02-27T22:51:16.8014338Z   fetch-depth: 1
+2026-02-27T22:51:16.8014532Z   fetch-tags: false
+2026-02-27T22:51:16.8014711Z   show-progress: true
+2026-02-27T22:51:16.8014893Z   lfs: false
+2026-02-27T22:51:16.8015052Z   submodules: false
+2026-02-27T22:51:16.8015237Z   set-safe-directory: true
+2026-02-27T22:51:16.8015616Z ##[endgroup]
+2026-02-27T22:51:16.9147419Z Syncing repository: vkuttyp/sql-nio
+2026-02-27T22:51:16.9149452Z ##[group]Getting Git version info
+2026-02-27T22:51:16.9150120Z Working directory is '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:51:16.9151398Z [command]/usr/bin/git version
+2026-02-27T22:51:16.9228767Z git version 2.53.0
+2026-02-27T22:51:16.9257242Z ##[endgroup]
+2026-02-27T22:51:16.9281754Z Temporarily overriding HOME='/home/runner/work/_temp/0632707d-e535-4b6f-800f-9b514904a984' before making global git config changes
+2026-02-27T22:51:16.9282606Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-27T22:51:16.9287572Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:51:16.9332905Z Deleting the contents of '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:51:16.9336659Z ##[group]Initializing the repository
+2026-02-27T22:51:16.9341279Z [command]/usr/bin/git init /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:51:16.9456341Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-02-27T22:51:16.9457007Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-02-27T22:51:16.9457558Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-02-27T22:51:16.9458001Z hint: call:
+2026-02-27T22:51:16.9458193Z hint:
+2026-02-27T22:51:16.9458459Z hint: 	git config --global init.defaultBranch <name>
+2026-02-27T22:51:16.9458784Z hint:
+2026-02-27T22:51:16.9459078Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-02-27T22:51:16.9459623Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-02-27T22:51:16.9460040Z hint:
+2026-02-27T22:51:16.9460242Z hint: 	git branch -m <name>
+2026-02-27T22:51:16.9460470Z hint:
+2026-02-27T22:51:16.9461157Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-02-27T22:51:16.9461856Z Initialized empty Git repository in /home/runner/work/sql-nio/sql-nio/.git/
+2026-02-27T22:51:16.9476069Z [command]/usr/bin/git remote add origin https://github.com/vkuttyp/sql-nio
+2026-02-27T22:51:16.9516076Z ##[endgroup]
+2026-02-27T22:51:16.9516807Z ##[group]Disabling automatic garbage collection
+2026-02-27T22:51:16.9522686Z [command]/usr/bin/git config --local gc.auto 0
+2026-02-27T22:51:16.9553682Z ##[endgroup]
+2026-02-27T22:51:16.9554246Z ##[group]Setting up auth
+2026-02-27T22:51:16.9561996Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-27T22:51:16.9595678Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-27T22:51:17.0025109Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-27T22:51:17.0059289Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-27T22:51:17.0303389Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-27T22:51:17.0339936Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-27T22:51:17.0587040Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-02-27T22:51:17.0653425Z ##[endgroup]
+2026-02-27T22:51:17.0654256Z ##[group]Fetching the repository
+2026-02-27T22:51:17.0657711Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2bda17def7f3c2f6e10788fa8790bfdc1697a7de:refs/tags/v1.0.3
+2026-02-27T22:51:17.6649593Z From https://github.com/vkuttyp/sql-nio
+2026-02-27T22:51:17.6651130Z  * [new ref]         2bda17def7f3c2f6e10788fa8790bfdc1697a7de -> v1.0.3
+2026-02-27T22:51:17.6686418Z ##[endgroup]
+2026-02-27T22:51:17.6687051Z ##[group]Determining the checkout info
+2026-02-27T22:51:17.6689048Z ##[endgroup]
+2026-02-27T22:51:17.6695685Z [command]/usr/bin/git sparse-checkout disable
+2026-02-27T22:51:17.6742342Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-02-27T22:51:17.6772264Z ##[group]Checking out the ref
+2026-02-27T22:51:17.6776898Z [command]/usr/bin/git checkout --progress --force refs/tags/v1.0.3
+2026-02-27T22:51:17.6886937Z Note: switching to 'refs/tags/v1.0.3'.
+2026-02-27T22:51:17.6887762Z 
+2026-02-27T22:51:17.6888274Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-02-27T22:51:17.6890404Z changes and commit them, and you can discard any commits you make in this
+2026-02-27T22:51:17.6891743Z state without impacting any branches by switching back to a branch.
+2026-02-27T22:51:17.6892566Z 
+2026-02-27T22:51:17.6892946Z If you want to create a new branch to retain commits you create, you may
+2026-02-27T22:51:17.6893791Z do so (now or later) by using -c with the switch command. Example:
+2026-02-27T22:51:17.6894262Z 
+2026-02-27T22:51:17.6894434Z   git switch -c <new-branch-name>
+2026-02-27T22:51:17.6894743Z 
+2026-02-27T22:51:17.6894916Z Or undo this operation with:
+2026-02-27T22:51:17.6895189Z 
+2026-02-27T22:51:17.6895338Z   git switch -
+2026-02-27T22:51:17.6895532Z 
+2026-02-27T22:51:17.6895897Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-02-27T22:51:17.6896477Z 
+2026-02-27T22:51:17.6896966Z HEAD is now at 2bda17d fix: add @unchecked Sendable to all test classes for Swift 6 compatibility
+2026-02-27T22:51:17.6898704Z ##[endgroup]
+2026-02-27T22:51:17.6940728Z [command]/usr/bin/git log -1 --format=%H
+2026-02-27T22:51:17.6967285Z 2bda17def7f3c2f6e10788fa8790bfdc1697a7de

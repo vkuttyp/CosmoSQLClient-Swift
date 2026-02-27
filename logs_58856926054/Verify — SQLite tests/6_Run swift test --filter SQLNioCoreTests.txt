@@ -1,0 +1,39 @@
+﻿2026-02-27T22:54:38.2913494Z ##[group]Run swift test --filter SQLNioCoreTests
+2026-02-27T22:54:38.2913853Z [36;1mswift test --filter SQLNioCoreTests[0m
+2026-02-27T22:54:38.2963843Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:54:38.2964081Z ##[endgroup]
+2026-02-27T22:54:45.2639492Z [0/1] Planning build
+2026-02-27T22:54:49.3188553Z [1/1] Compiling plugin Swift-DocC
+2026-02-27T22:54:53.2096641Z [2/2] Compiling plugin Swift-DocC Preview
+2026-02-27T22:54:53.2097047Z Building for debugging...
+2026-02-27T22:54:53.4206411Z [2/4] Write swift-version-B948D857FCC5015.txt
+2026-02-27T22:54:53.4668774Z Build complete! (13.56s)
+2026-02-27T22:54:53.5486599Z Test Suite 'Selected tests' started at 2026-02-27 22:54:53.534
+2026-02-27T22:54:53.5487369Z Test Suite 'SQLErrorTests' started at 2026-02-27 22:54:53.535
+2026-02-27T22:54:53.5488014Z Test Case 'SQLErrorTests.testDescriptions' started at 2026-02-27 22:54:53.535
+2026-02-27T22:54:53.5488493Z Test Case 'SQLErrorTests.testDescriptions' passed (0.001 seconds)
+2026-02-27T22:54:53.5488890Z Test Suite 'SQLErrorTests' passed at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5489327Z 	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+2026-02-27T22:54:53.5489732Z Test Suite 'SQLRowTests' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5490117Z Test Case 'SQLRowTests.testIndexAccess' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5490529Z Test Case 'SQLRowTests.testIndexAccess' passed (0.0 seconds)
+2026-02-27T22:54:53.5490920Z Test Case 'SQLRowTests.testNameAccess' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5491316Z Test Case 'SQLRowTests.testNameAccess' passed (0.0 seconds)
+2026-02-27T22:54:53.5491765Z Test Case 'SQLRowTests.testRequireThrowsOnMissingColumn' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5492324Z Test Case 'SQLRowTests.testRequireThrowsOnMissingColumn' passed (0.0 seconds)
+2026-02-27T22:54:53.5492744Z Test Suite 'SQLRowTests' passed at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5493104Z 	 Executed 3 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+2026-02-27T22:54:53.5493488Z Test Suite 'SQLValueTests' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5493867Z Test Case 'SQLValueTests.testEquality' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5494256Z Test Case 'SQLValueTests.testEquality' passed (0.0 seconds)
+2026-02-27T22:54:53.5494651Z Test Case 'SQLValueTests.testLiteralInit' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5495373Z Test Case 'SQLValueTests.testLiteralInit' passed (0.0 seconds)
+2026-02-27T22:54:53.5495800Z Test Case 'SQLValueTests.testTypedAccessors' started at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5496243Z Test Case 'SQLValueTests.testTypedAccessors' passed (0.0 seconds)
+2026-02-27T22:54:53.5496623Z Test Suite 'SQLValueTests' passed at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5496982Z 	 Executed 3 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+2026-02-27T22:54:53.5497351Z Test Suite 'Selected tests' passed at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5497731Z 	 Executed 7 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+2026-02-27T22:54:53.5498272Z ◇ Test run started.
+2026-02-27T22:54:53.5498562Z ↳ Testing Library Version: 6.0.3 (18c42c19cac3faf)
+2026-02-27T22:54:53.5500633Z ✔ Test run with 0 tests passed after 0.001 seconds.

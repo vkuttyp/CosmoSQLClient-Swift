@@ -1,0 +1,2097 @@
+﻿2026-02-27T22:50:55.7170318Z Current runner version: '2.331.0'
+2026-02-27T22:50:55.7193972Z ##[group]Runner Image Provisioner
+2026-02-27T22:50:55.7195386Z Hosted Compute Agent
+2026-02-27T22:50:55.7195927Z Version: 20260213.493
+2026-02-27T22:50:55.7196706Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-02-27T22:50:55.7197426Z Build Date: 2026-02-13T00:28:41Z
+2026-02-27T22:50:55.7198033Z Worker ID: {d72e6e6f-3d3b-41b3-a31a-638df8167e97}
+2026-02-27T22:50:55.7198807Z Azure Region: westus
+2026-02-27T22:50:55.7199321Z ##[endgroup]
+2026-02-27T22:50:55.7200794Z ##[group]Operating System
+2026-02-27T22:50:55.7201520Z Ubuntu
+2026-02-27T22:50:55.7202020Z 24.04.3
+2026-02-27T22:50:55.7202457Z LTS
+2026-02-27T22:50:55.7202996Z ##[endgroup]
+2026-02-27T22:50:55.7203517Z ##[group]Runner Image
+2026-02-27T22:50:55.7204034Z Image: ubuntu-24.04
+2026-02-27T22:50:55.7204645Z Version: 20260224.36.1
+2026-02-27T22:50:55.7206024Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260224.36/images/ubuntu/Ubuntu2404-Readme.md
+2026-02-27T22:50:55.7207524Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260224.36
+2026-02-27T22:50:55.7208436Z ##[endgroup]
+2026-02-27T22:50:55.7209493Z ##[group]GITHUB_TOKEN Permissions
+2026-02-27T22:50:55.7211541Z Contents: write
+2026-02-27T22:50:55.7212069Z Metadata: read
+2026-02-27T22:50:55.7212646Z ##[endgroup]
+2026-02-27T22:50:55.7214887Z Secret source: Actions
+2026-02-27T22:50:55.7215628Z Prepare workflow directory
+2026-02-27T22:50:55.7533297Z Prepare all required actions
+2026-02-27T22:50:55.7579190Z Getting action download info
+2026-02-27T22:50:56.1909813Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-02-27T22:50:56.3428151Z Download action repository 'swift-actions/setup-swift@v2' (SHA:7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a)
+2026-02-27T22:50:57.3496928Z Complete job name: Verify — SQLite tests
+2026-02-27T22:50:57.4227632Z ##[group]Run actions/checkout@v4
+2026-02-27T22:50:57.4228531Z with:
+2026-02-27T22:50:57.4229020Z   repository: vkuttyp/sql-nio
+2026-02-27T22:50:57.4229723Z   token: ***
+2026-02-27T22:50:57.4230170Z   ssh-strict: true
+2026-02-27T22:50:57.4230617Z   ssh-user: git
+2026-02-27T22:50:57.4231078Z   persist-credentials: true
+2026-02-27T22:50:57.4231582Z   clean: true
+2026-02-27T22:50:57.4232030Z   sparse-checkout-cone-mode: true
+2026-02-27T22:50:57.4232753Z   fetch-depth: 1
+2026-02-27T22:50:57.4233210Z   fetch-tags: false
+2026-02-27T22:50:57.4233679Z   show-progress: true
+2026-02-27T22:50:57.4234134Z   lfs: false
+2026-02-27T22:50:57.4234573Z   submodules: false
+2026-02-27T22:50:57.4235260Z   set-safe-directory: true
+2026-02-27T22:50:57.4236210Z ##[endgroup]
+2026-02-27T22:50:57.5314128Z Syncing repository: vkuttyp/sql-nio
+2026-02-27T22:50:57.5316386Z ##[group]Getting Git version info
+2026-02-27T22:50:57.5317149Z Working directory is '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:50:57.5318426Z [command]/usr/bin/git version
+2026-02-27T22:50:57.5413651Z git version 2.53.0
+2026-02-27T22:50:57.5439978Z ##[endgroup]
+2026-02-27T22:50:57.5463100Z Temporarily overriding HOME='/home/runner/work/_temp/27e3d416-ad4f-4bee-95e8-509c8ccc6800' before making global git config changes
+2026-02-27T22:50:57.5466162Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-27T22:50:57.5469351Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:50:57.5511654Z Deleting the contents of '/home/runner/work/sql-nio/sql-nio'
+2026-02-27T22:50:57.5515469Z ##[group]Initializing the repository
+2026-02-27T22:50:57.5520522Z [command]/usr/bin/git init /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:50:57.5634195Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-02-27T22:50:57.5635855Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-02-27T22:50:57.5636895Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-02-27T22:50:57.5638371Z hint: call:
+2026-02-27T22:50:57.5639430Z hint:
+2026-02-27T22:50:57.5640450Z hint: 	git config --global init.defaultBranch <name>
+2026-02-27T22:50:57.5641706Z hint:
+2026-02-27T22:50:57.5642907Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-02-27T22:50:57.5645108Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-02-27T22:50:57.5646638Z hint:
+2026-02-27T22:50:57.5647427Z hint: 	git branch -m <name>
+2026-02-27T22:50:57.5648311Z hint:
+2026-02-27T22:50:57.5649585Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-02-27T22:50:57.5651720Z Initialized empty Git repository in /home/runner/work/sql-nio/sql-nio/.git/
+2026-02-27T22:50:57.5655090Z [command]/usr/bin/git remote add origin https://github.com/vkuttyp/sql-nio
+2026-02-27T22:50:57.5689875Z ##[endgroup]
+2026-02-27T22:50:57.5691328Z ##[group]Disabling automatic garbage collection
+2026-02-27T22:50:57.5694874Z [command]/usr/bin/git config --local gc.auto 0
+2026-02-27T22:50:57.5725211Z ##[endgroup]
+2026-02-27T22:50:57.5726740Z ##[group]Setting up auth
+2026-02-27T22:50:57.5732899Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-27T22:50:57.5765994Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-27T22:50:57.6134609Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-27T22:50:57.6165970Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-27T22:50:57.6395746Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-27T22:50:57.6428334Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-27T22:50:57.6660364Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-02-27T22:50:57.6695934Z ##[endgroup]
+2026-02-27T22:50:57.6697428Z ##[group]Fetching the repository
+2026-02-27T22:50:57.6706113Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2bda17def7f3c2f6e10788fa8790bfdc1697a7de:refs/tags/v1.0.3
+2026-02-27T22:50:58.2453426Z From https://github.com/vkuttyp/sql-nio
+2026-02-27T22:50:58.2455176Z  * [new ref]         2bda17def7f3c2f6e10788fa8790bfdc1697a7de -> v1.0.3
+2026-02-27T22:50:58.2485289Z ##[endgroup]
+2026-02-27T22:50:58.2488609Z ##[group]Determining the checkout info
+2026-02-27T22:50:58.2489699Z ##[endgroup]
+2026-02-27T22:50:58.2492762Z [command]/usr/bin/git sparse-checkout disable
+2026-02-27T22:50:58.2545185Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-02-27T22:50:58.2574091Z ##[group]Checking out the ref
+2026-02-27T22:50:58.2575344Z [command]/usr/bin/git checkout --progress --force refs/tags/v1.0.3
+2026-02-27T22:50:58.2673884Z Note: switching to 'refs/tags/v1.0.3'.
+2026-02-27T22:50:58.2674915Z 
+2026-02-27T22:50:58.2675633Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-02-27T22:50:58.2677268Z changes and commit them, and you can discard any commits you make in this
+2026-02-27T22:50:58.2678913Z state without impacting any branches by switching back to a branch.
+2026-02-27T22:50:58.2679484Z 
+2026-02-27T22:50:58.2679864Z If you want to create a new branch to retain commits you create, you may
+2026-02-27T22:50:58.2680726Z do so (now or later) by using -c with the switch command. Example:
+2026-02-27T22:50:58.2681223Z 
+2026-02-27T22:50:58.2681453Z   git switch -c <new-branch-name>
+2026-02-27T22:50:58.2681800Z 
+2026-02-27T22:50:58.2682041Z Or undo this operation with:
+2026-02-27T22:50:58.2682405Z 
+2026-02-27T22:50:58.2682603Z   git switch -
+2026-02-27T22:50:58.2683005Z 
+2026-02-27T22:50:58.2683734Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-02-27T22:50:58.2685318Z 
+2026-02-27T22:50:58.2685849Z HEAD is now at 2bda17d fix: add @unchecked Sendable to all test classes for Swift 6 compatibility
+2026-02-27T22:50:58.2687679Z ##[endgroup]
+2026-02-27T22:50:58.2720610Z [command]/usr/bin/git log -1 --format=%H
+2026-02-27T22:50:58.2742370Z 2bda17def7f3c2f6e10788fa8790bfdc1697a7de
+2026-02-27T22:50:58.2940002Z ##[group]Run swift-actions/setup-swift@v2
+2026-02-27T22:50:58.2940646Z with:
+2026-02-27T22:50:58.2941055Z   swift-version: 6.0
+2026-02-27T22:50:58.2941522Z ##[endgroup]
+2026-02-27T22:50:58.8691563Z [command]/usr/bin/file /home/runner/work/_temp/90207083-d999-4496-9217-b684738576c4
+2026-02-27T22:50:58.9470904Z /home/runner/work/_temp/90207083-d999-4496-9217-b684738576c4: PGP public key block Public-Key (old)
+2026-02-27T22:50:58.9542380Z [command]/usr/bin/bash -c cat "/home/runner/work/_temp/90207083-d999-4496-9217-b684738576c4" | gpg --import
+2026-02-27T22:50:58.9632594Z gpg: directory '/home/runner/.gnupg' created
+2026-02-27T22:50:58.9637522Z gpg: keybox '/home/runner/.gnupg/pubring.kbx' created
+2026-02-27T22:50:58.9657497Z gpg: /home/runner/.gnupg/trustdb.gpg: trustdb created
+2026-02-27T22:50:58.9660616Z gpg: key D441C977412B37AD: public key "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9773676Z gpg: key 9F597F4D21A56D5F: public key "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9787242Z gpg: key 63BC1CFE91D306C6: public key "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9801305Z gpg: key EF5430F071E1B235: public key "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9814227Z gpg: key 7638F1FB2B2B08C4: public key "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9826701Z gpg: key 925CC1CCED3D1561: public key "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9839439Z gpg: key FAF6989E1BC16FEA: public key "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" imported
+2026-02-27T22:50:58.9877612Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:50:58.9890502Z gpg: key F167DF1ACF9CE069: public key "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:50:58.9903204Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" 1 new signature
+2026-02-27T22:50:58.9916154Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:50:58.9929539Z gpg: key EF80A866B47A981F: public key "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" imported
+2026-02-27T22:50:58.9942874Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" 1 new signature
+2026-02-27T22:50:58.9950036Z gpg: Total number processed: 13
+2026-02-27T22:50:58.9951412Z gpg:               imported: 9
+2026-02-27T22:50:58.9952679Z gpg:         new signatures: 4
+2026-02-27T22:50:58.9977725Z [command]/usr/bin/gpg --keyserver hkp://keyserver.ubuntu.com --refresh-keys Swift
+2026-02-27T22:50:59.0623917Z gpg: refreshing 9 keys from hkp://keyserver.ubuntu.com
+2026-02-27T22:51:03.4636885Z gpg: key EF80A866B47A981F: "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:03.4646145Z gpg: key F167DF1ACF9CE069: "Swift Automatic Signing Key #4 <swift-infrastructure@forums.swift.org>" not changed
+2026-02-27T22:51:03.4650412Z gpg: key FAF6989E1BC16FEA: "Swift Automatic Signing Key #3 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4661107Z gpg: key 925CC1CCED3D1561: "Swift 5.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4665697Z gpg: key 7638F1FB2B2B08C4: "Swift Automatic Signing Key #2 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4670092Z gpg: key EF5430F071E1B235: "Swift 4.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4674292Z gpg: key 63BC1CFE91D306C6: "Swift 3.x Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4679406Z gpg: key 9F597F4D21A56D5F: "Swift 2.2 Release Signing Key <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4684055Z gpg: key D441C977412B37AD: "Swift Automatic Signing Key #1 <swift-infrastructure@swift.org>" not changed
+2026-02-27T22:51:03.4685272Z gpg: Total number processed: 9
+2026-02-27T22:51:03.4685769Z gpg:              unchanged: 9
+2026-02-27T22:51:11.4405224Z [command]/usr/bin/gpg --verify /home/runner/work/_temp/177b8791-2328-429f-8645-b7cc42b8905b /home/runner/work/_temp/3d2ba6b7-96d2-41f5-ae4e-ed583781bf1b
+2026-02-27T22:51:12.5751103Z gpg: Signature made Thu Dec 12 01:43:03 2024 UTC
+2026-02-27T22:51:12.5752306Z gpg:                using RSA key EF80A866B47A981F
+2026-02-27T22:51:12.5753703Z gpg: Good signature from "Swift 6.x Release Signing Key <swift-infrastructure@forums.swift.org>" [unknown]
+2026-02-27T22:51:12.5755452Z gpg: WARNING: This key is not certified with a trusted signature!
+2026-02-27T22:51:12.5756455Z gpg:          There is no indication that the signature belongs to the owner.
+2026-02-27T22:51:12.5757591Z Primary key fingerprint: 52BB 7E3D E28A 71BE 22EC  05FF EF80 A866 B47A 981F
+2026-02-27T22:51:12.5836375Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/f62ab9f4-7f73-4616-864b-a7b6e0bb8b65 -f /home/runner/work/_temp/3d2ba6b7-96d2-41f5-ae4e-ed583781bf1b
+2026-02-27T22:51:34.5253119Z [command]/opt/hostedtoolcache/swift-Ubuntu/6.0.3/x64/usr/bin/swift --version
+2026-02-27T22:51:34.7246830Z Swift version 6.0.3 (swift-6.0.3-RELEASE)
+2026-02-27T22:51:34.7247617Z Target: x86_64-unknown-linux-gnu
+2026-02-27T22:51:34.7403459Z ##[group]Run sudo apt-get install -y libsqlite3-dev
+2026-02-27T22:51:34.7403902Z [36;1msudo apt-get install -y libsqlite3-dev[0m
+2026-02-27T22:51:34.7463733Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:51:34.7464005Z ##[endgroup]
+2026-02-27T22:51:34.7784603Z Reading package lists...
+2026-02-27T22:51:34.9362747Z Building dependency tree...
+2026-02-27T22:51:34.9370364Z Reading state information...
+2026-02-27T22:51:35.1100820Z libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.5).
+2026-02-27T22:51:35.1101691Z 0 upgraded, 0 newly installed, 0 to remove and 25 not upgraded.
+2026-02-27T22:51:35.1153892Z ##[group]Run swift test --filter SQLiteNioTests
+2026-02-27T22:51:35.1154259Z [36;1mswift test --filter SQLiteNioTests[0m
+2026-02-27T22:51:35.1204919Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:51:35.1205181Z ##[endgroup]
+2026-02-27T22:51:37.1495633Z Fetching https://github.com/apple/swift-nio.git
+2026-02-27T22:51:37.1496479Z Fetching https://github.com/apple/swift-system.git
+2026-02-27T22:51:37.1497017Z Fetching https://github.com/apple/swift-nio-ssl.git
+2026-02-27T22:51:37.6937852Z [1/5583] Fetching swift-system
+2026-02-27T22:51:37.8294286Z [727/20925] Fetching swift-system, swift-nio-ssl
+2026-02-27T22:51:38.2307785Z [9880/103470] Fetching swift-system, swift-nio-ssl, swift-nio
+2026-02-27T22:51:39.1645877Z Fetched https://github.com/apple/swift-nio-ssl.git from cache (2.07s)
+2026-02-27T22:51:39.1670344Z Fetching https://github.com/apple/swift-docc-plugin.git
+2026-02-27T22:51:39.2371871Z [41840/88128] Fetching swift-system, swift-nio
+2026-02-27T22:51:39.7014354Z [60064/90299] Fetching swift-system, swift-nio, swift-docc-plugin
+2026-02-27T22:51:40.1902574Z Fetched https://github.com/apple/swift-docc-plugin.git from cache (1.02s)
+2026-02-27T22:51:40.1924360Z Fetching https://github.com/apple/swift-collections.git
+2026-02-27T22:51:40.2108682Z [72445/88128] Fetching swift-system, swift-nio
+2026-02-27T22:51:40.7739227Z [88129/108294] Fetching swift-system, swift-nio, swift-collections
+2026-02-27T22:51:42.0666873Z Fetched https://github.com/apple/swift-collections.git from cache (1.87s)
+2026-02-27T22:51:42.0697088Z Fetching https://github.com/apple/swift-crypto.git
+2026-02-27T22:51:42.5272065Z Fetched https://github.com/apple/swift-system.git from cache (5.44s)
+2026-02-27T22:51:42.5292403Z Fetching https://github.com/apple/swift-atomics.git
+2026-02-27T22:51:42.6050172Z Fetched https://github.com/apple/swift-nio.git from cache (5.51s)
+2026-02-27T22:51:42.6071224Z Fetching https://github.com/swiftlang/swift-docc-symbolkit
+2026-02-27T22:51:43.0569351Z [1/1820] Fetching swift-atomics
+2026-02-27T22:51:43.0645172Z [74/19058] Fetching swift-atomics, swift-crypto
+2026-02-27T22:51:43.2780762Z [1211/22722] Fetching swift-atomics, swift-crypto, swift-docc-symbolkit
+2026-02-27T22:51:43.4608457Z Fetched https://github.com/apple/swift-atomics.git from cache (0.93s)
+2026-02-27T22:51:43.4643092Z Fetching https://github.com/apple/swift-asn1.git
+2026-02-27T22:51:43.4873898Z [5216/20902] Fetching swift-crypto, swift-docc-symbolkit
+2026-02-27T22:51:43.5032029Z Fetched https://github.com/swiftlang/swift-docc-symbolkit from cache (0.90s)
+2026-02-27T22:51:43.5051679Z Fetching https://github.com/apple/swift-log.git
+2026-02-27T22:51:43.6070321Z [1724/17238] Fetching swift-crypto
+2026-02-27T22:51:43.9849623Z [14309/18998] Fetching swift-crypto, swift-asn1
+2026-02-27T22:51:44.1159391Z [16232/25088] Fetching swift-crypto, swift-asn1, swift-log
+2026-02-27T22:51:44.2709204Z Fetched https://github.com/apple/swift-asn1.git from cache (0.81s)
+2026-02-27T22:51:44.2873480Z [17675/23328] Fetching swift-crypto, swift-log
+2026-02-27T22:51:44.5577806Z Fetched https://github.com/apple/swift-log.git from cache (1.05s)
+2026-02-27T22:51:44.7811402Z Fetched https://github.com/apple/swift-crypto.git from cache (2.71s)
+2026-02-27T22:51:44.7813413Z Computing version for https://github.com/apple/swift-docc-plugin.git
+2026-02-27T22:51:46.3737999Z Computed https://github.com/apple/swift-docc-plugin.git at 1.4.6 (1.59s)
+2026-02-27T22:51:46.3744063Z Computing version for https://github.com/apple/swift-crypto.git
+2026-02-27T22:51:47.6570798Z Computed https://github.com/apple/swift-crypto.git at 3.15.1 (1.28s)
+2026-02-27T22:51:47.6576774Z Computing version for https://github.com/apple/swift-log.git
+2026-02-27T22:51:48.0134159Z Computed https://github.com/apple/swift-log.git at 1.10.1 (0.36s)
+2026-02-27T22:51:48.0139035Z Computing version for https://github.com/apple/swift-nio-ssl.git
+2026-02-27T22:51:48.3855802Z Computed https://github.com/apple/swift-nio-ssl.git at 2.36.0 (0.37s)
+2026-02-27T22:51:48.3860821Z Computing version for https://github.com/apple/swift-nio.git
+2026-02-27T22:51:48.9882165Z Computed https://github.com/apple/swift-nio.git at 2.95.0 (0.60s)
+2026-02-27T22:51:48.9889714Z Computing version for https://github.com/swiftlang/swift-docc-symbolkit
+2026-02-27T22:51:49.3821787Z Computed https://github.com/swiftlang/swift-docc-symbolkit at 1.0.0 (0.39s)
+2026-02-27T22:51:49.3826636Z Computing version for https://github.com/apple/swift-asn1.git
+2026-02-27T22:51:50.7530710Z Computed https://github.com/apple/swift-asn1.git at 1.5.1 (1.37s)
+2026-02-27T22:51:50.7534652Z Computing version for https://github.com/apple/swift-system.git
+2026-02-27T22:51:51.1414509Z Computed https://github.com/apple/swift-system.git at 1.6.4 (0.39s)
+2026-02-27T22:51:51.1419145Z Computing version for https://github.com/apple/swift-collections.git
+2026-02-27T22:51:51.6460093Z Computed https://github.com/apple/swift-collections.git at 1.3.0 (0.50s)
+2026-02-27T22:51:51.6462002Z Computing version for https://github.com/apple/swift-atomics.git
+2026-02-27T22:51:51.9817728Z Computed https://github.com/apple/swift-atomics.git at 1.3.0 (0.34s)
+2026-02-27T22:51:52.0611859Z Creating working copy for https://github.com/apple/swift-docc-plugin.git
+2026-02-27T22:51:52.1100553Z Working copy of https://github.com/apple/swift-docc-plugin.git resolved at 1.4.6
+2026-02-27T22:51:52.1183694Z Creating working copy for https://github.com/apple/swift-collections.git
+2026-02-27T22:51:52.2690464Z Working copy of https://github.com/apple/swift-collections.git resolved at 1.3.0
+2026-02-27T22:51:52.2775003Z Creating working copy for https://github.com/apple/swift-atomics.git
+2026-02-27T22:51:52.3211109Z Working copy of https://github.com/apple/swift-atomics.git resolved at 1.3.0
+2026-02-27T22:51:52.3294485Z Creating working copy for https://github.com/apple/swift-nio-ssl.git
+2026-02-27T22:51:52.4819760Z Working copy of https://github.com/apple/swift-nio-ssl.git resolved at 2.36.0
+2026-02-27T22:51:52.4904929Z Creating working copy for https://github.com/apple/swift-system.git
+2026-02-27T22:51:52.5210784Z Working copy of https://github.com/apple/swift-system.git resolved at 1.6.4
+2026-02-27T22:51:52.5296866Z Creating working copy for https://github.com/apple/swift-nio.git
+2026-02-27T22:51:52.6747799Z Working copy of https://github.com/apple/swift-nio.git resolved at 2.95.0
+2026-02-27T22:51:52.6834662Z Creating working copy for https://github.com/apple/swift-asn1.git
+2026-02-27T22:51:52.7280438Z Working copy of https://github.com/apple/swift-asn1.git resolved at 1.5.1
+2026-02-27T22:51:52.7400077Z Creating working copy for https://github.com/swiftlang/swift-docc-symbolkit
+2026-02-27T22:51:52.7891007Z Working copy of https://github.com/swiftlang/swift-docc-symbolkit resolved at 1.0.0
+2026-02-27T22:51:52.7972507Z Creating working copy for https://github.com/apple/swift-log.git
+2026-02-27T22:51:52.8284316Z Working copy of https://github.com/apple/swift-log.git resolved at 1.10.1
+2026-02-27T22:51:52.8367299Z Creating working copy for https://github.com/apple/swift-crypto.git
+2026-02-27T22:51:53.0969222Z Working copy of https://github.com/apple/swift-crypto.git resolved at 3.15.1
+2026-02-27T22:52:02.8920311Z [1/1] Compiling plugin Swift-DocC
+2026-02-27T22:52:06.7451506Z [2/2] Compiling plugin Swift-DocC Preview
+2026-02-27T22:52:06.7451858Z Building for debugging...
+2026-02-27T22:52:06.7977950Z [2/839] Write sources
+2026-02-27T22:52:06.8127631Z [26/839] Compiling CNIOWindows shim.c
+2026-02-27T22:52:06.8128196Z [26/839] Compiling CNIOWindows WSAStartup.c
+2026-02-27T22:52:06.8226925Z [28/839] Compiling _AtomicsShims.c
+2026-02-27T22:52:06.8307744Z [29/839] Compiling CNIOWASI CNIOWASI.c
+2026-02-27T22:52:06.8357769Z [30/839] Compiling CNIOPosix event_loop_id.c
+2026-02-27T22:52:06.8417564Z [31/839] Compiling CNIOOpenBSD shim.c
+2026-02-27T22:52:06.8536304Z [32/839] Compiling CNIOLinux liburing_shims.c
+2026-02-27T22:52:06.8590338Z [33/839] Compiling CNIODarwin shim.c
+2026-02-27T22:52:06.8999104Z [34/839] Compiling fiat_p256_adx_sqr.S
+2026-02-27T22:52:06.9322770Z [35/839] Compiling fiat_p256_adx_mul.S
+2026-02-27T22:52:06.9787798Z [36/839] Compiling fiat_curve25519_adx_square.S
+2026-02-27T22:52:06.9996586Z [37/839] Compiling CNIOLinux shim.c
+2026-02-27T22:52:07.0186535Z [38/839] Compiling fiat_curve25519_adx_mul.S
+2026-02-27T22:52:07.0979336Z [39/839] Write swift-version-B948D857FCC5015.txt
+2026-02-27T22:52:07.1834575Z [40/839] Compiling CNIOBoringSSLShims shims.c
+2026-02-27T22:52:09.7102012Z [41/843] Compiling tls_method.cc
+2026-02-27T22:52:09.7211207Z [42/843] Compiling tls_record.cc
+2026-02-27T22:52:09.8052980Z [43/843] Compiling tls13_server.cc
+2026-02-27T22:52:11.1890799Z [45/863] Emitting module InternalCollectionsUtilities
+2026-02-27T22:52:11.7290054Z [46/867] Compiling InternalCollectionsUtilities UnsafeBufferPointer+Extras.swift
+2026-02-27T22:52:11.7327848Z [47/867] Compiling InternalCollectionsUtilities UnsafeMutableBufferPointer+Extras.swift
+2026-02-27T22:52:11.7345338Z [48/867] Compiling InternalCollectionsUtilities UnsafeMutableRawBufferPointer+Extras.swift
+2026-02-27T22:52:11.7346578Z [49/867] Compiling InternalCollectionsUtilities UnsafeRawBufferPointer+Extras.swift
+2026-02-27T22:52:11.9488474Z [50/867] Compiling InternalCollectionsUtilities Debugging.swift
+2026-02-27T22:52:11.9511067Z [51/867] Compiling InternalCollectionsUtilities Descriptions.swift
+2026-02-27T22:52:11.9513657Z [52/867] Compiling InternalCollectionsUtilities LifetimeOverride.swift
+2026-02-27T22:52:11.9516661Z [53/867] Compiling InternalCollectionsUtilities RandomAccessCollection+Offsets.swift
+2026-02-27T22:52:12.0132430Z [54/867] Compiling _NIODataStructures _TinyArray.swift
+2026-02-27T22:52:12.0295089Z [55/867] Compiling _NIOBase64 Base64.swift
+2026-02-27T22:52:12.0295843Z [56/867] Emitting module _NIOBase64
+2026-02-27T22:52:12.1786382Z [58/868] Compiling InternalCollectionsUtilities FixedWidthInteger+roundUpToPowerOfTwo.swift
+2026-02-27T22:52:12.1787889Z [59/868] Compiling InternalCollectionsUtilities Integer rank.swift
+2026-02-27T22:52:12.1791155Z [60/868] Compiling InternalCollectionsUtilities UInt+first and last set bit.swift
+2026-02-27T22:52:12.1792058Z [61/868] Compiling InternalCollectionsUtilities UInt+reversed.swift
+2026-02-27T22:52:12.1792860Z [62/868] Compiling InternalCollectionsUtilities _UnsafeBitSet+Index.swift
+2026-02-27T22:52:12.1838844Z [63/868] Compiling InternalCollectionsUtilities _UnsafeBitSet+_Word.swift
+2026-02-27T22:52:12.1840681Z [64/868] Compiling InternalCollectionsUtilities _UnsafeBitSet.swift
+2026-02-27T22:52:12.1841489Z [65/868] Compiling InternalCollectionsUtilities _SortedCollection.swift
+2026-02-27T22:52:12.1842334Z [66/868] Compiling InternalCollectionsUtilities _UniqueCollection.swift
+2026-02-27T22:52:12.4485187Z [67/869] Wrapping AST for _NIOBase64 for debugging
+2026-02-27T22:52:12.4522326Z [69/869] Compiling _NIODataStructures Heap.swift
+2026-02-27T22:52:12.4549027Z [70/869] Compiling _NIODataStructures PriorityQueue.swift
+2026-02-27T22:52:12.4549969Z [71/869] Emitting module _NIODataStructures
+2026-02-27T22:52:12.6398629Z [72/870] Wrapping AST for InternalCollectionsUtilities for debugging
+2026-02-27T22:52:12.7500053Z [73/883] Wrapping AST for _NIODataStructures for debugging
+2026-02-27T22:52:12.7997073Z [75/883] Compiling Logging Locks.swift
+2026-02-27T22:52:12.8015716Z [76/883] Compiling Logging LogHandler.swift
+2026-02-27T22:52:12.8016192Z [77/884] Emitting module Logging
+2026-02-27T22:52:12.8016613Z [78/884] Compiling Logging Logging.swift
+2026-02-27T22:52:13.1401811Z [79/884] Compiling Logging MetadataProvider.swift
+2026-02-27T22:52:13.3147740Z [81/885] Compiling DequeModule Deque+Equatable.swift
+2026-02-27T22:52:13.3158764Z [82/885] Compiling DequeModule Deque+ExpressibleByArrayLiteral.swift
+2026-02-27T22:52:13.3159502Z [83/885] Compiling DequeModule Deque+Extras.swift
+2026-02-27T22:52:13.3160041Z [84/885] Compiling DequeModule Deque+Hashable.swift
+2026-02-27T22:52:13.5137920Z [84/889] Wrapping AST for Logging for debugging
+2026-02-27T22:52:14.0101122Z [86/889] Compiling DequeModule _DequeBuffer.swift
+2026-02-27T22:52:14.0103807Z [87/889] Compiling DequeModule _DequeBufferHeader.swift
+2026-02-27T22:52:14.0104874Z [88/889] Compiling DequeModule _DequeSlot.swift
+2026-02-27T22:52:14.0105457Z [89/889] Compiling DequeModule _UnsafeWrappedBuffer.swift
+2026-02-27T22:52:14.1242367Z [90/889] Compiling DequeModule Deque+Testing.swift
+2026-02-27T22:52:14.1243485Z [91/889] Compiling DequeModule Deque._Storage.swift
+2026-02-27T22:52:14.1244298Z [92/889] Compiling DequeModule Deque._UnsafeHandle.swift
+2026-02-27T22:52:14.1245201Z [93/889] Compiling DequeModule Deque.swift
+2026-02-27T22:52:14.3899165Z [94/889] Compiling DequeModule Deque+Codable.swift
+2026-02-27T22:52:14.3904504Z [95/889] Compiling DequeModule Deque+Collection.swift
+2026-02-27T22:52:14.3911255Z [96/889] Compiling DequeModule Deque+CustomReflectable.swift
+2026-02-27T22:52:14.3938595Z [97/889] Compiling DequeModule Deque+Descriptions.swift
+2026-02-27T22:52:14.5143736Z [98/889] Emitting module DequeModule
+2026-02-27T22:52:14.5183538Z [98/890] Compiling tls13_enc.cc
+2026-02-27T22:52:14.9753497Z [100/890] Compiling tls13_client.cc
+2026-02-27T22:52:15.0763357Z [101/890] Wrapping AST for DequeModule for debugging
+2026-02-27T22:52:15.4983727Z [102/890] Compiling tls13_both.cc
+2026-02-27T22:52:16.0994388Z [103/890] Compiling t1_enc.cc
+2026-02-27T22:52:16.5193608Z [104/890] Compiling ssl_x509.cc
+2026-02-27T22:52:16.6743419Z [105/890] Compiling ssl_versions.cc
+2026-02-27T22:52:17.0293334Z [106/890] Compiling ssl_transcript.cc
+2026-02-27T22:52:17.6373997Z [107/890] Compiling ssl_stat.cc
+2026-02-27T22:52:18.3524073Z [108/890] Compiling ssl_session.cc
+2026-02-27T22:52:18.4043034Z [109/890] Compiling ssl_privkey.cc
+2026-02-27T22:52:19.2933469Z [110/890] Compiling ssl_lib.cc
+2026-02-27T22:52:19.3604424Z [111/890] Compiling ssl_key_share.cc
+2026-02-27T22:52:19.9893286Z [112/890] Compiling ssl_file.cc
+2026-02-27T22:52:20.1763444Z [113/890] Compiling ssl_credential.cc
+2026-02-27T22:52:20.9683347Z [114/890] Compiling ssl_cipher.cc
+2026-02-27T22:52:21.1143503Z [115/890] Compiling ssl_cert.cc
+2026-02-27T22:52:21.5465537Z [116/890] Compiling ssl_buffer.cc
+2026-02-27T22:52:21.8243329Z [117/890] Compiling ssl_asn1.cc
+2026-02-27T22:52:22.5513415Z [118/890] Compiling ssl_aead_ctx.cc
+2026-02-27T22:52:22.7312919Z [119/890] Compiling s3_pkt.cc
+2026-02-27T22:52:23.2163896Z [120/890] Compiling s3_lib.cc
+2026-02-27T22:52:23.4436315Z [121/890] Compiling s3_both.cc
+2026-02-27T22:52:24.4913413Z [122/890] Compiling handshake_server.cc
+2026-02-27T22:52:24.6103936Z [123/890] Compiling handshake_client.cc
+2026-02-27T22:52:25.0283504Z [124/890] Compiling handshake.cc
+2026-02-27T22:52:25.2453628Z [125/890] Compiling handoff.cc
+2026-02-27T22:52:26.3623494Z [126/890] Compiling encrypted_client_hello.cc
+2026-02-27T22:52:26.6303472Z [127/890] Compiling extensions.cc
+2026-02-27T22:52:26.7003199Z [128/890] Compiling dtls_record.cc
+2026-02-27T22:52:26.8703334Z [129/890] Compiling dtls_method.cc
+2026-02-27T22:52:28.0424026Z [130/890] Compiling d1_srtp.cc
+2026-02-27T22:52:28.2216135Z [131/890] Compiling d1_pkt.cc
+2026-02-27T22:52:28.2729230Z [132/890] Compiling md5-x86_64-linux.S
+2026-02-27T22:52:28.3208902Z [133/890] Compiling md5-x86_64-apple.S
+2026-02-27T22:52:28.3472390Z [134/890] Compiling d1_lib.cc
+2026-02-27T22:52:28.3658799Z [135/890] Compiling md5-586-linux.S
+2026-02-27T22:52:28.3930957Z [136/890] Compiling md5-586-apple.S
+2026-02-27T22:52:28.4999695Z [137/890] Compiling chacha20_poly1305_x86_64-linux.S
+2026-02-27T22:52:28.5520804Z [138/890] Compiling chacha20_poly1305_x86_64-apple.S
+2026-02-27T22:52:28.6022049Z [139/890] Compiling chacha20_poly1305_armv8-win.S
+2026-02-27T22:52:28.6509170Z [140/890] Compiling chacha20_poly1305_armv8-linux.S
+2026-02-27T22:52:28.6771222Z [141/890] Compiling err_data.cc
+2026-02-27T22:52:28.6949798Z [142/890] Compiling chacha20_poly1305_armv8-apple.S
+2026-02-27T22:52:28.7103678Z [143/890] Compiling d1_both.cc
+2026-02-27T22:52:28.7299041Z [144/890] Compiling chacha-x86_64-linux.S
+2026-02-27T22:52:28.7388682Z [145/890] Compiling chacha-x86_64-apple.S
+2026-02-27T22:52:28.7595168Z [146/890] Compiling chacha-x86-linux.S
+2026-02-27T22:52:28.7728838Z [147/890] Compiling chacha-x86-apple.S
+2026-02-27T22:52:28.7818590Z [148/890] Compiling chacha-armv8-win.S
+2026-02-27T22:52:28.8079473Z [149/890] Compiling chacha-armv8-linux.S
+2026-02-27T22:52:28.8196360Z [150/890] Compiling chacha-armv8-apple.S
+2026-02-27T22:52:28.8258383Z [151/890] Compiling chacha-armv4-linux.S
+2026-02-27T22:52:28.8618983Z [152/890] Compiling aes128gcmsiv-x86_64-apple.S
+2026-02-27T22:52:28.8738769Z [153/890] Compiling aes128gcmsiv-x86_64-linux.S
+2026-02-27T22:52:28.8848791Z [154/890] Compiling x86_64-mont5-linux.S
+2026-02-27T22:52:28.9085215Z [155/890] Compiling x86_64-mont5-apple.S
+2026-02-27T22:52:28.9288098Z [156/890] Compiling x86_64-mont-apple.S
+2026-02-27T22:52:28.9294057Z [157/890] Compiling x86_64-mont-linux.S
+2026-02-27T22:52:28.9361130Z [158/890] Compiling bio_ssl.cc
+2026-02-27T22:52:28.9508993Z [159/890] Compiling x86-mont-linux.S
+2026-02-27T22:52:28.9698995Z [160/890] Compiling x86-mont-apple.S
+2026-02-27T22:52:28.9759368Z [161/890] Compiling vpaes-x86_64-linux.S
+2026-02-27T22:52:28.9797854Z [162/890] Compiling vpaes-x86_64-apple.S
+2026-02-27T22:52:28.9928947Z [163/890] Compiling vpaes-x86-linux.S
+2026-02-27T22:52:29.0138862Z [164/890] Compiling vpaes-x86-apple.S
+2026-02-27T22:52:29.0178289Z [165/890] Compiling vpaes-armv8-win.S
+2026-02-27T22:52:29.0227598Z [166/890] Compiling vpaes-armv8-linux.S
+2026-02-27T22:52:29.0370176Z [167/890] Compiling vpaes-armv8-apple.S
+2026-02-27T22:52:29.0569350Z [168/890] Compiling vpaes-armv7-linux.S
+2026-02-27T22:52:29.0657920Z [169/890] Compiling sha512-x86_64-apple.S
+2026-02-27T22:52:29.0748479Z [170/890] Compiling sha512-x86_64-linux.S
+2026-02-27T22:52:29.0797881Z [171/890] Compiling sha512-armv8-win.S
+2026-02-27T22:52:29.1008725Z [172/890] Compiling sha512-armv8-linux.S
+2026-02-27T22:52:29.1101364Z [173/890] Compiling sha512-armv8-apple.S
+2026-02-27T22:52:29.1188436Z [174/890] Compiling sha512-armv4-linux.S
+2026-02-27T22:52:29.1237939Z [175/890] Compiling sha512-586-linux.S
+2026-02-27T22:52:29.1428519Z [176/890] Compiling sha512-586-apple.S
+2026-02-27T22:52:29.1639131Z [177/890] Compiling sha256-x86_64-apple.S
+2026-02-27T22:52:29.1677346Z [178/890] Compiling sha256-armv8-win.S
+2026-02-27T22:52:29.1755536Z [179/890] Compiling sha256-x86_64-linux.S
+2026-02-27T22:52:29.1838693Z [180/890] Compiling sha256-armv8-linux.S
+2026-02-27T22:52:29.2078947Z [181/890] Compiling sha256-armv8-apple.S
+2026-02-27T22:52:29.2127704Z [182/890] Compiling sha256-armv4-linux.S
+2026-02-27T22:52:29.2143980Z [183/890] Compiling sha256-586-linux.S
+2026-02-27T22:52:29.2290362Z [184/890] Compiling sha256-586-apple.S
+2026-02-27T22:52:29.2565467Z [185/890] Compiling sha1-x86_64-apple.S
+2026-02-27T22:52:29.2588777Z [186/890] Compiling sha1-armv8-win.S
+2026-02-27T22:52:29.2731259Z [187/890] Compiling sha1-armv8-linux.S
+2026-02-27T22:52:29.2778007Z [188/890] Compiling sha1-x86_64-linux.S
+2026-02-27T22:52:29.2968710Z [189/890] Compiling sha1-armv8-apple.S
+2026-02-27T22:52:29.3027571Z [190/890] Compiling sha1-armv4-large-linux.S
+2026-02-27T22:52:29.3161011Z [191/890] Compiling sha1-586-linux.S
+2026-02-27T22:52:29.3207755Z [192/890] Compiling sha1-586-apple.S
+2026-02-27T22:52:29.3469132Z [193/890] Compiling rsaz-avx2-apple.S
+2026-02-27T22:52:29.3499050Z [194/890] Compiling rsaz-avx2-linux.S
+2026-02-27T22:52:29.3599874Z [195/890] Compiling rdrand-x86_64-linux.S
+2026-02-27T22:52:29.3627723Z [196/890] Compiling rdrand-x86_64-apple.S
+2026-02-27T22:52:29.3936551Z [197/890] Compiling p256_beeu-x86_64-asm-apple.S
+2026-02-27T22:52:29.3943350Z [198/890] Compiling p256_beeu-x86_64-asm-linux.S
+2026-02-27T22:52:29.4028332Z [199/890] Compiling p256_beeu-armv8-asm-win.S
+2026-02-27T22:52:29.4047590Z [200/890] Compiling p256_beeu-armv8-asm-linux.S
+2026-02-27T22:52:29.4349115Z [201/890] Compiling p256_beeu-armv8-asm-apple.S
+2026-02-27T22:52:29.4495723Z [202/890] Compiling p256-x86_64-asm-apple.S
+2026-02-27T22:52:29.4496449Z [202/890] Compiling p256-armv8-asm-win.S
+2026-02-27T22:52:29.4619565Z [204/890] Compiling p256-x86_64-asm-linux.S
+2026-02-27T22:52:29.4786942Z [205/890] Compiling p256-armv8-asm-linux.S
+2026-02-27T22:52:29.4899299Z [206/890] Compiling ghashv8-armv8-win.S
+2026-02-27T22:52:29.4908374Z [207/890] Compiling p256-armv8-asm-apple.S
+2026-02-27T22:52:29.5079060Z [208/890] Compiling ghashv8-armv8-linux.S
+2026-02-27T22:52:29.5210259Z [209/890] Compiling ghashv8-armv8-apple.S
+2026-02-27T22:52:29.5340496Z [210/890] Compiling ghashv8-armv7-linux.S
+2026-02-27T22:52:29.5368917Z [211/890] Compiling ghash-x86_64-linux.S
+2026-02-27T22:52:29.5547230Z [212/890] Compiling ghash-x86_64-apple.S
+2026-02-27T22:52:29.5718997Z [213/890] Compiling ghash-x86-linux.S
+2026-02-27T22:52:29.5747714Z [214/890] Compiling ghash-x86-apple.S
+2026-02-27T22:52:29.5797866Z [215/890] Compiling ghash-ssse3-x86_64-linux.S
+2026-02-27T22:52:29.5989368Z [216/890] Compiling ghash-ssse3-x86_64-apple.S
+2026-02-27T22:52:29.6158965Z [217/890] Compiling ghash-ssse3-x86-linux.S
+2026-02-27T22:52:29.6168353Z [218/890] Compiling ghash-ssse3-x86-apple.S
+2026-02-27T22:52:29.6229529Z [219/890] Compiling ghash-neon-armv8-win.S
+2026-02-27T22:52:29.6448721Z [220/890] Compiling ghash-neon-armv8-linux.S
+2026-02-27T22:52:29.6576860Z [221/890] Compiling ghash-neon-armv8-apple.S
+2026-02-27T22:52:29.6579063Z [221/890] Compiling ghash-armv4-linux.S
+2026-02-27T22:52:29.6668384Z [223/890] Compiling co-586-linux.S
+2026-02-27T22:52:29.6898851Z [224/890] Compiling co-586-apple.S
+2026-02-27T22:52:29.6989638Z [225/890] Compiling bn-armv8-win.S
+2026-02-27T22:52:29.6990567Z [225/890] Compiling bsaes-armv7-linux.S
+2026-02-27T22:52:29.7088881Z [227/890] Compiling bn-armv8-linux.S
+2026-02-27T22:52:29.7326222Z [228/890] Compiling bn-armv8-apple.S
+2026-02-27T22:52:29.7418167Z [229/890] Compiling bn-586-apple.S
+2026-02-27T22:52:29.7429238Z [230/890] Compiling bn-586-linux.S
+2026-02-27T22:52:29.7529603Z [231/890] Compiling armv8-mont-win.S
+2026-02-27T22:52:29.7758922Z [232/890] Compiling armv8-mont-linux.S
+2026-02-27T22:52:29.7835231Z [233/890] Compiling armv8-mont-apple.S
+2026-02-27T22:52:29.7857971Z [234/890] Compiling armv4-mont-linux.S
+2026-02-27T22:52:29.7978489Z [235/890] Compiling aesv8-gcm-armv8-win.S
+2026-02-27T22:52:29.8208890Z [236/890] Compiling aesv8-gcm-armv8-linux.S
+2026-02-27T22:52:29.8277953Z [237/890] Compiling aesv8-gcm-armv8-apple.S
+2026-02-27T22:52:29.8307251Z [238/890] Compiling aesv8-armv8-win.S
+2026-02-27T22:52:29.8430172Z [239/890] Compiling aesv8-armv8-linux.S
+2026-02-27T22:52:29.8658785Z [240/890] Compiling aesv8-armv8-apple.S
+2026-02-27T22:52:29.8694371Z [241/890] Compiling aesv8-armv7-linux.S
+2026-02-27T22:52:29.8868763Z [242/890] Compiling aesni-x86_64-apple.S
+2026-02-27T22:52:29.8869636Z [242/890] Compiling aesni-x86_64-linux.S
+2026-02-27T22:52:29.9108489Z [244/890] Compiling aesni-x86-linux.S
+2026-02-27T22:52:29.9137955Z [245/890] Compiling aesni-x86-apple.S
+2026-02-27T22:52:29.9318495Z [246/890] Compiling aesni-gcm-x86_64-apple.S
+2026-02-27T22:52:29.9325474Z [246/890] Compiling aesni-gcm-x86_64-linux.S
+2026-02-27T22:52:29.9590285Z [248/890] Compiling aes-gcm-avx2-x86_64-apple.S
+2026-02-27T22:52:29.9610005Z [249/890] Compiling aes-gcm-avx2-x86_64-linux.S
+2026-02-27T22:52:29.9758326Z [250/890] Compiling aes-gcm-avx10-x86_64-apple.S
+2026-02-27T22:52:29.9798002Z [251/890] Compiling aes-gcm-avx10-x86_64-linux.S
+2026-02-27T22:52:30.8742228Z [252/890] Compiling x_spki.cc
+2026-02-27T22:52:30.8810065Z [253/890] Compiling x_x509.cc
+2026-02-27T22:52:30.8848172Z [254/890] Compiling x_x509a.cc
+2026-02-27T22:52:30.8870257Z [255/890] Compiling x_val.cc
+2026-02-27T22:52:31.7292575Z [256/890] Compiling x_sig.cc
+2026-02-27T22:52:31.7773336Z [257/890] Compiling x_req.cc
+2026-02-27T22:52:31.8086604Z [258/890] Compiling x_pubkey.cc
+2026-02-27T22:52:31.8342704Z [259/890] Compiling x_name.cc
+2026-02-27T22:52:32.6282827Z [260/890] Compiling x_exten.cc
+2026-02-27T22:52:32.7191878Z [261/890] Compiling x_crl.cc
+2026-02-27T22:52:32.7291680Z [262/890] Compiling x_attrib.cc
+2026-02-27T22:52:32.7852764Z [263/890] Compiling x_all.cc
+2026-02-27T22:52:33.4883739Z [264/890] Compiling x_algor.cc
+2026-02-27T22:52:33.5715412Z [265/890] Compiling x509spki.cc
+2026-02-27T22:52:33.6385918Z [266/890] Compiling x509rset.cc
+2026-02-27T22:52:33.6963748Z [267/890] Compiling x509name.cc
+2026-02-27T22:52:34.4132592Z [268/890] Compiling x509cset.cc
+2026-02-27T22:52:34.4935208Z [269/890] Compiling x509_vpm.cc
+2026-02-27T22:52:34.5912641Z [270/890] Compiling x509_v3.cc
+2026-02-27T22:52:34.6403114Z [271/890] Compiling x509_vfy.cc
+2026-02-27T22:52:35.2452464Z [272/890] Compiling x509_txt.cc
+2026-02-27T22:52:35.3952698Z [273/890] Compiling x509_trs.cc
+2026-02-27T22:52:35.4743093Z [274/890] Compiling x509_set.cc
+2026-02-27T22:52:35.5733607Z [275/890] Compiling x509_req.cc
+2026-02-27T22:52:36.1862080Z [276/890] Compiling x509_obj.cc
+2026-02-27T22:52:36.3412953Z [277/890] Compiling x509_lu.cc
+2026-02-27T22:52:36.3852254Z [278/890] Compiling x509_def.cc
+2026-02-27T22:52:36.3897687Z [279/890] Compiling x509_ext.cc
+2026-02-27T22:52:36.9962796Z [280/890] Compiling x509_d2.cc
+2026-02-27T22:52:37.2153569Z [281/890] Compiling x509.cc
+2026-02-27T22:52:37.2462671Z [282/890] Compiling x509_cmp.cc
+2026-02-27T22:52:37.2862132Z [283/890] Compiling x509_att.cc
+2026-02-27T22:52:37.9902635Z [284/890] Compiling v3_utl.cc
+2026-02-27T22:52:38.1182760Z [285/890] Compiling v3_skey.cc
+2026-02-27T22:52:38.1511701Z [286/890] Compiling v3_prn.cc
+2026-02-27T22:52:38.1671392Z [287/890] Compiling v3_purp.cc
+2026-02-27T22:52:38.9073201Z [288/890] Compiling v3_pmaps.cc
+2026-02-27T22:52:38.9922740Z [289/890] Compiling v3_ocsp.cc
+2026-02-27T22:52:39.0222871Z [290/890] Compiling v3_pcons.cc
+2026-02-27T22:52:39.1002647Z [291/890] Compiling v3_ncons.cc
+2026-02-27T22:52:39.8242384Z [292/890] Compiling v3_int.cc
+2026-02-27T22:52:39.8351703Z [293/890] Compiling v3_lib.cc
+2026-02-27T22:52:39.9272719Z [294/890] Compiling v3_info.cc
+2026-02-27T22:52:39.9895957Z [295/890] Compiling v3_ia5.cc
+2026-02-27T22:52:40.7462858Z [296/890] Compiling v3_extku.cc
+2026-02-27T22:52:40.7490671Z [297/890] Compiling v3_genn.cc
+2026-02-27T22:52:40.8002865Z [298/890] Compiling v3_enum.cc
+2026-02-27T22:52:40.9122107Z [299/890] Compiling v3_crld.cc
+2026-02-27T22:52:41.6602373Z [300/890] Compiling v3_cpols.cc
+2026-02-27T22:52:41.6712369Z [301/890] Compiling v3_conf.cc
+2026-02-27T22:52:41.6911795Z [302/890] Compiling v3_bitst.cc
+2026-02-27T22:52:41.8184003Z [303/890] Compiling v3_bcons.cc
+2026-02-27T22:52:42.5723063Z [304/890] Compiling v3_akeya.cc
+2026-02-27T22:52:42.5902165Z [305/890] Compiling v3_alt.cc
+2026-02-27T22:52:42.6082255Z [306/890] Compiling v3_akey.cc
+2026-02-27T22:52:42.7243097Z [307/890] Compiling t_x509a.cc
+2026-02-27T22:52:43.4702389Z [308/890] Compiling t_crl.cc
+2026-02-27T22:52:43.4822246Z [309/890] Compiling t_x509.cc
+2026-02-27T22:52:43.5093002Z [310/890] Compiling t_req.cc
+2026-02-27T22:52:43.6664511Z [311/890] Compiling rsa_pss.cc
+2026-02-27T22:52:44.0581745Z [312/890] Compiling i2d_pr.cc
+2026-02-27T22:52:44.3342731Z [313/890] Compiling name_print.cc
+2026-02-27T22:52:44.4342357Z [314/890] Compiling policy.cc
+2026-02-27T22:52:44.5968810Z [315/890] Compiling by_file.cc
+2026-02-27T22:52:44.9974503Z [316/890] Compiling by_dir.cc
+2026-02-27T22:52:45.2814639Z [317/890] Compiling asn1_gen.cc
+2026-02-27T22:52:45.3242293Z [318/890] Compiling algorithm.cc
+2026-02-27T22:52:45.4892778Z [319/890] Compiling a_verify.cc
+2026-02-27T22:52:45.8832993Z [320/890] Compiling a_sign.cc
+2026-02-27T22:52:45.9922539Z [321/890] Compiling voprf.cc
+2026-02-27T22:52:46.1253233Z [322/890] Compiling a_digest.cc
+2026-02-27T22:52:46.1382445Z [323/890] Compiling trust_token.cc
+2026-02-27T22:52:46.4190934Z [324/890] Compiling thread_win.cc
+2026-02-27T22:52:46.5522758Z [325/890] Compiling pmbtoken.cc
+2026-02-27T22:52:46.5546197Z [326/890] Compiling thread_none.cc
+2026-02-27T22:52:46.5551211Z [326/890] Compiling thread_pthread.cc
+2026-02-27T22:52:46.7563192Z [328/890] Compiling thread.cc
+2026-02-27T22:52:47.0084407Z [329/890] Compiling stack.cc
+2026-02-27T22:52:47.0110138Z [330/890] Compiling slhdsa.cc
+2026-02-27T22:52:47.1761150Z [331/890] Compiling siphash.cc
+2026-02-27T22:52:47.2025473Z [332/890] Compiling spake2plus.cc
+2026-02-27T22:52:47.3684149Z [333/890] Compiling sha256.cc
+2026-02-27T22:52:47.3860907Z [334/890] Compiling sha512.cc
+2026-02-27T22:52:47.5391915Z [335/890] Compiling sha1.cc
+2026-02-27T22:52:47.6331726Z [336/890] Compiling rsa_print.cc
+2026-02-27T22:52:47.7491231Z [337/890] Compiling rsa_extra.cc
+2026-02-27T22:52:47.9311620Z [338/890] Compiling rsa_crypt.cc
+2026-02-27T22:52:48.0611238Z [339/890] Compiling refcount.cc
+2026-02-27T22:52:48.0922865Z [340/890] Compiling rsa_asn1.cc
+2026-02-27T22:52:48.1090552Z [341/890] Compiling rc4.cc
+2026-02-27T22:52:48.3563395Z [342/890] Compiling windows.cc
+2026-02-27T22:52:48.4452906Z [343/890] Compiling trusty.cc
+2026-02-27T22:52:48.4940605Z [344/890] Compiling rand.cc
+2026-02-27T22:52:48.5091134Z [345/890] Compiling urandom.cc
+2026-02-27T22:52:48.7841144Z [346/890] Compiling passive.cc
+2026-02-27T22:52:48.7990278Z [347/890] Compiling ios.cc
+2026-02-27T22:52:48.8571316Z [348/890] Compiling getentropy.cc
+2026-02-27T22:52:48.9312709Z [349/890] Compiling forkunsafe.cc
+2026-02-27T22:52:49.1497792Z [350/890] Compiling deterministic.cc
+2026-02-27T22:52:49.1889618Z [351/890] Compiling poly1305_arm_asm.S
+2026-02-27T22:52:49.2181467Z [352/890] Compiling fork_detect.cc
+2026-02-27T22:52:49.4191316Z [353/890] Compiling pool.cc
+2026-02-27T22:52:49.5123894Z [354/890] Compiling poly1305_vec.cc
+2026-02-27T22:52:49.6043989Z [355/890] Compiling poly1305_arm.cc
+2026-02-27T22:52:49.6403223Z [356/890] Compiling poly1305.cc
+2026-02-27T22:52:50.4112141Z [357/890] Compiling pkcs8.cc
+2026-02-27T22:52:50.4130715Z [358/890] Compiling pkcs8_x509.cc
+2026-02-27T22:52:50.5072802Z [359/890] Compiling p5_pbev2.cc
+2026-02-27T22:52:50.5773008Z [360/890] Compiling pkcs7_x509.cc
+2026-02-27T22:52:50.9184100Z [361/890] Compiling pkcs7.cc
+2026-02-27T22:52:51.2584112Z [362/890] Compiling pem_xaux.cc
+2026-02-27T22:52:51.3492804Z [363/890] Compiling pem_x509.cc
+2026-02-27T22:52:51.4402589Z [364/890] Compiling pem_pkey.cc
+2026-02-27T22:52:51.7802504Z [365/890] Compiling pem_pk8.cc
+2026-02-27T22:52:52.1041835Z [366/890] Compiling pem_oth.cc
+2026-02-27T22:52:52.2912728Z [367/890] Compiling pem_info.cc
+2026-02-27T22:52:52.2973010Z [368/890] Compiling pem_lib.cc
+2026-02-27T22:52:52.6372952Z [369/890] Compiling obj_xref.cc
+2026-02-27T22:52:52.6534155Z [370/890] Compiling pem_all.cc
+2026-02-27T22:52:52.6723740Z [371/890] Compiling mlkem.cc
+2026-02-27T22:52:52.9943744Z [372/890] Compiling obj.cc
+2026-02-27T22:52:53.0040345Z [373/890] Compiling mldsa.cc
+2026-02-27T22:52:53.0811520Z [374/890] Compiling md5.cc
+2026-02-27T22:52:53.1101835Z [375/890] Compiling mem.cc
+2026-02-27T22:52:53.4395978Z [376/890] Compiling lhash.cc
+2026-02-27T22:52:53.4411063Z [377/890] Compiling md4.cc
+2026-02-27T22:52:53.5469314Z [378/890] Compiling poly_rq_mul.S
+2026-02-27T22:52:53.5719512Z [379/890] Compiling fips_shared_support.cc
+2026-02-27T22:52:53.6583412Z [380/890] Compiling kyber.cc
+2026-02-27T22:52:53.7633777Z [381/890] Compiling hrss.cc
+2026-02-27T22:52:54.0882420Z [382/890] Compiling hpke.cc
+2026-02-27T22:52:54.1111531Z [383/890] Compiling ex_data.cc
+2026-02-27T22:52:54.2252118Z [384/890] Compiling sign.cc
+2026-02-27T22:52:54.5701735Z [385/890] Compiling scrypt.cc
+2026-02-27T22:52:54.7082857Z [386/890] Compiling pbkdf.cc
+2026-02-27T22:52:54.7083327Z [386/890] Compiling print.cc
+2026-02-27T22:52:55.1281568Z [388/890] Compiling p_x25519.cc
+2026-02-27T22:52:55.1411403Z [389/890] Compiling p_x25519_asn1.cc
+2026-02-27T22:52:55.2782271Z [390/890] Compiling p_rsa_asn1.cc
+2026-02-27T22:52:55.7348839Z [391/890] Compiling p_hkdf.cc
+2026-02-27T22:52:55.7573456Z [392/890] Compiling p_rsa.cc
+2026-02-27T22:52:55.9224984Z [393/890] Compiling p_ed25519_asn1.cc
+2026-02-27T22:52:56.1842241Z [394/890] Compiling p_ed25519.cc
+2026-02-27T22:52:56.3369699Z [395/890] Compiling p_ec_asn1.cc
+2026-02-27T22:52:56.4742091Z [396/890] Compiling p_ec.cc
+2026-02-27T22:52:56.8634454Z [397/890] Compiling p_dsa_asn1.cc
+2026-02-27T22:52:56.8710812Z [398/890] Compiling p_dh_asn1.cc
+2026-02-27T22:52:56.9321141Z [399/890] Compiling p_dh.cc
+2026-02-27T22:52:57.3121146Z [400/890] Compiling evp_ctx.cc
+2026-02-27T22:52:57.3152417Z [401/890] Compiling bcm.cc
+2026-02-27T22:52:57.4741670Z [402/890] Compiling evp.cc
+2026-02-27T22:52:57.5912427Z [403/890] Compiling evp_asn1.cc
+2026-02-27T22:52:57.7920842Z [404/890] Compiling err.cc
+2026-02-27T22:52:57.7959585Z [405/890] Compiling engine.cc
+2026-02-27T22:52:58.0681885Z [406/890] Compiling ecdsa_asn1.cc
+2026-02-27T22:52:58.0800294Z [407/890] Compiling ecdh.cc
+2026-02-27T22:52:58.2781239Z [408/890] Compiling ec_derive.cc
+2026-02-27T22:52:58.3041734Z [409/890] Compiling hash_to_curve.cc
+2026-02-27T22:52:58.6611079Z [410/890] Compiling dsa_asn1.cc
+2026-02-27T22:52:58.6751289Z [411/890] Compiling ec_asn1.cc
+2026-02-27T22:52:58.8164299Z [412/890] Compiling dsa.cc
+2026-02-27T22:52:58.9242799Z [413/890] Compiling digest_extra.cc
+2026-02-27T22:52:59.1461703Z [414/890] Compiling params.cc
+2026-02-27T22:52:59.2263537Z [415/890] Compiling dh_asn1.cc
+2026-02-27T22:52:59.3231506Z [416/890] Compiling des.cc
+2026-02-27T22:52:59.3599194Z [417/890] Compiling x25519-asm-arm.S
+2026-02-27T22:52:59.4652006Z [418/890] Compiling spake25519.cc
+2026-02-27T22:52:59.7832945Z [419/890] Compiling crypto.cc
+2026-02-27T22:52:59.9011802Z [420/890] Compiling cpu_intel.cc
+2026-02-27T22:52:59.9571786Z [421/890] Compiling curve25519.cc
+2026-02-27T22:53:00.2011245Z [422/890] Compiling cpu_arm_linux.cc
+2026-02-27T22:53:00.3133319Z [423/890] Compiling curve25519_64_adx.cc
+2026-02-27T22:53:00.3169853Z [424/890] Compiling cpu_arm_freebsd.cc
+2026-02-27T22:53:00.3762677Z [425/890] Compiling cpu_aarch64_win.cc
+2026-02-27T22:53:00.6181230Z [426/890] Compiling cpu_aarch64_sysreg.cc
+2026-02-27T22:53:00.6731692Z [427/890] Compiling cpu_aarch64_openbsd.cc
+2026-02-27T22:53:00.7181520Z [428/890] Compiling cpu_aarch64_linux.cc
+2026-02-27T22:53:00.7941768Z [429/890] Compiling cpu_aarch64_fuchsia.cc
+2026-02-27T22:53:01.0351700Z [430/890] Compiling cpu_aarch64_apple.cc
+2026-02-27T22:53:01.1913238Z [431/890] Compiling conf.cc
+2026-02-27T22:53:01.1915021Z [431/890] Compiling tls_cbc.cc
+2026-02-27T22:53:01.2291406Z [433/890] Compiling get_cipher.cc
+2026-02-27T22:53:01.5233221Z [434/890] Compiling e_tls.cc
+2026-02-27T22:53:01.6351873Z [435/890] Compiling e_rc4.cc
+2026-02-27T22:53:01.6465646Z [436/890] Compiling e_rc2.cc
+2026-02-27T22:53:01.6781476Z [437/890] Compiling e_null.cc
+2026-02-27T22:53:01.9703876Z [438/890] Compiling e_des.cc
+2026-02-27T22:53:02.1043326Z [439/890] Compiling e_chacha20poly1305.cc
+2026-02-27T22:53:02.1311400Z [440/890] Compiling e_aesgcmsiv.cc
+2026-02-27T22:53:02.1400810Z [441/890] Compiling e_aesctrhmac.cc
+2026-02-27T22:53:02.3383991Z [442/890] Compiling derive_key.cc
+2026-02-27T22:53:02.5451548Z [443/890] Compiling chacha.cc
+2026-02-27T22:53:02.6037827Z [444/890] Compiling unicode.cc
+2026-02-27T22:53:02.7921982Z [445/890] Compiling cbs.cc
+2026-02-27T22:53:02.9152206Z [446/890] Compiling cbb.cc
+2026-02-27T22:53:03.0121585Z [447/890] Compiling ber.cc
+2026-02-27T22:53:03.1231993Z [448/890] Compiling asn1_compat.cc
+2026-02-27T22:53:03.2191983Z [449/890] Compiling buf.cc
+2026-02-27T22:53:03.4844153Z [450/890] Compiling bn_asn1.cc
+2026-02-27T22:53:03.5174933Z [451/890] Compiling convert.cc
+2026-02-27T22:53:03.5593053Z [452/890] Compiling blake2.cc
+2026-02-27T22:53:03.7112214Z [453/890] Compiling socket_helper.cc
+2026-02-27T22:53:03.9182006Z [454/890] Compiling socket.cc
+2026-02-27T22:53:03.9312489Z [455/890] Compiling printf.cc
+2026-02-27T22:53:04.0451822Z [456/890] Compiling pair.cc
+2026-02-27T22:53:04.1812402Z [457/890] Compiling hexdump.cc
+2026-02-27T22:53:04.4041850Z [458/890] Compiling file.cc
+2026-02-27T22:53:04.4103629Z [459/890] Compiling fd.cc
+2026-02-27T22:53:04.4671934Z [460/890] Compiling errno.cc
+2026-02-27T22:53:04.6922381Z [461/890] Compiling connect.cc
+2026-02-27T22:53:04.8871912Z [462/890] Compiling bio_mem.cc
+2026-02-27T22:53:04.9320916Z [463/890] Compiling base64.cc
+2026-02-27T22:53:04.9521532Z [464/890] Compiling bio.cc
+2026-02-27T22:53:05.3257314Z [465/890] Compiling tasn_utl.cc
+2026-02-27T22:53:05.3825834Z [466/890] Compiling tasn_typ.cc
+2026-02-27T22:53:05.4111654Z [467/890] Compiling tasn_fre.cc
+2026-02-27T22:53:05.5358077Z [468/890] Compiling tasn_new.cc
+2026-02-27T22:53:05.8591883Z [469/890] Compiling tasn_enc.cc
+2026-02-27T22:53:05.8772214Z [470/890] Compiling posix_time.cc
+2026-02-27T22:53:05.9701628Z [471/890] Compiling f_string.cc
+2026-02-27T22:53:06.0312228Z [472/890] Compiling tasn_dec.cc
+2026-02-27T22:53:06.2981100Z [473/890] Compiling f_int.cc
+2026-02-27T22:53:06.3161071Z [474/890] Compiling asn_pack.cc
+2026-02-27T22:53:06.4031858Z [475/890] Compiling asn1_par.cc
+2026-02-27T22:53:06.6244187Z [476/890] Compiling asn1_lib.cc
+2026-02-27T22:53:06.8301992Z [477/890] Compiling a_utctm.cc
+2026-02-27T22:53:06.8641937Z [478/890] Compiling a_type.cc
+2026-02-27T22:53:06.9601831Z [479/890] Compiling a_time.cc
+2026-02-27T22:53:07.2172710Z [480/890] Compiling a_strnid.cc
+2026-02-27T22:53:07.2941516Z [481/890] Compiling a_octet.cc
+2026-02-27T22:53:07.4461913Z [482/890] Compiling a_strex.cc
+2026-02-27T22:53:07.5722418Z [483/890] Compiling a_object.cc
+2026-02-27T22:53:07.7671745Z [484/890] Compiling a_mbstr.cc
+2026-02-27T22:53:07.8821411Z [485/890] Compiling a_i2d_fp.cc
+2026-02-27T22:53:07.9092490Z [486/890] Compiling a_int.cc
+2026-02-27T22:53:08.1062749Z [487/890] Compiling a_gentm.cc
+2026-02-27T22:53:08.2081240Z [488/890] Compiling a_dup.cc
+2026-02-27T22:53:08.3242148Z [489/890] Compiling a_d2i_fp.cc
+2026-02-27T22:53:08.4001128Z [490/890] Compiling a_bool.cc
+2026-02-27T22:53:08.5701284Z [491/890] Compiling a_bitstr.cc
+2026-02-27T22:53:08.6140476Z [492/890] Compiling fiat_p256_adx_sqr.S
+2026-02-27T22:53:08.6598828Z [493/890] Compiling fiat_p256_adx_mul.S
+2026-02-27T22:53:08.7059706Z [494/890] Compiling CCryptoBoringSSLShims shims.c
+2026-02-27T22:53:08.7065235Z [495/890] Compiling fiat_curve25519_adx_square.S
+2026-02-27T22:53:08.7538366Z [496/890] Compiling fiat_curve25519_adx_mul.S
+2026-02-27T22:53:08.7539330Z [496/890] Compiling md5-x86_64-linux.S
+2026-02-27T22:53:08.7978672Z [498/890] Compiling md5-586-linux.S
+2026-02-27T22:53:08.7979464Z [498/890] Compiling md5-x86_64-apple.S
+2026-02-27T22:53:08.8401202Z [500/890] Compiling md5-586-apple.S
+2026-02-27T22:53:08.9319236Z [501/890] Compiling chacha20_poly1305_x86_64-linux.S
+2026-02-27T22:53:08.9801122Z [502/890] Compiling chacha20_poly1305_x86_64-apple.S
+2026-02-27T22:53:09.0258702Z [503/890] Compiling chacha20_poly1305_armv8-win.S
+2026-02-27T22:53:09.0709012Z [504/890] Compiling chacha20_poly1305_armv8-linux.S
+2026-02-27T22:53:09.0900989Z [505/890] Compiling err_data.cc
+2026-02-27T22:53:09.1129101Z [506/890] Compiling chacha20_poly1305_armv8-apple.S
+2026-02-27T22:53:09.1422417Z [507/890] Compiling chacha-x86_64-linux.S
+2026-02-27T22:53:09.1569218Z [508/890] Compiling chacha-x86_64-apple.S
+2026-02-27T22:53:09.1857037Z [509/890] Compiling chacha-x86-linux.S
+2026-02-27T22:53:09.1998937Z [510/890] Compiling chacha-x86-apple.S
+2026-02-27T22:53:09.2309036Z [511/890] Compiling chacha-armv8-win.S
+2026-02-27T22:53:09.2428838Z [512/890] Compiling chacha-armv8-linux.S
+2026-02-27T22:53:09.2768847Z [513/890] Compiling chacha-armv8-apple.S
+2026-02-27T22:53:09.2858849Z [514/890] Compiling chacha-armv4-linux.S
+2026-02-27T22:53:09.3269827Z [515/890] Compiling aes128gcmsiv-x86_64-apple.S
+2026-02-27T22:53:09.3339175Z [516/890] Compiling aes128gcmsiv-x86_64-linux.S
+2026-02-27T22:53:09.3779300Z [517/890] Compiling x86_64-mont5-apple.S
+2026-02-27T22:53:09.3839203Z [518/890] Compiling x86_64-mont5-linux.S
+2026-02-27T22:53:09.4259410Z [519/890] Compiling x86_64-mont-linux.S
+2026-02-27T22:53:09.4277463Z [520/890] Compiling x86_64-mont-apple.S
+2026-02-27T22:53:09.4678025Z [521/890] Compiling x86-mont-apple.S
+2026-02-27T22:53:09.4699043Z [522/890] Compiling x86-mont-linux.S
+2026-02-27T22:53:09.5099766Z [523/890] Compiling vpaes-x86_64-apple.S
+2026-02-27T22:53:09.5149127Z [524/890] Compiling vpaes-x86_64-linux.S
+2026-02-27T22:53:09.5538845Z [525/890] Compiling vpaes-x86-linux.S
+2026-02-27T22:53:09.5578533Z [526/890] Compiling vpaes-x86-apple.S
+2026-02-27T22:53:09.5988897Z [527/890] Compiling vpaes-armv8-win.S
+2026-02-27T22:53:09.6007896Z [528/890] Compiling vpaes-armv8-linux.S
+2026-02-27T22:53:09.6500801Z [529/890] Compiling vpaes-armv7-linux.S
+2026-02-27T22:53:09.6575926Z [530/890] Compiling vpaes-armv8-apple.S
+2026-02-27T22:53:09.7269235Z [531/890] Compiling sha512-x86_64-linux.S
+2026-02-27T22:53:09.7400177Z [532/890] Compiling sha512-x86_64-apple.S
+2026-02-27T22:53:09.7847067Z [533/890] Compiling sha512-armv8-win.S
+2026-02-27T22:53:09.7990823Z [534/890] Compiling sha512-armv8-linux.S
+2026-02-27T22:53:09.8429361Z [535/890] Compiling sha512-armv8-apple.S
+2026-02-27T22:53:09.8876555Z [536/890] Compiling sha512-armv4-linux.S
+2026-02-27T22:53:09.8937533Z [537/890] Compiling sha512-586-linux.S
+2026-02-27T22:53:09.9689171Z [538/890] Compiling sha256-x86_64-linux.S
+2026-02-27T22:53:09.9718505Z [539/890] Compiling sha512-586-apple.S
+2026-02-27T22:53:10.0337380Z [540/890] Compiling sha256-armv8-win.S
+2026-02-27T22:53:10.0519738Z [541/890] Compiling c-nioatomics.c
+2026-02-27T22:53:10.0567065Z [542/890] Compiling sha256-x86_64-apple.S
+2026-02-27T22:53:10.0991938Z [543/890] Compiling sha256-armv8-linux.S
+2026-02-27T22:53:10.1236099Z [544/890] Compiling sha256-armv4-linux.S
+2026-02-27T22:53:10.1237906Z [545/890] Compiling sha256-armv8-apple.S
+2026-02-27T22:53:10.1633819Z [546/890] Compiling sha256-586-linux.S
+2026-02-27T22:53:10.1739037Z [547/890] Compiling sha256-586-apple.S
+2026-02-27T22:53:10.2259003Z [548/890] Compiling sha1-x86_64-apple.S
+2026-02-27T22:53:10.2402781Z [549/890] Compiling sha1-armv8-win.S
+2026-02-27T22:53:10.2646172Z [550/890] Compiling sha1-x86_64-linux.S
+2026-02-27T22:53:10.2888954Z [551/890] Compiling sha1-armv8-linux.S
+2026-02-27T22:53:10.2996636Z [552/890] Compiling sha1-armv8-apple.S
+2026-02-27T22:53:10.3309829Z [553/890] Compiling sha1-armv4-large-linux.S
+2026-02-27T22:53:10.3310985Z [553/890] Compiling sha1-586-linux.S
+2026-02-27T22:53:10.3638246Z [555/890] Compiling sha1-586-apple.S
+2026-02-27T22:53:10.3909662Z [556/890] Compiling rsaz-avx2-apple.S
+2026-02-27T22:53:10.3956290Z [557/890] Compiling rsaz-avx2-linux.S
+2026-02-27T22:53:10.4179923Z [558/890] Compiling rdrand-x86_64-linux.S
+2026-02-27T22:53:10.4508837Z [559/890] Compiling p256_beeu-x86_64-asm-linux.S
+2026-02-27T22:53:10.4578653Z [560/890] Compiling rdrand-x86_64-apple.S
+2026-02-27T22:53:10.4959982Z [561/890] Compiling p256_beeu-x86_64-asm-apple.S
+2026-02-27T22:53:10.5136157Z [562/890] Compiling p256_beeu-armv8-asm-linux.S
+2026-02-27T22:53:10.5298536Z [563/890] Compiling p256_beeu-armv8-asm-win.S
+2026-02-27T22:53:10.5538486Z [564/890] Compiling p256_beeu-armv8-asm-apple.S
+2026-02-27T22:53:10.6009994Z [565/890] Compiling c-atomics.c
+2026-02-27T22:53:10.6038570Z [566/890] Compiling p256-x86_64-asm-linux.S
+2026-02-27T22:53:10.6039388Z [566/890] Compiling p256-armv8-asm-win.S
+2026-02-27T22:53:10.6186601Z [568/890] Compiling p256-x86_64-asm-apple.S
+2026-02-27T22:53:10.6568761Z [569/890] Compiling p256-armv8-asm-apple.S
+2026-02-27T22:53:10.6596985Z [570/890] Compiling p256-armv8-asm-linux.S
+2026-02-27T22:53:10.6748115Z [571/890] Compiling ghashv8-armv8-win.S
+2026-02-27T22:53:10.7029008Z [572/890] Compiling ghashv8-armv8-apple.S
+2026-02-27T22:53:10.7192430Z [573/890] Compiling ghashv8-armv8-linux.S
+2026-02-27T22:53:10.7456641Z [574/890] Compiling ghashv8-armv7-linux.S
+2026-02-27T22:53:10.7537817Z [575/890] Compiling ghash-x86_64-linux.S
+2026-02-27T22:53:10.7928428Z [576/890] Compiling ghash-x86_64-apple.S
+2026-02-27T22:53:10.7977912Z [577/890] Compiling ghash-x86-apple.S
+2026-02-27T22:53:10.8148402Z [578/890] Compiling ghash-x86-linux.S
+2026-02-27T22:53:10.8518426Z [579/890] Compiling ghash-ssse3-x86_64-linux.S
+2026-02-27T22:53:10.8567272Z [580/890] Compiling ghash-ssse3-x86_64-apple.S
+2026-02-27T22:53:10.8648556Z [581/890] Compiling ghash-ssse3-x86-linux.S
+2026-02-27T22:53:10.9138178Z [582/890] Compiling ghash-neon-armv8-linux.S
+2026-02-27T22:53:10.9145811Z [583/890] Compiling ghash-neon-armv8-win.S
+2026-02-27T22:53:10.9229404Z [584/890] Compiling ghash-ssse3-x86-apple.S
+2026-02-27T22:53:10.9749688Z [585/896] Compiling ghash-neon-armv8-apple.S
+2026-02-27T22:53:10.9813187Z [586/896] Compiling ghash-armv4-linux.S
+2026-02-27T22:53:11.0186859Z [587/896] Compiling co-586-linux.S
+2026-02-27T22:53:11.0546004Z [588/896] Compiling co-586-apple.S
+2026-02-27T22:53:11.0626025Z [589/896] Compiling bsaes-armv7-linux.S
+2026-02-27T22:53:11.1178742Z [590/896] Compiling bn-armv8-linux.S
+2026-02-27T22:53:11.1208665Z [591/896] Compiling bn-armv8-win.S
+2026-02-27T22:53:11.1358323Z [592/896] Compiling bn-armv8-apple.S
+2026-02-27T22:53:11.1915984Z [593/896] Compiling bn-586-linux.S
+2026-02-27T22:53:11.1948004Z [594/896] Compiling bn-586-apple.S
+2026-02-27T22:53:11.2156027Z [595/896] Compiling armv8-mont-win.S
+2026-02-27T22:53:11.2707884Z [596/896] Compiling armv8-mont-linux.S
+2026-02-27T22:53:11.2899338Z [597/896] Compiling armv8-mont-apple.S
+2026-02-27T22:53:11.3336028Z [598/896] Compiling armv4-mont-linux.S
+2026-02-27T22:53:11.3766669Z [599/896] Compiling aesv8-gcm-armv8-linux.S
+2026-02-27T22:53:11.3810476Z [600/896] Compiling aesv8-gcm-armv8-win.S
+2026-02-27T22:53:11.4183739Z [601/896] Compiling aesv8-gcm-armv8-apple.S
+2026-02-27T22:53:11.4409946Z [602/896] Compiling aesv8-armv8-win.S
+2026-02-27T22:53:11.4828800Z [603/896] Compiling aesv8-armv8-linux.S
+2026-02-27T22:53:11.5089014Z [604/896] Compiling aesv8-armv8-apple.S
+2026-02-27T22:53:11.5466063Z [605/896] Compiling aesv8-armv7-linux.S
+2026-02-27T22:53:11.5638594Z [606/896] Compiling aesni-x86_64-apple.S
+2026-02-27T22:53:11.6359294Z [607/896] Compiling aesni-x86_64-linux.S
+2026-02-27T22:53:11.6367375Z [608/896] Compiling NIOConcurrencyHelpers NIOLockedValueBox.swift
+2026-02-27T22:53:11.6408006Z [609/896] Compiling NIOConcurrencyHelpers NIOThreadPoolWorkAvailable.swift
+2026-02-27T22:53:11.6475709Z [609/897] Compiling aesni-x86-linux.S
+2026-02-27T22:53:11.6630078Z [611/897] Compiling aesni-x86-apple.S
+2026-02-27T22:53:11.7286194Z [612/897] Compiling aesni-gcm-x86_64-apple.S
+2026-02-27T22:53:11.7558515Z [613/897] Compiling aesni-gcm-x86_64-linux.S
+2026-02-27T22:53:11.7628443Z [614/897] Compiling aes-gcm-avx512-x86_64-linux.S
+2026-02-27T22:53:11.8137873Z [615/897] Compiling aes-gcm-avx512-x86_64-apple.S
+2026-02-27T22:53:11.8537878Z [616/897] Compiling aes-gcm-avx2-x86_64-linux.S
+2026-02-27T22:53:11.8567688Z [617/897] Compiling aes-gcm-avx2-x86_64-apple.S
+2026-02-27T22:53:12.0023352Z [619/897] Compiling NIOConcurrencyHelpers atomics.swift
+2026-02-27T22:53:12.0118444Z [620/897] Emitting module NIOConcurrencyHelpers
+2026-02-27T22:53:12.1545878Z [621/897] Compiling NIOConcurrencyHelpers NIOAtomic.swift
+2026-02-27T22:53:12.1546930Z [622/897] Compiling NIOConcurrencyHelpers NIOLock.swift
+2026-02-27T22:53:12.3741439Z [623/897] Compiling NIOConcurrencyHelpers lock.swift
+2026-02-27T22:53:12.6190717Z [624/898] Compiling xwing.cc
+2026-02-27T22:53:12.7108133Z [625/898] Wrapping AST for NIOConcurrencyHelpers for debugging
+2026-02-27T22:53:13.0852286Z [626/898] Compiling x_x509a.cc
+2026-02-27T22:53:13.1219354Z [627/898] Compiling x_x509.cc
+2026-02-27T22:53:13.5792329Z [628/898] Compiling x_sig.cc
+2026-02-27T22:53:13.6171951Z [629/898] Compiling x_spki.cc
+2026-02-27T22:53:14.1833451Z [630/898] Compiling x_req.cc
+2026-02-27T22:53:14.4554197Z [631/898] Compiling x_pubkey.cc
+2026-02-27T22:53:14.6006627Z [632/898] Compiling x_exten.cc
+2026-02-27T22:53:14.6812995Z [633/898] Compiling x_name.cc
+2026-02-27T22:53:14.9292064Z [634/898] Compiling x_crl.cc
+2026-02-27T22:53:15.7056607Z [635/898] Compiling x_all.cc
+2026-02-27T22:53:15.7625412Z [636/898] Compiling x_attrib.cc
+2026-02-27T22:53:15.8257015Z [637/898] Compiling x_algor.cc
+2026-02-27T22:53:15.8642865Z [638/898] Compiling x509spki.cc
+2026-02-27T22:53:16.6793331Z [639/898] Compiling x509cset.cc
+2026-02-27T22:53:16.8422595Z [640/898] Compiling x509rset.cc
+2026-02-27T22:53:16.8852970Z [641/898] Compiling x509_vpm.cc
+2026-02-27T22:53:17.0146305Z [642/898] Compiling x509name.cc
+2026-02-27T22:53:17.7071734Z [643/898] Compiling x509_vfy.cc
+2026-02-27T22:53:17.7983769Z [644/898] Compiling x509_v3.cc
+2026-02-27T22:53:17.8852823Z [645/898] Compiling x509_txt.cc
+2026-02-27T22:53:18.1466161Z [646/898] Compiling x509_trs.cc
+2026-02-27T22:53:18.7875645Z [647/898] Compiling x509_obj.cc
+2026-02-27T22:53:18.7895882Z [648/898] Compiling x509_set.cc
+2026-02-27T22:53:18.8123009Z [649/898] Compiling x509_req.cc
+2026-02-27T22:53:19.0784592Z [650/898] Compiling x509_lu.cc
+2026-02-27T22:53:19.6042459Z [651/898] Compiling x509_def.cc
+2026-02-27T22:53:19.6651795Z [652/898] Compiling x509_d2.cc
+2026-02-27T22:53:19.7018018Z [653/898] Compiling x509_ext.cc
+2026-02-27T22:53:20.0135124Z [654/898] Compiling x509_cmp.cc
+2026-02-27T22:53:20.5014384Z [655/898] Compiling x509.cc
+2026-02-27T22:53:20.5272993Z [656/898] Compiling x509_att.cc
+2026-02-27T22:53:20.6685928Z [657/898] Compiling v3_utl.cc
+2026-02-27T22:53:20.9243303Z [658/898] Compiling v3_skey.cc
+2026-02-27T22:53:21.3812562Z [659/898] Compiling v3_prn.cc
+2026-02-27T22:53:21.4213164Z [660/898] Compiling v3_purp.cc
+2026-02-27T22:53:21.5882900Z [661/898] Compiling v3_pmaps.cc
+2026-02-27T22:53:21.8482309Z [662/898] Compiling v3_pcons.cc
+2026-02-27T22:53:22.2732258Z [663/898] Compiling v3_ocsp.cc
+2026-02-27T22:53:22.3713014Z [664/898] Compiling v3_ncons.cc
+2026-02-27T22:53:22.5264539Z [665/898] Compiling v3_lib.cc
+2026-02-27T22:53:22.7642654Z [666/898] Compiling v3_int.cc
+2026-02-27T22:53:23.2703022Z [667/898] Compiling v3_info.cc
+2026-02-27T22:53:23.2942334Z [668/898] Compiling v3_ia5.cc
+2026-02-27T22:53:23.4543649Z [669/898] Compiling v3_genn.cc
+2026-02-27T22:53:23.6914075Z [670/898] Compiling v3_extku.cc
+2026-02-27T22:53:24.1983074Z [671/898] Compiling v3_enum.cc
+2026-02-27T22:53:24.2435120Z [672/898] Compiling v3_crld.cc
+2026-02-27T22:53:24.4212671Z [673/898] Compiling v3_cpols.cc
+2026-02-27T22:53:24.7332434Z [674/898] Compiling v3_conf.cc
+2026-02-27T22:53:25.0982601Z [675/898] Compiling v3_bitst.cc
+2026-02-27T22:53:25.1633219Z [676/898] Compiling v3_bcons.cc
+2026-02-27T22:53:25.3724420Z [677/898] Compiling v3_alt.cc
+2026-02-27T22:53:25.6682458Z [678/898] Compiling v3_akeya.cc
+2026-02-27T22:53:26.0192634Z [679/898] Compiling v3_akey.cc
+2026-02-27T22:53:26.0746255Z [680/898] Compiling t_x509a.cc
+2026-02-27T22:53:26.2982197Z [681/898] Compiling t_x509.cc
+2026-02-27T22:53:26.5912485Z [682/898] Compiling t_req.cc
+2026-02-27T22:53:26.8291283Z [683/898] Compiling t_crl.cc
+2026-02-27T22:53:27.0042839Z [684/898] Compiling rsa_pss.cc
+2026-02-27T22:53:27.2732717Z [685/898] Compiling policy.cc
+2026-02-27T22:53:27.3622802Z [686/898] Compiling i2d_pr.cc
+2026-02-27T22:53:27.5352338Z [687/898] Compiling name_print.cc
+2026-02-27T22:53:27.9172742Z [688/898] Compiling by_file.cc
+2026-02-27T22:53:28.2562944Z [689/898] Compiling by_dir.cc
+2026-02-27T22:53:28.3002684Z [690/898] Compiling asn1_gen.cc
+2026-02-27T22:53:28.4492982Z [691/898] Compiling algorithm.cc
+2026-02-27T22:53:28.8402714Z [692/898] Compiling a_verify.cc
+2026-02-27T22:53:29.1242347Z [693/898] Compiling voprf.cc
+2026-02-27T22:53:29.1592153Z [694/898] Compiling a_digest.cc
+2026-02-27T22:53:29.2015528Z [695/898] Compiling a_sign.cc
+2026-02-27T22:53:29.5711588Z [696/898] Compiling thread_win.cc
+2026-02-27T22:53:29.6341389Z [697/898] Compiling thread_pthread.cc
+2026-02-27T22:53:29.7214130Z [698/898] Compiling trust_token.cc
+2026-02-27T22:53:29.8102581Z [699/898] Compiling pmbtoken.cc
+2026-02-27T22:53:29.9760339Z [700/898] Compiling thread_none.cc
+2026-02-27T22:53:29.9940501Z [701/898] Compiling thread.cc
+2026-02-27T22:53:30.1711582Z [702/898] Compiling stack.cc
+2026-02-27T22:53:30.4121436Z [703/898] Compiling siphash.cc
+2026-02-27T22:53:30.4381519Z [704/898] Compiling slhdsa.cc
+2026-02-27T22:53:30.4782258Z [705/898] Compiling spake2plus.cc
+2026-02-27T22:53:30.5353679Z [706/898] Compiling sha512.cc
+2026-02-27T22:53:30.7834042Z [707/898] Compiling sha256.cc
+2026-02-27T22:53:30.8000477Z [708/898] Compiling sha1.cc
+2026-02-27T22:53:30.9040976Z [709/898] Compiling rsa_print.cc
+2026-02-27T22:53:30.9160177Z [710/898] Compiling rsa_extra.cc
+2026-02-27T22:53:31.2813873Z [711/898] Compiling rc4.cc
+2026-02-27T22:53:31.3173384Z [712/898] Compiling refcount.cc
+2026-02-27T22:53:31.3653342Z [713/898] Compiling rsa_crypt.cc
+2026-02-27T22:53:31.7124491Z [714/898] Compiling windows.cc
+2026-02-27T22:53:31.7370644Z [715/898] Compiling trusty.cc
+2026-02-27T22:53:31.7712606Z [716/898] Compiling rsa_asn1.cc
+2026-02-27T22:53:31.7821764Z [717/898] Compiling urandom.cc
+2026-02-27T22:53:32.0941914Z [718/898] Compiling rand.cc
+2026-02-27T22:53:32.1431916Z [719/898] Compiling ios.cc
+2026-02-27T22:53:32.1432675Z [719/898] Compiling getentropy.cc
+2026-02-27T22:53:32.1561361Z [721/898] Compiling passive.cc
+2026-02-27T22:53:32.5151382Z [722/898] Compiling deterministic.cc
+2026-02-27T22:53:32.5441728Z [723/898] Compiling forkunsafe.cc
+2026-02-27T22:53:32.5848759Z [724/898] Compiling poly1305_arm_asm.S
+2026-02-27T22:53:32.5857260Z [724/898] Compiling fork_detect.cc
+2026-02-27T22:53:32.7251964Z [726/898] Compiling pool.cc
+2026-02-27T22:53:33.0026177Z [727/898] Compiling poly1305_arm.cc
+2026-02-27T22:53:33.0172146Z [728/898] Compiling poly1305.cc
+2026-02-27T22:53:33.0854463Z [729/898] Compiling poly1305_vec.cc
+2026-02-27T22:53:33.7432595Z [730/898] Compiling pkcs8_x509.cc
+2026-02-27T22:53:33.9153061Z [731/898] Compiling p5_pbev2.cc
+2026-02-27T22:53:33.9423163Z [732/898] Compiling pkcs8.cc
+2026-02-27T22:53:34.0643113Z [733/898] Compiling pkcs7_x509.cc
+2026-02-27T22:53:34.3141785Z [734/898] Compiling pkcs7.cc
+2026-02-27T22:53:34.7692629Z [735/898] Compiling pem_xaux.cc
+2026-02-27T22:53:34.7741327Z [736/898] Compiling pem_x509.cc
+2026-02-27T22:53:34.9337204Z [737/898] Compiling pem_pkey.cc
+2026-02-27T22:53:35.1942505Z [738/898] Compiling pem_pk8.cc
+2026-02-27T22:53:35.6003253Z [739/898] Compiling pem_oth.cc
+2026-02-27T22:53:35.7392463Z [740/898] Compiling pem_lib.cc
+2026-02-27T22:53:35.7832739Z [741/898] Compiling pem_info.cc
+2026-02-27T22:53:36.1061298Z [742/898] Compiling obj_xref.cc
+2026-02-27T22:53:36.1142117Z [743/898] Compiling pem_all.cc
+2026-02-27T22:53:36.1551176Z [744/898] Compiling mlkem.cc
+2026-02-27T22:53:36.4936193Z [745/898] Compiling mldsa.cc
+2026-02-27T22:53:36.5691557Z [746/898] Compiling mem.cc
+2026-02-27T22:53:36.6348296Z [747/898] Compiling obj.cc
+2026-02-27T22:53:36.6641501Z [748/898] Compiling md5.cc
+2026-02-27T22:53:36.9821344Z [749/898] Compiling lhash.cc
+2026-02-27T22:53:37.0233117Z [750/898] Compiling md4.cc
+2026-02-27T22:53:37.0871833Z [751/898] Compiling poly_rq_mul.S
+2026-02-27T22:53:37.1881954Z [752/898] Compiling kyber.cc
+2026-02-27T22:53:37.2129106Z [753/898] Compiling fips_shared_support.cc
+2026-02-27T22:53:37.4861481Z [754/898] Compiling fuzzer_mode.cc
+2026-02-27T22:53:37.5434482Z [755/898] Compiling hrss.cc
+2026-02-27T22:53:37.6722515Z [756/898] Compiling hpke.cc
+2026-02-27T22:53:37.9381758Z [757/898] Compiling ex_data.cc
+2026-02-27T22:53:38.1291582Z [758/898] Compiling sign.cc
+2026-02-27T22:53:38.1491145Z [759/898] Compiling scrypt.cc
+2026-02-27T22:53:38.5502059Z [760/898] Compiling print.cc
+2026-02-27T22:53:38.5941777Z [761/898] Compiling pbkdf.cc
+2026-02-27T22:53:38.7452268Z [762/898] Compiling p_x25519_asn1.cc
+2026-02-27T22:53:39.0961504Z [763/898] Compiling p_x25519.cc
+2026-02-27T22:53:39.2402850Z [764/898] Compiling p_rsa_asn1.cc
+2026-02-27T22:53:39.4852418Z [765/898] Compiling p_rsa.cc
+2026-02-27T22:53:39.7132730Z [766/898] Compiling p_hkdf.cc
+2026-02-27T22:53:39.8281836Z [767/898] Compiling p_ed25519_asn1.cc
+2026-02-27T22:53:40.0612354Z [768/898] Compiling p_ed25519.cc
+2026-02-27T22:53:40.3462574Z [769/898] Compiling p_ec_asn1.cc
+2026-02-27T22:53:40.4582440Z [770/898] Compiling p_ec.cc
+2026-02-27T22:53:40.7521732Z [771/898] Compiling p_dsa_asn1.cc
+2026-02-27T22:53:40.8752114Z [772/898] Compiling p_dh_asn1.cc
+2026-02-27T22:53:41.0628168Z [773/898] Compiling p_dh.cc
+2026-02-27T22:53:41.3922064Z [774/898] Compiling evp_ctx.cc
+2026-02-27T22:53:41.6154210Z [775/898] Compiling evp_asn1.cc
+2026-02-27T22:53:41.6531699Z [776/898] Compiling evp.cc
+2026-02-27T22:53:41.8701522Z [777/898] Compiling err.cc
+2026-02-27T22:53:42.0331409Z [778/898] Compiling engine.cc
+2026-02-27T22:53:42.1251466Z [779/898] Compiling ecdsa_p1363.cc
+2026-02-27T22:53:42.4561473Z [780/898] Compiling ecdh.cc
+2026-02-27T22:53:42.5408347Z [781/898] Compiling ecdsa_asn1.cc
+2026-02-27T22:53:42.7315123Z [782/898] Compiling hash_to_curve.cc
+2026-02-27T22:53:42.9634407Z [783/898] Compiling ec_derive.cc
+2026-02-27T22:53:43.3422552Z [784/898] Compiling ec_asn1.cc
+2026-02-27T22:53:43.4182060Z [785/898] Compiling dsa_asn1.cc
+2026-02-27T22:53:43.5171733Z [786/898] Compiling dsa.cc
+2026-02-27T22:53:43.9842586Z [787/898] Compiling digest_extra.cc
+2026-02-27T22:53:44.0302191Z [788/898] Compiling params.cc
+2026-02-27T22:53:44.0702057Z [789/898] Compiling dh_asn1.cc
+2026-02-27T22:53:44.4961017Z [790/898] Compiling des.cc
+2026-02-27T22:53:44.7702825Z [791/898] Compiling spake25519.cc
+2026-02-27T22:53:44.8108560Z [792/898] Compiling x25519-asm-arm.S
+2026-02-27T22:53:45.0762733Z [793/898] Compiling curve25519_64_adx.cc
+2026-02-27T22:53:45.1961630Z [794/898] Compiling curve25519.cc
+2026-02-27T22:53:45.2183488Z [795/898] Compiling crypto.cc
+2026-02-27T22:53:45.4501496Z [796/898] Compiling cpu_intel.cc
+2026-02-27T22:53:45.5991418Z [797/898] Compiling cpu_arm_linux.cc
+2026-02-27T22:53:45.6303696Z [798/898] Compiling cpu_arm_freebsd.cc
+2026-02-27T22:53:45.8126474Z [799/898] Compiling cpu_aarch64_win.cc
+2026-02-27T22:53:45.9960092Z [800/898] Compiling cpu_aarch64_openbsd.cc
+2026-02-27T22:53:46.0009426Z [801/898] Compiling cpu_aarch64_sysreg.cc
+2026-02-27T22:53:46.1791505Z [802/898] Compiling cpu_aarch64_linux.cc
+2026-02-27T22:53:46.4041083Z [803/898] Compiling cpu_aarch64_fuchsia.cc
+2026-02-27T22:53:46.4200336Z [804/898] Compiling cpu_aarch64_apple.cc
+2026-02-27T22:53:46.6383791Z [805/898] Compiling conf.cc
+2026-02-27T22:53:46.9073475Z [806/898] Compiling tls_cbc.cc
+2026-02-27T22:53:47.0291855Z [807/898] Compiling get_cipher.cc
+2026-02-27T22:53:47.2944563Z [808/898] Compiling cms.cc
+2026-02-27T22:53:47.3841824Z [809/898] Compiling e_tls.cc
+2026-02-27T22:53:47.4251208Z [810/898] Compiling e_rc4.cc
+2026-02-27T22:53:47.7621629Z [811/898] Compiling e_rc2.cc
+2026-02-27T22:53:47.8321629Z [812/898] Compiling e_null.cc
+2026-02-27T22:53:47.8342435Z [813/898] Compiling e_des.cc
+2026-02-27T22:53:48.2361972Z [814/898] Compiling e_chacha20poly1305.cc
+2026-02-27T22:53:48.2470118Z [815/898] Compiling e_aeseax.cc
+2026-02-27T22:53:48.3099912Z [816/898] Compiling e_aesgcmsiv.cc
+2026-02-27T22:53:48.5694615Z [817/898] Compiling derive_key.cc
+2026-02-27T22:53:48.6863952Z [818/898] Compiling e_aesctrhmac.cc
+2026-02-27T22:53:48.7389208Z [819/898] Compiling chacha.cc
+2026-02-27T22:53:49.1031794Z [820/898] Compiling unicode.cc
+2026-02-27T22:53:49.3162769Z [821/898] Compiling cbb.cc
+2026-02-27T22:53:49.3392333Z [822/898] Compiling cbs.cc
+2026-02-27T22:53:49.6354046Z [823/898] Compiling ber.cc
+2026-02-27T22:53:49.7621591Z [824/898] Compiling buf.cc
+2026-02-27T22:53:49.8892047Z [825/898] Compiling asn1_compat.cc
+2026-02-27T22:53:50.0151267Z [826/898] Compiling sqrt.cc
+2026-02-27T22:53:50.2801959Z [827/898] Compiling exponentiation.cc
+2026-02-27T22:53:50.3141154Z [828/898] Compiling div.cc
+2026-02-27T22:53:50.6322448Z [829/898] Compiling convert.cc
+2026-02-27T22:53:50.7371753Z [830/898] Compiling bn_asn1.cc
+2026-02-27T22:53:50.9444392Z [831/898] Compiling blake2.cc
+2026-02-27T22:53:51.0461451Z [832/898] Compiling printf.cc
+2026-02-27T22:53:51.2115244Z [833/898] Compiling pair.cc
+2026-02-27T22:53:51.3421048Z [834/898] Compiling hexdump.cc
+2026-02-27T22:53:51.3546465Z [835/898] Compiling bcm.cc
+2026-02-27T22:53:51.5362423Z [836/898] Compiling file.cc
+2026-02-27T22:53:51.6772124Z [837/898] Compiling fd.cc
+2026-02-27T22:53:51.7931896Z [838/898] Compiling errno.cc
+2026-02-27T22:53:51.8421833Z [839/898] Compiling bio_mem.cc
+2026-02-27T22:53:52.0833692Z [840/898] Compiling bio.cc
+2026-02-27T22:53:52.1232894Z [841/898] Compiling base64.cc
+2026-02-27T22:53:52.3221323Z [842/898] Compiling tasn_typ.cc
+2026-02-27T22:53:52.4160024Z [843/898] Compiling tasn_utl.cc
+2026-02-27T22:53:52.5862956Z [844/898] Compiling tasn_fre.cc
+2026-02-27T22:53:52.6836845Z [845/898] Compiling tasn_new.cc
+2026-02-27T22:53:52.8487833Z [846/898] Compiling tasn_enc.cc
+2026-02-27T22:53:53.0431931Z [847/898] Compiling posix_time.cc
+2026-02-27T22:53:53.0972697Z [848/898] Compiling tasn_dec.cc
+2026-02-27T22:53:53.1017185Z [849/898] Compiling f_string.cc
+2026-02-27T22:53:53.2821454Z [850/898] Compiling f_int.cc
+2026-02-27T22:53:53.4812026Z [851/898] Compiling asn_pack.cc
+2026-02-27T22:53:53.5182412Z [852/898] Compiling asn1_par.cc
+2026-02-27T22:53:53.7073100Z [853/898] Compiling asn1_lib.cc
+2026-02-27T22:53:53.8381680Z [854/898] Compiling a_utctm.cc
+2026-02-27T22:53:54.0781883Z [855/898] Compiling a_time.cc
+2026-02-27T22:53:54.1001968Z [856/898] Compiling a_type.cc
+2026-02-27T22:53:54.4656595Z [857/898] Compiling a_strex.cc
+2026-02-27T22:53:54.5012563Z [858/898] Compiling a_strnid.cc
+2026-02-27T22:53:54.5079827Z [859/898] Compiling a_octet.cc
+2026-02-27T22:53:54.7602419Z [860/898] Compiling a_object.cc
+2026-02-27T22:53:54.9561631Z [861/898] Compiling a_i2d_fp.cc
+2026-02-27T22:53:55.0111536Z [862/898] Compiling a_mbstr.cc
+2026-02-27T22:53:55.1302364Z [863/898] Compiling a_int.cc
+2026-02-27T22:53:55.3052309Z [864/898] Compiling a_gentm.cc
+2026-02-27T22:53:55.3911588Z [865/898] Compiling a_dup.cc
+2026-02-27T22:53:55.4537303Z [866/898] Compiling a_d2i_fp.cc
+2026-02-27T22:53:55.4546383Z [867/898] Write sources
+2026-02-27T22:53:55.6960673Z [868/898] Compiling aes.cc
+2026-02-27T22:53:55.7356118Z [869/914] Compiling a_bool.cc
+2026-02-27T22:53:55.8972286Z [870/914] Compiling a_bitstr.cc
+2026-02-27T22:53:56.1482038Z [872/914] Compiling Atomics AtomicValue.swift
+2026-02-27T22:53:56.1489314Z [873/914] Compiling Atomics AtomicMemoryOrderings.swift
+2026-02-27T22:53:56.1496217Z [874/914] Compiling Atomics DoubleWord.swift
+2026-02-27T22:53:56.1502822Z [875/914] Compiling Atomics ManagedAtomic.swift
+2026-02-27T22:53:56.1570714Z [876/914] Compiling Atomics ManagedAtomicLazyReference.swift
+2026-02-27T22:53:56.6798047Z [877/925] Compiling Atomics UnsafeAtomic.swift
+2026-02-27T22:53:56.6799615Z [878/925] Compiling Atomics UnsafeAtomicLazyReference.swift
+2026-02-27T22:53:56.6800687Z [879/925] Compiling Atomics IntegerOperations.swift
+2026-02-27T22:53:56.6801583Z [880/925] Compiling Atomics Unmanaged extensions.swift
+2026-02-27T22:53:57.4155401Z [881/925] Compiling CryptoBoringWrapper EllipticCurvePoint.swift
+2026-02-27T22:53:57.4161557Z [882/925] Compiling Atomics AtomicInteger.swift
+2026-02-27T22:53:57.4167563Z [883/925] Compiling Atomics AtomicOptionalWrappable.swift
+2026-02-27T22:53:57.4173269Z [884/925] Compiling Atomics AtomicReference.swift
+2026-02-27T22:53:57.4179752Z [885/925] Compiling Atomics AtomicStorage.swift
+2026-02-27T22:53:57.4185615Z [886/925] Compiling Atomics OptionalRawRepresentable.swift
+2026-02-27T22:53:57.4191848Z [887/925] Compiling Atomics RawRepresentable.swift
+2026-02-27T22:53:57.4196103Z [888/925] Compiling Atomics AtomicBool.swift
+2026-02-27T22:53:57.4200927Z [889/925] Compiling Atomics IntegerConformances.swift
+2026-02-27T22:53:57.4205213Z [890/925] Compiling Atomics PointerConformances.swift
+2026-02-27T22:53:57.6590063Z [891/925] Emitting module Atomics
+2026-02-27T22:53:57.8074218Z [892/926] Wrapping AST for Atomics for debugging
+2026-02-27T22:54:01.5439413Z [894/981] Emitting module CryptoBoringWrapper
+2026-02-27T22:54:01.5446897Z [895/981] Compiling NIOCore ByteBuffer-multi-int.swift
+2026-02-27T22:54:01.5452018Z [896/981] Compiling NIOCore ByteBuffer-quicBinaryEncodingStrategy.swift
+2026-02-27T22:54:01.6792156Z [897/982] Compiling NIOCore ByteBuffer-views.swift
+2026-02-27T22:54:01.6832125Z [898/982] Compiling NIOCore Channel.swift
+2026-02-27T22:54:01.6833534Z [899/982] Compiling NIOCore ChannelHandler.swift
+2026-02-27T22:54:01.6834356Z [900/982] Compiling NIOCore ChannelHandlers.swift
+2026-02-27T22:54:02.0814595Z [901/982] Compiling CryptoBoringWrapper RandomBytes.swift
+2026-02-27T22:54:02.4379513Z [902/983] Wrapping AST for CryptoBoringWrapper for debugging
+2026-02-27T22:54:05.2707838Z [904/1044] Emitting module Crypto
+2026-02-27T22:54:06.6594506Z [905/1064] Compiling Crypto PKCS8PrivateKey.swift
+2026-02-27T22:54:06.6600123Z [906/1064] Compiling Crypto SEC1PrivateKey.swift
+2026-02-27T22:54:06.6605411Z [907/1064] Compiling Crypto SubjectPublicKeyInfo.swift
+2026-02-27T22:54:06.6610514Z [908/1064] Compiling Crypto CryptoError_boring.swift
+2026-02-27T22:54:06.6616130Z [909/1064] Compiling Crypto CryptoKitErrors.swift
+2026-02-27T22:54:06.6619290Z [910/1064] Compiling Crypto Digest_boring.swift
+2026-02-27T22:54:06.6622664Z [911/1064] Compiling Crypto Digest.swift
+2026-02-27T22:54:06.6625110Z [912/1064] Compiling Crypto Digests.swift
+2026-02-27T22:54:06.6637152Z [913/1064] Compiling Crypto HashFunctions.swift
+2026-02-27T22:54:06.6639447Z [914/1064] Compiling Crypto HashFunctions_SHA2.swift
+2026-02-27T22:54:06.6641677Z [915/1064] Compiling Crypto HPKE-AEAD.swift
+2026-02-27T22:54:06.6643864Z [916/1064] Compiling Crypto HPKE-Ciphersuite.swift
+2026-02-27T22:54:06.6646496Z [917/1064] Compiling Crypto HPKE-KDF.swift
+2026-02-27T22:54:06.6649639Z [918/1064] Compiling Crypto HPKE-KexKeyDerivation.swift
+2026-02-27T22:54:06.6655117Z [919/1064] Compiling Crypto HPKE-LabeledExtract.swift
+2026-02-27T22:54:06.6655727Z [920/1064] Compiling Crypto HPKE-Utils.swift
+2026-02-27T22:54:06.6656232Z [921/1064] Compiling Crypto DHKEM.swift
+2026-02-27T22:54:06.6656788Z [922/1064] Compiling Crypto HPKE-KEM-Curve25519.swift
+2026-02-27T22:54:06.6657369Z [923/1064] Compiling Crypto HPKE-NIST-EC-KEMs.swift
+2026-02-27T22:54:06.6657911Z [924/1064] Compiling Crypto HPKE-KEM.swift
+2026-02-27T22:54:08.1053392Z [925/1064] Compiling Crypto HPKE-Errors.swift
+2026-02-27T22:54:08.1058643Z [926/1064] Compiling Crypto HPKE.swift
+2026-02-27T22:54:08.1063812Z [927/1064] Compiling Crypto HPKE-Context.swift
+2026-02-27T22:54:08.1074271Z [928/1064] Compiling Crypto HPKE-KeySchedule.swift
+2026-02-27T22:54:08.1076427Z [929/1064] Compiling Crypto HPKE-Modes.swift
+2026-02-27T22:54:08.1078293Z [930/1064] Compiling Crypto Insecure.swift
+2026-02-27T22:54:08.1080208Z [931/1064] Compiling Crypto Insecure_HashFunctions.swift
+2026-02-27T22:54:08.1082486Z [932/1064] Compiling Crypto KEM.swift
+2026-02-27T22:54:08.1084332Z [933/1064] Compiling Crypto ECDH_boring.swift
+2026-02-27T22:54:08.1086464Z [934/1064] Compiling Crypto DH.swift
+2026-02-27T22:54:08.1088386Z [935/1064] Compiling Crypto ECDH.swift
+2026-02-27T22:54:08.1090966Z [936/1064] Compiling Crypto HKDF.swift
+2026-02-27T22:54:08.1093128Z [937/1064] Compiling Crypto AESWrap.swift
+2026-02-27T22:54:08.1095343Z [938/1064] Compiling Crypto AESWrap_boring.swift
+2026-02-27T22:54:08.1097423Z [939/1064] Compiling Crypto Ed25519_boring.swift
+2026-02-27T22:54:08.1105845Z [940/1064] Compiling Crypto NISTCurvesKeys_boring.swift
+2026-02-27T22:54:08.1106414Z [941/1064] Compiling Crypto X25519Keys_boring.swift
+2026-02-27T22:54:08.1106900Z [942/1064] Compiling Crypto Curve25519.swift
+2026-02-27T22:54:08.1107354Z [943/1064] Compiling Crypto Ed25519Keys.swift
+2026-02-27T22:54:08.1107826Z [944/1064] Compiling Crypto NISTCurvesKeys.swift
+2026-02-27T22:54:09.0005672Z [945/1064] Compiling Crypto X25519Keys.swift
+2026-02-27T22:54:09.0045555Z [946/1064] Compiling Crypto SymmetricKeys.swift
+2026-02-27T22:54:09.0046259Z [947/1064] Compiling Crypto HMAC.swift
+2026-02-27T22:54:09.0046875Z [948/1064] Compiling Crypto MACFunctions.swift
+2026-02-27T22:54:09.0047610Z [949/1064] Compiling Crypto MessageAuthenticationCode.swift
+2026-02-27T22:54:09.0048328Z [950/1064] Compiling Crypto AES.swift
+2026-02-27T22:54:09.0049014Z [951/1064] Compiling Crypto ECDSASignature_boring.swift
+2026-02-27T22:54:09.0049753Z [952/1064] Compiling Crypto ECDSA_boring.swift
+2026-02-27T22:54:09.0050418Z [953/1064] Compiling Crypto EdDSA_boring.swift
+2026-02-27T22:54:09.0051034Z [954/1064] Compiling Crypto ECDSA.swift
+2026-02-27T22:54:09.0051586Z [955/1064] Compiling Crypto Ed25519.swift
+2026-02-27T22:54:09.0052149Z [956/1064] Compiling Crypto Signature.swift
+2026-02-27T22:54:09.0052783Z [957/1064] Compiling Crypto CryptoKitErrors_boring.swift
+2026-02-27T22:54:09.0053447Z [958/1064] Compiling Crypto RNG_boring.swift
+2026-02-27T22:54:09.0054087Z [959/1064] Compiling Crypto SafeCompare_boring.swift
+2026-02-27T22:54:09.0054944Z [960/1064] Compiling Crypto Zeroization_boring.swift
+2026-02-27T22:54:09.0055660Z [961/1064] Compiling Crypto PrettyBytes.swift
+2026-02-27T22:54:09.0056283Z [962/1064] Compiling Crypto SafeCompare.swift
+2026-02-27T22:54:09.0056882Z [963/1064] Compiling Crypto SecureBytes.swift
+2026-02-27T22:54:09.0057501Z [964/1064] Compiling Crypto Zeroization.swift
+2026-02-27T22:54:09.2094099Z [965/1064] Compiling Crypto AES-GCM.swift
+2026-02-27T22:54:09.2155477Z [966/1064] Compiling Crypto AES-GCM_boring.swift
+2026-02-27T22:54:09.2156792Z [967/1064] Compiling Crypto ChaChaPoly_boring.swift
+2026-02-27T22:54:09.2157318Z [968/1064] Compiling Crypto ChaChaPoly.swift
+2026-02-27T22:54:09.2157739Z [969/1064] Compiling Crypto Cipher.swift
+2026-02-27T22:54:09.2158154Z [970/1064] Compiling Crypto Nonces.swift
+2026-02-27T22:54:09.2158596Z [971/1064] Compiling Crypto ASN1.swift
+2026-02-27T22:54:09.2159062Z [972/1064] Compiling Crypto ASN1Any.swift
+2026-02-27T22:54:09.2159578Z [973/1064] Compiling Crypto ASN1BitString.swift
+2026-02-27T22:54:09.2160062Z [974/1064] Compiling Crypto ASN1Boolean.swift
+2026-02-27T22:54:09.2160542Z [975/1064] Compiling Crypto ASN1Identifier.swift
+2026-02-27T22:54:09.2161041Z [976/1064] Compiling Crypto ASN1Integer.swift
+2026-02-27T22:54:09.2161505Z [977/1064] Compiling Crypto ASN1Null.swift
+2026-02-27T22:54:09.2161986Z [978/1064] Compiling Crypto ASN1OctetString.swift
+2026-02-27T22:54:09.2162535Z [979/1064] Compiling Crypto ASN1Strings.swift
+2026-02-27T22:54:09.2163082Z [980/1064] Compiling Crypto ArraySliceBigint.swift
+2026-02-27T22:54:09.2163639Z [981/1064] Compiling Crypto GeneralizedTime.swift
+2026-02-27T22:54:09.2164174Z [982/1064] Compiling Crypto ObjectIdentifier.swift
+2026-02-27T22:54:09.2164938Z [983/1064] Compiling Crypto ECDSASignature.swift
+2026-02-27T22:54:09.2165414Z [984/1064] Compiling Crypto PEMDocument.swift
+2026-02-27T22:54:09.6758161Z [985/1065] Wrapping AST for Crypto for debugging
+2026-02-27T22:54:09.9697442Z [987/1065] Emitting module NIOCore
+2026-02-27T22:54:11.8885758Z [1042/1082] Compiling NIOCore NIOCoreSendableMetatype.swift
+2026-02-27T22:54:11.8890139Z [1043/1082] Compiling NIOCore NIODecodedAsyncSequence.swift
+2026-02-27T22:54:11.8890860Z [1044/1082] Compiling NIOCore NIOLoopBound.swift
+2026-02-27T22:54:11.8891483Z [1045/1082] Compiling NIOCore NIOPooledRecvBufferAllocator.swift
+2026-02-27T22:54:11.8892146Z [1046/1082] Compiling NIOCore NIOScheduledCallback.swift
+2026-02-27T22:54:11.8892705Z [1047/1082] Compiling NIOCore NIOSendable.swift
+2026-02-27T22:54:11.8893286Z [1048/1082] Compiling NIOCore NIOSplitLinesMessageDecoder.swift
+2026-02-27T22:54:11.8894014Z [1049/1082] Compiling NIOCore NIOTransportAccessibleChannelCore.swift
+2026-02-27T22:54:11.8894888Z [1050/1082] Compiling NIOCore RecvByteBufferAllocator.swift
+2026-02-27T22:54:11.8895557Z [1051/1082] Compiling NIOCore SingleStepByteToMessageDecoder.swift
+2026-02-27T22:54:11.8896221Z [1052/1082] Compiling NIOCore SocketAddresses.swift
+2026-02-27T22:54:11.8896764Z [1053/1082] Compiling NIOCore SocketOptionProvider.swift
+2026-02-27T22:54:11.8897326Z [1054/1082] Compiling NIOCore SystemCallHelpers.swift
+2026-02-27T22:54:11.8897878Z [1055/1082] Compiling NIOCore TimeAmount+Duration.swift
+2026-02-27T22:54:11.8898509Z [1056/1082] Compiling NIOCore TypeAssistedChannelHandler.swift
+2026-02-27T22:54:11.8899182Z [1057/1082] Compiling NIOCore UniversalBootstrapSupport.swift
+2026-02-27T22:54:11.8899780Z [1058/1082] Compiling NIOCore Utilities.swift
+2026-02-27T22:54:12.0870546Z [1059/1083] Wrapping AST for NIOCore for debugging
+2026-02-27T22:54:13.4445360Z [1061/1140] Emitting module SQLNioCore
+2026-02-27T22:54:13.7195245Z [1062/1142] Compiling NIOPosix BSDSocketAPICommon.swift
+2026-02-27T22:54:13.7202481Z [1063/1142] Compiling NIOPosix BSDSocketAPIPosix.swift
+2026-02-27T22:54:13.7276733Z [1064/1142] Compiling NIOPosix BSDSocketAPIWindows.swift
+2026-02-27T22:54:14.8892703Z [1065/1142] Compiling NIOEmbedded AsyncTestingChannel.swift
+2026-02-27T22:54:14.8910954Z [1066/1142] Compiling NIOEmbedded AsyncTestingEventLoop.swift
+2026-02-27T22:54:14.8919025Z [1067/1142] Compiling NIOEmbedded Embedded.swift
+2026-02-27T22:54:14.8956955Z [1068/1142] Emitting module NIOEmbedded
+2026-02-27T22:54:15.0992595Z [1069/1143] Compiling NIOPosix BaseSocketChannel.swift
+2026-02-27T22:54:15.0993648Z [1070/1143] Compiling NIOPosix BaseStreamSocketChannel.swift
+2026-02-27T22:54:15.0994570Z [1071/1143] Compiling NIOPosix Bootstrap.swift
+2026-02-27T22:54:15.1077143Z [1072/1143] Compiling NIOPosix BaseSocket.swift
+2026-02-27T22:54:15.1082574Z [1073/1143] Compiling NIOPosix BaseSocketChannel+AccessibleTransport.swift
+2026-02-27T22:54:15.1083799Z [1074/1143] Compiling NIOPosix BaseSocketChannel+SocketOptionProvider.swift
+2026-02-27T22:54:15.3908780Z [1076/1143] Compiling SQLNioCore SQLRowDecoder.swift
+2026-02-27T22:54:15.3909693Z [1077/1143] Compiling SQLNioCore SQLValue.swift
+2026-02-27T22:54:15.4220482Z [1077/1144] Wrapping AST for NIOEmbedded for debugging
+2026-02-27T22:54:15.7189968Z [1079/1144] Wrapping AST for SQLNioCore for debugging
+2026-02-27T22:54:15.9585439Z [1081/1146] Emitting module SQLNioCoreTests
+2026-02-27T22:54:15.9757570Z [1082/1146] Emitting module NIOPosix
+2026-02-27T22:54:16.4746963Z [1083/1159] Compiling SQLNioCoreTests SQLNioCoreTests.swift
+2026-02-27T22:54:16.8574321Z [1084/1160] Wrapping AST for SQLNioCoreTests for debugging
+2026-02-27T22:54:17.2726347Z [1086/1160] Compiling NIOPosix PipePair.swift
+2026-02-27T22:54:17.2727222Z [1087/1160] Compiling NIOPosix Pool.swift
+2026-02-27T22:54:17.2730938Z [1088/1160] Compiling NIOPosix PosixSingletons+ConcurrencyTakeOver.swift
+2026-02-27T22:54:17.2738068Z [1089/1160] Compiling NIOPosix PosixSingletons.swift
+2026-02-27T22:54:17.2780262Z [1090/1160] Compiling NIOPosix RawSocketBootstrap.swift
+2026-02-27T22:54:17.2786128Z [1091/1160] Compiling NIOPosix Resolver.swift
+2026-02-27T22:54:17.2787155Z [1092/1160] Compiling NIOPosix Selectable.swift
+2026-02-27T22:54:17.2787839Z [1093/1160] Compiling NIOPosix SelectableChannel.swift
+2026-02-27T22:54:17.2789035Z [1094/1160] Compiling NIOPosix SelectableEventLoop.swift
+2026-02-27T22:54:17.2789722Z [1095/1160] Compiling NIOPosix SelectorEpoll.swift
+2026-02-27T22:54:17.2790370Z [1096/1160] Compiling NIOPosix SelectorGeneric.swift
+2026-02-27T22:54:17.2791017Z [1097/1160] Compiling NIOPosix SelectorKqueue.swift
+2026-02-27T22:54:17.2791662Z [1098/1160] Compiling NIOPosix SelectorUring.swift
+2026-02-27T22:54:17.2792360Z [1099/1160] Compiling NIOPosix SelectorWSAPoll.swift
+2026-02-27T22:54:18.0576830Z [1100/1160] Compiling NIOPosix HappyEyeballs.swift
+2026-02-27T22:54:18.0577411Z [1101/1160] Compiling NIOPosix IO.swift
+2026-02-27T22:54:18.0577941Z [1102/1160] Compiling NIOPosix IntegerBitPacking.swift
+2026-02-27T22:54:18.0578520Z [1103/1160] Compiling NIOPosix IntegerTypes.swift
+2026-02-27T22:54:18.0588548Z [1104/1160] Compiling NIOPosix Linux.swift
+2026-02-27T22:54:18.0589209Z [1105/1160] Compiling NIOPosix LinuxCPUSet.swift
+2026-02-27T22:54:18.0589839Z [1106/1160] Compiling NIOPosix LinuxUring.swift
+2026-02-27T22:54:18.0590595Z [1107/1160] Compiling NIOPosix MultiThreadedEventLoopGroup.swift
+2026-02-27T22:54:18.0591427Z [1108/1160] Compiling NIOPosix NIOPosixSendableMetatype.swift
+2026-02-27T22:54:18.0592147Z [1109/1160] Compiling NIOPosix NIOThreadPool.swift
+2026-02-27T22:54:18.0592804Z [1110/1160] Compiling NIOPosix NonBlockingFileIO.swift
+2026-02-27T22:54:18.0593555Z [1111/1160] Compiling NIOPosix PendingDatagramWritesManager.swift
+2026-02-27T22:54:18.0594354Z [1112/1160] Compiling NIOPosix PendingWritesManager.swift
+2026-02-27T22:54:18.0595227Z [1113/1160] Compiling NIOPosix PipeChannel.swift
+2026-02-27T22:54:18.2463409Z [1114/1160] Compiling NIOPosix ServerSocket.swift
+2026-02-27T22:54:18.2464001Z [1115/1160] Compiling NIOPosix Socket.swift
+2026-02-27T22:54:18.2464503Z [1116/1160] Compiling NIOPosix SocketChannel.swift
+2026-02-27T22:54:18.2465881Z [1117/1160] Compiling NIOPosix SocketProtocols.swift
+2026-02-27T22:54:18.2466529Z [1118/1160] Compiling NIOPosix StructuredConcurrencyHelpers.swift
+2026-02-27T22:54:18.2471393Z [1119/1160] Compiling NIOPosix System.swift
+2026-02-27T22:54:18.2471865Z [1120/1160] Compiling NIOPosix Thread.swift
+2026-02-27T22:54:18.2472342Z [1121/1160] Compiling NIOPosix ThreadPosix.swift
+2026-02-27T22:54:18.2472883Z [1122/1160] Compiling NIOPosix ThreadWindows.swift
+2026-02-27T22:54:18.2473406Z [1123/1160] Compiling NIOPosix Utilities.swift
+2026-02-27T22:54:18.2473900Z [1124/1160] Compiling NIOPosix VsockAddress.swift
+2026-02-27T22:54:18.2474932Z [1125/1160] Compiling NIOPosix VsockChannelEvents.swift
+2026-02-27T22:54:18.2475506Z [1126/1160] Compiling NIOPosix Windows.swift
+2026-02-27T22:54:18.4130881Z [1138/1160] Compiling NIOPosix Errors+Any.swift
+2026-02-27T22:54:18.4131474Z [1139/1160] Compiling NIOPosix FileDescriptor.swift
+2026-02-27T22:54:18.4132057Z [1140/1160] Compiling NIOPosix GetaddrinfoResolver.swift
+2026-02-27T22:54:18.5998785Z [1141/1161] Wrapping AST for NIOPosix for debugging
+2026-02-27T22:54:18.8449729Z [1143/1167] Compiling NIO Exports.swift
+2026-02-27T22:54:18.8453560Z [1144/1167] Emitting module NIO
+2026-02-27T22:54:19.1056866Z [1145/1168] Wrapping AST for NIO for debugging
+2026-02-27T22:54:19.1404954Z [1147/1168] Compiling SQLiteNio SQLiteConnectionPool.swift
+2026-02-27T22:54:19.5438901Z [1148/1173] Compiling SQLiteNio SQLiteBackup.swift
+2026-02-27T22:54:19.5439952Z [1149/1173] Emitting module SQLiteNio
+2026-02-27T22:54:19.5440834Z [1150/1173] Compiling SQLiteNio SQLiteConnection.swift
+2026-02-27T22:54:19.6665190Z [1152/1174] Emitting module NIOTLS
+2026-02-27T22:54:19.6674621Z [1153/1174] Compiling NIOTLS ApplicationProtocolNegotiationHandler.swift
+2026-02-27T22:54:19.6681997Z [1154/1174] Compiling NIOTLS NIOTypedApplicationProtocolNegotiationHandler.swift
+2026-02-27T22:54:19.7338283Z [1154/1175] Wrapping AST for SQLiteNio for debugging
+2026-02-27T22:54:19.8603660Z [1156/1177] Compiling NIOTLS TLSEvents.swift
+2026-02-27T22:54:19.8612040Z [1157/1177] Compiling NIOTLS ProtocolNegotiationHandlerStateMachine.swift
+2026-02-27T22:54:19.8613898Z [1158/1177] Compiling NIOTLS SNIHandler.swift
+2026-02-27T22:54:20.0312916Z [1159/1178] Wrapping AST for NIOTLS for debugging
+2026-02-27T22:54:22.2370418Z [1161/1203] Emitting module SQLiteNioTests
+2026-02-27T22:54:22.2377951Z [1162/1203] Compiling SQLiteNioTests SQLiteNioTests.swift
+2026-02-27T22:54:22.4928142Z [1163/1204] Wrapping AST for SQLiteNioTests for debugging
+2026-02-27T22:54:22.6409254Z [1165/1204] Compiling NIOSSL SSLContext.swift
+2026-02-27T22:54:22.6409825Z [1166/1204] Compiling NIOSSL SSLErrors.swift
+2026-02-27T22:54:22.6413479Z [1167/1204] Compiling NIOSSL SSLInit.swift
+2026-02-27T22:54:22.6417087Z [1168/1204] Compiling NIOSSL SSLPKCS12Bundle.swift
+2026-02-27T22:54:22.6421823Z [1169/1204] Compiling NIOSSL SSLPrivateKey.swift
+2026-02-27T22:54:22.6426337Z [1170/1204] Compiling NIOSSL SSLPublicKey.swift
+2026-02-27T22:54:22.6431112Z [1171/1204] Compiling NIOSSL SecurityFrameworkCertificateVerification.swift
+2026-02-27T22:54:22.6434249Z [1172/1204] Compiling NIOSSL String+unsafeUninitializedCapacity.swift
+2026-02-27T22:54:22.7135599Z [1173/1212] Compiling NIOSSL NIOSSLServerHandler.swift
+2026-02-27T22:54:22.7138988Z [1174/1212] Compiling NIOSSL ObjectIdentifier.swift
+2026-02-27T22:54:22.7143773Z [1175/1212] Compiling NIOSSL PosixPort.swift
+2026-02-27T22:54:22.7146696Z [1176/1212] Compiling NIOSSL SSLCallbacks.swift
+2026-02-27T22:54:22.7149508Z [1177/1212] Compiling NIOSSL SSLCertificate.swift
+2026-02-27T22:54:22.7152334Z [1178/1212] Compiling NIOSSL SSLCertificateExtensions.swift
+2026-02-27T22:54:22.7155038Z [1179/1212] Compiling NIOSSL SSLCertificateName.swift
+2026-02-27T22:54:22.7157535Z [1180/1212] Compiling NIOSSL SSLConnection.swift
+2026-02-27T22:54:22.7522797Z [1181/1212] Emitting module NIOSSL
+2026-02-27T22:54:22.7525325Z [1182/1212] Compiling NIOSSL AndroidCABundle.swift
+2026-02-27T22:54:22.7528382Z [1183/1212] Compiling NIOSSL ByteBufferBIO.swift
+2026-02-27T22:54:22.7529116Z [1184/1212] Compiling NIOSSL CustomPrivateKey.swift
+2026-02-27T22:54:22.7529759Z [1185/1212] Compiling NIOSSL IdentityVerification.swift
+2026-02-27T22:54:22.7530388Z [1186/1212] Compiling NIOSSL LinuxCABundle.swift
+2026-02-27T22:54:22.7530993Z [1187/1212] Compiling NIOSSL NIOSSLClientHandler.swift
+2026-02-27T22:54:22.7531721Z [1188/1212] Compiling NIOSSL NIOSSLHandler+Configuration.swift
+2026-02-27T22:54:22.7532409Z [1189/1212] Compiling NIOSSL NIOSSLHandler.swift
+2026-02-27T22:54:24.0249076Z [1190/1212] Compiling NIOSSL SubjectAlternativeName.swift
+2026-02-27T22:54:24.0249787Z [1191/1212] Compiling NIOSSL NIOSSLSecureBytes.swift
+2026-02-27T22:54:24.0250655Z [1192/1212] Compiling NIOSSL RNG.swift
+2026-02-27T22:54:24.0251124Z [1193/1212] Compiling NIOSSL SafeCompare.swift
+2026-02-27T22:54:24.0251441Z [1194/1212] Compiling NIOSSL Zeroization.swift
+2026-02-27T22:54:24.0251759Z [1195/1212] Compiling NIOSSL TLSConfiguration.swift
+2026-02-27T22:54:24.0252144Z [1196/1212] Compiling NIOSSL UniversalBootstrapSupport.swift
+2026-02-27T22:54:24.0252548Z [1197/1212] Compiling NIOSSL UnsafeKeyAndChainTarget.swift
+2026-02-27T22:54:24.2039873Z [1198/1213] Wrapping AST for NIOSSL for debugging
+2026-02-27T22:54:25.4266204Z [1200/1239] Emitting module MSSQLNio
+2026-02-27T22:54:25.7321975Z [1201/1242] Emitting module PostgresNio
+2026-02-27T22:54:26.0608809Z [1202/1243] Compiling MSSQLNio TDSDecoder.swift
+2026-02-27T22:54:26.0609827Z [1203/1243] Compiling MSSQLNio TDSHandler.swift
+2026-02-27T22:54:26.1966268Z [1204/1243] Compiling MySQLNio MySQLDecoder.swift
+2026-02-27T22:54:26.6559912Z [1205/1244] Compiling PostgresNio PostgresMessages.swift
+2026-02-27T22:54:26.7616056Z [1206/1244] Compiling MSSQLNio TDSLogin7.swift
+2026-02-27T22:54:26.7617823Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/TDS/TDSPacket.swift:74:17: warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7619452Z 72 |             let spid:    UInt16 = buffer.readInteger(endianness: .big),
+2026-02-27T22:54:26.7620354Z 73 |             let pid:     UInt8  = buffer.readInteger(),
+2026-02-27T22:54:26.7621146Z 74 |             let win:     UInt8  = buffer.readInteger()
+2026-02-27T22:54:26.7622670Z    |                 `- warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7623740Z 75 |         else { throw TDSError.incomplete }
+2026-02-27T22:54:26.7624382Z 76 | 
+2026-02-27T22:54:26.7697875Z [1207/1244] Compiling MSSQLNio TDSMessages.swift
+2026-02-27T22:54:26.7699506Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/TDS/TDSPacket.swift:74:17: warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7701042Z 72 |             let spid:    UInt16 = buffer.readInteger(endianness: .big),
+2026-02-27T22:54:26.7701866Z 73 |             let pid:     UInt8  = buffer.readInteger(),
+2026-02-27T22:54:26.7702607Z 74 |             let win:     UInt8  = buffer.readInteger()
+2026-02-27T22:54:26.7703595Z    |                 `- warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7704570Z 75 |         else { throw TDSError.incomplete }
+2026-02-27T22:54:26.7705402Z 76 | 
+2026-02-27T22:54:26.7762580Z [1208/1244] Compiling MSSQLNio TDSPacket.swift
+2026-02-27T22:54:26.7806137Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/TDS/TDSPacket.swift:74:17: warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7807836Z 72 |             let spid:    UInt16 = buffer.readInteger(endianness: .big),
+2026-02-27T22:54:26.7808689Z 73 |             let pid:     UInt8  = buffer.readInteger(),
+2026-02-27T22:54:26.7809421Z 74 |             let win:     UInt8  = buffer.readInteger()
+2026-02-27T22:54:26.7810389Z    |                 `- warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7811375Z 75 |         else { throw TDSError.incomplete }
+2026-02-27T22:54:26.7811991Z 76 | 
+2026-02-27T22:54:26.7875390Z [1209/1244] Compiling MSSQLNio TDSPreLogin.swift
+2026-02-27T22:54:26.7876893Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/TDS/TDSPacket.swift:74:17: warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7878435Z 72 |             let spid:    UInt16 = buffer.readInteger(endianness: .big),
+2026-02-27T22:54:26.7879239Z 73 |             let pid:     UInt8  = buffer.readInteger(),
+2026-02-27T22:54:26.7879985Z 74 |             let win:     UInt8  = buffer.readInteger()
+2026-02-27T22:54:26.7881213Z    |                 `- warning: immutable value 'win' was never used; consider replacing with '_' or removing it
+2026-02-27T22:54:26.7882230Z 75 |         else { throw TDSError.incomplete }
+2026-02-27T22:54:26.7882846Z 76 | 
+2026-02-27T22:54:26.8304291Z [1210/1244] Compiling MSSQLNio TDSRPCProcRequest.swift
+2026-02-27T22:54:26.8311461Z [1211/1244] Compiling MSSQLNio TDSRPCRequest.swift
+2026-02-27T22:54:26.8317789Z [1212/1244] Compiling MSSQLNio TDSTLSFramer.swift
+2026-02-27T22:54:27.3020814Z [1213/1244] Compiling MSSQLNio MSSQLConnectionPool.swift
+2026-02-27T22:54:27.3060065Z [1214/1244] Compiling MSSQLNio MSSQLProcResult.swift
+2026-02-27T22:54:27.3065417Z [1215/1244] Compiling MSSQLNio NTLMAuth.swift
+2026-02-27T22:54:27.3071467Z /home/runner/work/sql-nio/sql-nio/Sources/PostgresNio/PostgresConnection.swift:121:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.3074549Z 119 |         bridge = b
+2026-02-27T22:54:27.3079433Z 120 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:27.3084533Z 121 |             ByteToMessageHandler(PGFramingHandler()),
+2026-02-27T22:54:27.3090533Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.3093759Z 122 |             b,
+2026-02-27T22:54:27.3096214Z 123 |         ]).get()
+2026-02-27T22:54:27.3098114Z 
+2026-02-27T22:54:27.3101028Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.3104566Z 505 | 
+2026-02-27T22:54:27.3105710Z 506 | @available(*, unavailable)
+2026-02-27T22:54:27.3106653Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:27.3109159Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.3110454Z 508 | 
+2026-02-27T22:54:27.3112319Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:27.3114240Z 
+2026-02-27T22:54:27.3117955Z /home/runner/work/sql-nio/sql-nio/Sources/PostgresNio/PostgresConnection.swift:140:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.3121561Z 138 |         let sslHandler = try NIOSSLClientHandler(context: sslContext,
+2026-02-27T22:54:27.3122531Z 139 |                                                   serverHostname: config.host)
+2026-02-27T22:54:27.3141994Z 140 |         try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+2026-02-27T22:54:27.3143364Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.3165633Z 141 |     }
+2026-02-27T22:54:27.3166241Z 142 | 
+2026-02-27T22:54:27.3166575Z 
+2026-02-27T22:54:27.3167980Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.3169571Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:27.3169954Z 293 | @available(*, unavailable)
+2026-02-27T22:54:27.3170435Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:27.3171317Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.3172144Z 295 | #endif
+2026-02-27T22:54:27.3172422Z 296 | 
+2026-02-27T22:54:27.4285900Z [1216/1244] Compiling MSSQLNio MSSQLBackup.swift
+2026-02-27T22:54:27.4307256Z /home/runner/work/sql-nio/sql-nio/Sources/PostgresNio/PostgresConnection.swift:121:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.4308825Z 119 |         bridge = b
+2026-02-27T22:54:27.4309587Z 120 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:27.4310157Z 121 |             ByteToMessageHandler(PGFramingHandler()),
+2026-02-27T22:54:27.4311247Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.4312257Z 122 |             b,
+2026-02-27T22:54:27.4312539Z 123 |         ]).get()
+2026-02-27T22:54:27.4312731Z 
+2026-02-27T22:54:27.4313891Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.4315501Z 505 | 
+2026-02-27T22:54:27.4315777Z 506 | @available(*, unavailable)
+2026-02-27T22:54:27.4316214Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:27.4317123Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.4317969Z 508 | 
+2026-02-27T22:54:27.4318275Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:27.4318616Z 
+2026-02-27T22:54:27.4319794Z /home/runner/work/sql-nio/sql-nio/Sources/PostgresNio/PostgresConnection.swift:140:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.4321425Z 138 |         let sslHandler = try NIOSSLClientHandler(context: sslContext,
+2026-02-27T22:54:27.4322093Z 139 |                                                   serverHostname: config.host)
+2026-02-27T22:54:27.4323055Z 140 |         try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+2026-02-27T22:54:27.4324326Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.4325470Z 141 |     }
+2026-02-27T22:54:27.4325715Z 142 | 
+2026-02-27T22:54:27.4325866Z 
+2026-02-27T22:54:27.4327072Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.4328562Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:27.4328899Z 293 | @available(*, unavailable)
+2026-02-27T22:54:27.4329328Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:27.4335770Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.4355307Z 295 | #endif
+2026-02-27T22:54:27.4355730Z 296 | 
+2026-02-27T22:54:27.7378365Z [1217/1245] Wrapping AST for PostgresNio for debugging
+2026-02-27T22:54:27.7652895Z [1219/1245] Compiling MySQLNio MySQLMessages.swift
+2026-02-27T22:54:27.8291202Z [1222/1245] Emitting module MySQLNio
+2026-02-27T22:54:27.8326669Z /home/runner/work/sql-nio/sql-nio/Sources/MySQLNio/MySQLConnection.swift:101:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.8328634Z  99 |         bridge = b
+2026-02-27T22:54:27.8329403Z 100 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:27.8335970Z 101 |             ByteToMessageHandler(MySQLFramingHandler()),
+2026-02-27T22:54:27.8339223Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.8340933Z 102 |             b,
+2026-02-27T22:54:27.8343297Z 103 |         ]).get()
+2026-02-27T22:54:27.8344084Z 
+2026-02-27T22:54:27.8347404Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.8356313Z 505 | 
+2026-02-27T22:54:27.8357259Z 506 | @available(*, unavailable)
+2026-02-27T22:54:27.8358398Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:27.8359680Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.8360877Z 508 | 
+2026-02-27T22:54:27.8361514Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:27.8362102Z 
+2026-02-27T22:54:27.8363451Z /home/runner/work/sql-nio/sql-nio/Sources/MySQLNio/MySQLConnection.swift:157:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.8365753Z 155 |         let sni = config.host.first?.isNumber == false ? config.host : nil
+2026-02-27T22:54:27.8366962Z 156 |         let sslHandler = try NIOSSLClientHandler(context: sslContext, serverHostname: sni)
+2026-02-27T22:54:27.8368423Z 157 |         try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+2026-02-27T22:54:27.8370010Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.8371306Z 158 |     }
+2026-02-27T22:54:27.8371781Z 159 | 
+2026-02-27T22:54:27.8372124Z 
+2026-02-27T22:54:27.8373542Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.8375517Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:27.8376407Z 293 | @available(*, unavailable)
+2026-02-27T22:54:27.8377074Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:27.8378178Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.8379212Z 295 | #endif
+2026-02-27T22:54:27.8379686Z 296 | 
+2026-02-27T22:54:27.9463320Z /home/runner/work/sql-nio/sql-nio/Sources/MySQLNio/MySQLConnection.swift:101:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.9469481Z  99 |         bridge = b
+2026-02-27T22:54:27.9470235Z 100 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:27.9475224Z 101 |             ByteToMessageHandler(MySQLFramingHandler()),
+2026-02-27T22:54:27.9478150Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.9480979Z 102 |             b,
+2026-02-27T22:54:27.9483063Z 103 |         ]).get()
+2026-02-27T22:54:27.9485210Z 
+2026-02-27T22:54:27.9487960Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.9535997Z 505 | 
+2026-02-27T22:54:27.9536431Z 506 | @available(*, unavailable)
+2026-02-27T22:54:27.9537003Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:27.9538026Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.9538983Z 508 | 
+2026-02-27T22:54:27.9539329Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:27.9539672Z 
+2026-02-27T22:54:27.9540902Z /home/runner/work/sql-nio/sql-nio/Sources/MySQLNio/MySQLConnection.swift:157:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.9542769Z 155 |         let sni = config.host.first?.isNumber == false ? config.host : nil
+2026-02-27T22:54:27.9543659Z 156 |         let sslHandler = try NIOSSLClientHandler(context: sslContext, serverHostname: sni)
+2026-02-27T22:54:27.9544633Z 157 |         try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+2026-02-27T22:54:27.9546315Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:27.9547475Z 158 |     }
+2026-02-27T22:54:27.9547750Z 159 | 
+2026-02-27T22:54:27.9547893Z 
+2026-02-27T22:54:27.9549109Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.9550607Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:27.9551062Z 293 | @available(*, unavailable)
+2026-02-27T22:54:27.9551590Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:27.9552524Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:27.9553398Z 295 | #endif
+2026-02-27T22:54:27.9553670Z 296 | 
+2026-02-27T22:54:28.1419180Z [1229/1249] Wrapping AST for MySQLNio for debugging
+2026-02-27T22:54:28.3835489Z [1231/1252] Compiling PostgresNioTests PostgresNioTests.swift
+2026-02-27T22:54:28.7918161Z [1232/1252] Compiling MySQLNioTests MySQLNioTests.swift
+2026-02-27T22:54:28.8388109Z [1233/1252] Emitting module MySQLNioTests
+2026-02-27T22:54:30.6939639Z [1234/1252] Emitting module PostgresNioTests
+2026-02-27T22:54:30.6975722Z [1235/1252] Compiling PostgresNioTests PostgresIntegrationTests.swift
+2026-02-27T22:54:30.6977853Z /home/runner/work/sql-nio/sql-nio/Tests/PostgresNioTests/PostgresIntegrationTests.swift:1458:42: warning: mutation of captured var 'notices' in concurrently-executing code; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.6980152Z 1456 |             try await PGTestDatabase.withConnection { conn in
+2026-02-27T22:54:30.6980959Z 1457 |                 var notices: [String] = []
+2026-02-27T22:54:30.6981651Z 1458 |                 conn.onNotice = { msg in notices.append(msg) }
+2026-02-27T22:54:30.6982808Z      |                                          `- warning: mutation of captured var 'notices' in concurrently-executing code; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.6983784Z 1459 | 
+2026-02-27T22:54:30.6984178Z 1460 |                 // PostgreSQL RAISE NOTICE generates a notice message
+2026-02-27T22:54:30.7315864Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:121:23: warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7317835Z 119 | 
+2026-02-27T22:54:30.7318649Z 120 |         let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
+2026-02-27T22:54:30.7319510Z 121 |             try await bootstrap.connect(host: configuration.host,
+2026-02-27T22:54:30.7320764Z     |                       `- warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7321990Z 122 |                                         port: configuration.port).get()
+2026-02-27T22:54:30.7322505Z 123 |         }
+2026-02-27T22:54:30.7322689Z 
+2026-02-27T22:54:30.7323640Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOPosix/Bootstrap.swift:810:20: note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:30.7325032Z  808 | ///
+2026-02-27T22:54:30.7325730Z  809 | /// The connected `SocketChannel` will operate on `ByteBuffer` as inbound and on `IOData` as outbound messages.
+2026-02-27T22:54:30.7326798Z  810 | public final class ClientBootstrap: NIOClientTCPBootstrapProtocol {
+2026-02-27T22:54:30.7327688Z      |                    `- note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:30.7328431Z  811 |     private let group: EventLoopGroup
+2026-02-27T22:54:30.7329114Z  812 |     private var protocolHandlers: Optional<@Sendable () -> [ChannelHandler]>
+2026-02-27T22:54:30.7329654Z 
+2026-02-27T22:54:30.7331180Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:148:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7332727Z 146 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:30.7333200Z 147 |             tlsFramer,
+2026-02-27T22:54:30.7333634Z 148 |             ByteToMessageHandler(TDSFramingHandler()),
+2026-02-27T22:54:30.7355034Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7356100Z 149 |             b,
+2026-02-27T22:54:30.7356411Z 150 |         ]).get()
+2026-02-27T22:54:30.7356618Z 
+2026-02-27T22:54:30.7357783Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7359331Z 505 | 
+2026-02-27T22:54:30.7385425Z 506 | @available(*, unavailable)
+2026-02-27T22:54:30.7385913Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:30.7386898Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7387759Z 508 | 
+2026-02-27T22:54:30.7388078Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:30.7388433Z 
+2026-02-27T22:54:30.7389557Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:228:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7391503Z 226 |         // Because the channel is already active, NIOSSLClientHandler's handlerAdded()
+2026-02-27T22:54:30.7392243Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:30.7393040Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:30.7394433Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7395996Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:30.7396719Z 230 | 
+2026-02-27T22:54:30.7396866Z 
+2026-02-27T22:54:30.7398085Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7399593Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:30.7399950Z 293 | @available(*, unavailable)
+2026-02-27T22:54:30.7400390Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:30.7401245Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7402026Z 295 | #endif
+2026-02-27T22:54:30.7402285Z 296 | 
+2026-02-27T22:54:30.7402428Z 
+2026-02-27T22:54:30.7403817Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:229:76: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7405734Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:30.7406541Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:30.7407609Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:30.7409297Z     |                                                                            `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:30.7410785Z 230 | 
+2026-02-27T22:54:30.7411337Z 231 |         // Wait for TLS handshake to complete (tracker fulfils promise + deactivates framer)
+2026-02-27T22:54:30.7412123Z 
+2026-02-27T22:54:30.7413356Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7415004Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:30.7415357Z 293 | @available(*, unavailable)
+2026-02-27T22:54:30.7415785Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:30.7416634Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:30.7417437Z 295 | #endif
+2026-02-27T22:54:30.7417687Z 296 | 
+2026-02-27T22:54:31.0270374Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:121:23: warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0277003Z 119 | 
+2026-02-27T22:54:31.0281087Z 120 |         let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
+2026-02-27T22:54:31.0284503Z 121 |             try await bootstrap.connect(host: configuration.host,
+2026-02-27T22:54:31.0288527Z     |                       `- warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0292339Z 122 |                                         port: configuration.port).get()
+2026-02-27T22:54:31.0295591Z 123 |         }
+2026-02-27T22:54:31.0298620Z 
+2026-02-27T22:54:31.0301062Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOPosix/Bootstrap.swift:810:20: note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.0314909Z  808 | ///
+2026-02-27T22:54:31.0315655Z  809 | /// The connected `SocketChannel` will operate on `ByteBuffer` as inbound and on `IOData` as outbound messages.
+2026-02-27T22:54:31.0316752Z  810 | public final class ClientBootstrap: NIOClientTCPBootstrapProtocol {
+2026-02-27T22:54:31.0317630Z      |                    `- note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.0318356Z  811 |     private let group: EventLoopGroup
+2026-02-27T22:54:31.0319034Z  812 |     private var protocolHandlers: Optional<@Sendable () -> [ChannelHandler]>
+2026-02-27T22:54:31.0319575Z 
+2026-02-27T22:54:31.0320763Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:148:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0326648Z 146 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:31.0327151Z 147 |             tlsFramer,
+2026-02-27T22:54:31.0327591Z 148 |             ByteToMessageHandler(TDSFramingHandler()),
+2026-02-27T22:54:31.0328687Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0329701Z 149 |             b,
+2026-02-27T22:54:31.0329991Z 150 |         ]).get()
+2026-02-27T22:54:31.0330190Z 
+2026-02-27T22:54:31.0331322Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0332715Z 505 | 
+2026-02-27T22:54:31.0332996Z 506 | @available(*, unavailable)
+2026-02-27T22:54:31.0333439Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:31.0334351Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0335345Z 508 | 
+2026-02-27T22:54:31.0335656Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:31.0336002Z 
+2026-02-27T22:54:31.0337373Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:228:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0339025Z 226 |         // Because the channel is already active, NIOSSLClientHandler's handlerAdded()
+2026-02-27T22:54:31.0339762Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.0340566Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.0341907Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0343269Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.0343995Z 230 | 
+2026-02-27T22:54:31.0344143Z 
+2026-02-27T22:54:31.0345476Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0346968Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.0347315Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.0347751Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.0348581Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0349369Z 295 | #endif
+2026-02-27T22:54:31.0349631Z 296 | 
+2026-02-27T22:54:31.0349774Z 
+2026-02-27T22:54:31.0351125Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:229:76: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0353058Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.0353848Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.0355057Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.0356716Z     |                                                                            `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.0358032Z 230 | 
+2026-02-27T22:54:31.0358579Z 231 |         // Wait for TLS handshake to complete (tracker fulfils promise + deactivates framer)
+2026-02-27T22:54:31.0359153Z 
+2026-02-27T22:54:31.0360353Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0361839Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.0362191Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.0362617Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.0363460Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.0364244Z 295 | #endif
+2026-02-27T22:54:31.0364506Z 296 | 
+2026-02-27T22:54:31.4417749Z [1238/1253] Compiling MSSQLNio MSSQLBulkInsert.swift
+2026-02-27T22:54:31.4496644Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:121:23: warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4498235Z 119 | 
+2026-02-27T22:54:31.4498780Z 120 |         let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
+2026-02-27T22:54:31.4499610Z 121 |             try await bootstrap.connect(host: configuration.host,
+2026-02-27T22:54:31.4500840Z     |                       `- warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4502418Z 122 |                                         port: configuration.port).get()
+2026-02-27T22:54:31.4502948Z 123 |         }
+2026-02-27T22:54:31.4503135Z 
+2026-02-27T22:54:31.4504129Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOPosix/Bootstrap.swift:810:20: note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.4505585Z  808 | ///
+2026-02-27T22:54:31.4506313Z  809 | /// The connected `SocketChannel` will operate on `ByteBuffer` as inbound and on `IOData` as outbound messages.
+2026-02-27T22:54:31.4507416Z  810 | public final class ClientBootstrap: NIOClientTCPBootstrapProtocol {
+2026-02-27T22:54:31.4508331Z      |                    `- note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.4509090Z  811 |     private let group: EventLoopGroup
+2026-02-27T22:54:31.4509771Z  812 |     private var protocolHandlers: Optional<@Sendable () -> [ChannelHandler]>
+2026-02-27T22:54:31.4510320Z 
+2026-02-27T22:54:31.4511527Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:148:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4513170Z 146 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:31.4513679Z 147 |             tlsFramer,
+2026-02-27T22:54:31.4514131Z 148 |             ByteToMessageHandler(TDSFramingHandler()),
+2026-02-27T22:54:31.4515463Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4516785Z 149 |             b,
+2026-02-27T22:54:31.4517086Z 150 |         ]).get()
+2026-02-27T22:54:31.4517275Z 
+2026-02-27T22:54:31.4518425Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4519872Z 505 | 
+2026-02-27T22:54:31.4520194Z 506 | @available(*, unavailable)
+2026-02-27T22:54:31.4520670Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:31.4521613Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4522497Z 508 | 
+2026-02-27T22:54:31.4522842Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:31.4523197Z 
+2026-02-27T22:54:31.4524340Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:228:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4526288Z 226 |         // Because the channel is already active, NIOSSLClientHandler's handlerAdded()
+2026-02-27T22:54:31.4527070Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.4527896Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.4529321Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4530704Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.4531477Z 230 | 
+2026-02-27T22:54:31.4531633Z 
+2026-02-27T22:54:31.4532865Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4534348Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.4534977Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.4535447Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.4536343Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4537176Z 295 | #endif
+2026-02-27T22:54:31.4537443Z 296 | 
+2026-02-27T22:54:31.4537592Z 
+2026-02-27T22:54:31.4539237Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:229:76: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4541043Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.4541878Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.4542975Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.4544890Z     |                                                                            `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.4546278Z 230 | 
+2026-02-27T22:54:31.4546855Z 231 |         // Wait for TLS handshake to complete (tracker fulfils promise + deactivates framer)
+2026-02-27T22:54:31.4547468Z 
+2026-02-27T22:54:31.4548779Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4550329Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.4550696Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.4551147Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.4552311Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.4553160Z 295 | #endif
+2026-02-27T22:54:31.4553427Z 296 | 
+2026-02-27T22:54:31.9067440Z [1239/1253] Compiling MSSQLNio MSSQLConnection.swift
+2026-02-27T22:54:31.9075017Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:121:23: warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9078364Z 119 | 
+2026-02-27T22:54:31.9080556Z 120 |         let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
+2026-02-27T22:54:31.9083022Z 121 |             try await bootstrap.connect(host: configuration.host,
+2026-02-27T22:54:31.9086156Z     |                       `- warning: capture of 'bootstrap' with non-sendable type 'ClientBootstrap' in a `@Sendable` closure; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9089299Z 122 |                                         port: configuration.port).get()
+2026-02-27T22:54:31.9091659Z 123 |         }
+2026-02-27T22:54:31.9093668Z 
+2026-02-27T22:54:31.9096639Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOPosix/Bootstrap.swift:810:20: note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.9099809Z  808 | ///
+2026-02-27T22:54:31.9102316Z  809 | /// The connected `SocketChannel` will operate on `ByteBuffer` as inbound and on `IOData` as outbound messages.
+2026-02-27T22:54:31.9105060Z  810 | public final class ClientBootstrap: NIOClientTCPBootstrapProtocol {
+2026-02-27T22:54:31.9107816Z      |                    `- note: class 'ClientBootstrap' does not conform to the 'Sendable' protocol
+2026-02-27T22:54:31.9110408Z  811 |     private let group: EventLoopGroup
+2026-02-27T22:54:31.9112943Z  812 |     private var protocolHandlers: Optional<@Sendable () -> [ChannelHandler]>
+2026-02-27T22:54:31.9115469Z 
+2026-02-27T22:54:31.9118411Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:148:13: warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9121677Z 146 |         try await channel.pipeline.addHandlers([
+2026-02-27T22:54:31.9123829Z 147 |             tlsFramer,
+2026-02-27T22:54:31.9126103Z 148 |             ByteToMessageHandler(TDSFramingHandler()),
+2026-02-27T22:54:31.9129286Z     |             `- warning: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9147360Z 149 |             b,
+2026-02-27T22:54:31.9147675Z 150 |         ]).get()
+2026-02-27T22:54:31.9147882Z 
+2026-02-27T22:54:31.9149041Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio/Sources/NIOCore/Codec.swift:507:1: note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9150492Z 505 | 
+2026-02-27T22:54:31.9150769Z 506 | @available(*, unavailable)
+2026-02-27T22:54:31.9151216Z 507 | extension ByteToMessageHandler: Sendable {}
+2026-02-27T22:54:31.9152124Z     | `- note: conformance of 'ByteToMessageHandler<Decoder>' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9152976Z 508 | 
+2026-02-27T22:54:31.9153300Z 509 | // MARK: ByteToMessageHandler: Test Helpers
+2026-02-27T22:54:31.9153649Z 
+2026-02-27T22:54:31.9154947Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:228:47: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9156645Z 226 |         // Because the channel is already active, NIOSSLClientHandler's handlerAdded()
+2026-02-27T22:54:31.9157390Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.9158174Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.9159813Z     |                                               `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9161177Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.9161893Z 230 | 
+2026-02-27T22:54:31.9162031Z 
+2026-02-27T22:54:31.9163220Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9164943Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.9165306Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.9165749Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.9166597Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9167400Z 295 | #endif
+2026-02-27T22:54:31.9167682Z 296 | 
+2026-02-27T22:54:31.9167832Z 
+2026-02-27T22:54:31.9169227Z /home/runner/work/sql-nio/sql-nio/Sources/MSSQLNio/MSSQLConnection.swift:229:76: warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9170992Z 227 |         // triggers the TLS handshake automatically.
+2026-02-27T22:54:31.9171799Z 228 |         try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
+2026-02-27T22:54:31.9172864Z 229 |         try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+2026-02-27T22:54:31.9174546Z     |                                                                            `- warning: conformance of 'NIOSSLClientHandler' to 'Sendable' is unavailable; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+2026-02-27T22:54:31.9176078Z 230 | 
+2026-02-27T22:54:31.9176637Z 231 |         // Wait for TLS handshake to complete (tracker fulfils promise + deactivates framer)
+2026-02-27T22:54:31.9177221Z 
+2026-02-27T22:54:31.9178461Z /home/runner/work/sql-nio/sql-nio/.build/checkouts/swift-nio-ssl/Sources/NIOSSL/NIOSSLClientHandler.swift:294:1: note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9179974Z 292 | #if compiler(<6.2)
+2026-02-27T22:54:31.9180317Z 293 | @available(*, unavailable)
+2026-02-27T22:54:31.9180944Z 294 | extension NIOSSLClientHandler: Sendable {}
+2026-02-27T22:54:31.9181790Z     | `- note: conformance of 'NIOSSLClientHandler' to 'Sendable' has been explicitly marked unavailable here
+2026-02-27T22:54:31.9182573Z 295 | #endif
+2026-02-27T22:54:31.9182826Z 296 | 
+2026-02-27T22:54:32.3274335Z [1241/1254] Wrapping AST for PostgresNioTests for debugging
+2026-02-27T22:54:32.3280072Z [1242/1254] Wrapping AST for MSSQLNio for debugging
+2026-02-27T22:54:32.3287343Z [1244/1264] Emitting module MSSQLNioTests
+2026-02-27T22:54:32.3291370Z [1245/1266] Compiling MSSQLNioTests TestDatabase.swift
+2026-02-27T22:54:32.3294391Z [1246/1266] Compiling MSSQLNioTests TestValueHelpers.swift
+2026-02-27T22:54:33.1720528Z [1247/1266] Compiling MySQLNioTests MySQLIntegrationTests.swift
+2026-02-27T22:54:33.3552776Z [1249/1267] Compiling MSSQLNioTests MSSQLAdvancedFeatureTests.swift
+2026-02-27T22:54:33.3553968Z [1250/1267] Compiling MSSQLNioTests MSSQLDataTypeTests.swift
+2026-02-27T22:54:33.3556470Z [1251/1267] Compiling MSSQLNioTests MSSQLErrorTests.swift
+2026-02-27T22:54:33.3786454Z [1251/1267] Wrapping AST for MySQLNioTests for debugging
+2026-02-27T22:54:33.7690301Z [1253/1267] Compiling MSSQLNioTests MSSQLNewFeatureTests.swift
+2026-02-27T22:54:33.7692031Z /home/runner/work/sql-nio/sql-nio/Tests/MSSQLNioTests/MSSQLNioTests.swift:9:13: warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7693249Z  7 | 
+2026-02-27T22:54:33.7693568Z  8 |     func testHeaderRoundtrip() throws {
+2026-02-27T22:54:33.7694399Z  9 |         var allocator = ByteBufferAllocator()
+2026-02-27T22:54:33.7695355Z    |             `- warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7696123Z 10 |         var buf = allocator.buffer(capacity: 8)
+2026-02-27T22:54:33.7696556Z 11 | 
+2026-02-27T22:54:33.7708810Z [1254/1267] Compiling MSSQLNioTests MSSQLNioTests.swift
+2026-02-27T22:54:33.7711157Z /home/runner/work/sql-nio/sql-nio/Tests/MSSQLNioTests/MSSQLNioTests.swift:9:13: warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7713550Z  7 | 
+2026-02-27T22:54:33.7713887Z  8 |     func testHeaderRoundtrip() throws {
+2026-02-27T22:54:33.7714389Z  9 |         var allocator = ByteBufferAllocator()
+2026-02-27T22:54:33.7715321Z    |             `- warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7716093Z 10 |         var buf = allocator.buffer(capacity: 8)
+2026-02-27T22:54:33.7716542Z 11 | 
+2026-02-27T22:54:33.7725660Z [1255/1267] Compiling MSSQLNioTests MSSQLQueryTests.swift
+2026-02-27T22:54:33.7727207Z /home/runner/work/sql-nio/sql-nio/Tests/MSSQLNioTests/MSSQLNioTests.swift:9:13: warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7728392Z  7 | 
+2026-02-27T22:54:33.7728695Z  8 |     func testHeaderRoundtrip() throws {
+2026-02-27T22:54:33.7729176Z  9 |         var allocator = ByteBufferAllocator()
+2026-02-27T22:54:33.7729935Z    |             `- warning: variable 'allocator' was never mutated; consider changing to 'let' constant
+2026-02-27T22:54:33.7730702Z 10 |         var buf = allocator.buffer(capacity: 8)
+2026-02-27T22:54:33.7731134Z 11 | 
+2026-02-27T22:54:33.7743715Z [1256/1267] Compiling MSSQLNioTests MSSQLStoredProcTests.swift
+2026-02-27T22:54:33.7744360Z [1257/1267] Compiling MSSQLNioTests NTLMTests.swift
+2026-02-27T22:54:33.7745162Z [1258/1267] Compiling MSSQLNioTests SQLClientCompatTests.swift
+2026-02-27T22:54:33.8541418Z [1259/1268] /home/runner/work/sql-nio/sql-nio/.build/x86_64-unknown-linux-gnu/debug/sql-nioPackageDiscoveredTests.derived/all-discovered-tests.swift
+2026-02-27T22:54:33.8543308Z [1260/1268] Write sources
+2026-02-27T22:54:33.9043341Z [1261/1268] Wrapping AST for MSSQLNioTests for debugging
+2026-02-27T22:54:34.5725903Z [1263/1274] Compiling sql_nioPackageDiscoveredTests SQLiteNioTests.swift
+2026-02-27T22:54:34.7233116Z [1264/1275] Compiling sql_nioPackageDiscoveredTests all-discovered-tests.swift
+2026-02-27T22:54:35.1098034Z [1265/1275] Emitting module sql_nioPackageDiscoveredTests
+2026-02-27T22:54:35.1099261Z [1266/1275] Compiling sql_nioPackageDiscoveredTests PostgresNioTests.swift
+2026-02-27T22:54:35.1100107Z [1267/1275] Compiling sql_nioPackageDiscoveredTests SQLNioCoreTests.swift
+2026-02-27T22:54:35.1102649Z [1268/1275] Compiling sql_nioPackageDiscoveredTests MSSQLNioTests.swift
+2026-02-27T22:54:35.1103238Z [1269/1275] Compiling sql_nioPackageDiscoveredTests MySQLNioTests.swift
+2026-02-27T22:54:35.1869506Z [1270/1276] /home/runner/work/sql-nio/sql-nio/.build/x86_64-unknown-linux-gnu/debug/sql-nioPackageTests.derived/runner.swift
+2026-02-27T22:54:35.1871344Z [1271/1276] Write sources
+2026-02-27T22:54:35.2433399Z [1272/1276] Wrapping AST for sql-nioPackageDiscoveredTests for debugging
+2026-02-27T22:54:36.5040851Z [1274/1278] Emitting module sql_nioPackageTests
+2026-02-27T22:54:36.5041459Z [1275/1278] Compiling sql_nioPackageTests runner.swift
+2026-02-27T22:54:36.6857540Z [1276/1279] Wrapping AST for sql-nioPackageTests for debugging
+2026-02-27T22:54:36.6867437Z [1277/1279] Write Objects.LinkFileList
+2026-02-27T22:54:37.7160520Z [1278/1279] Linking sql-nioPackageTests.xctest
+2026-02-27T22:54:37.7228793Z Build complete! (180.64s)
+2026-02-27T22:54:37.9343443Z Test Suite 'Selected tests' started at 2026-02-27 22:54:37.789
+2026-02-27T22:54:37.9344254Z Test Suite 'SQLiteAdvancedQueryTests' started at 2026-02-27 22:54:37.791
+2026-02-27T22:54:37.9345382Z Test Case 'SQLiteAdvancedQueryTests.testAggregates' started at 2026-02-27 22:54:37.791
+2026-02-27T22:54:37.9346708Z Test Case 'SQLiteAdvancedQueryTests.testAggregates' passed (0.105 seconds)
+2026-02-27T22:54:37.9347602Z Test Case 'SQLiteAdvancedQueryTests.testCTE' started at 2026-02-27 22:54:37.896
+2026-02-27T22:54:37.9348496Z Test Case 'SQLiteAdvancedQueryTests.testCTE' passed (0.001 seconds)
+2026-02-27T22:54:37.9349355Z Test Case 'SQLiteAdvancedQueryTests.testGroupBy' started at 2026-02-27 22:54:37.896
+2026-02-27T22:54:37.9350209Z Test Case 'SQLiteAdvancedQueryTests.testGroupBy' passed (0.001 seconds)
+2026-02-27T22:54:37.9350930Z Test Case 'SQLiteAdvancedQueryTests.testJoin' started at 2026-02-27 22:54:37.897
+2026-02-27T22:54:37.9351688Z Test Case 'SQLiteAdvancedQueryTests.testJoin' passed (0.001 seconds)
+2026-02-27T22:54:37.9352157Z Test Case 'SQLiteAdvancedQueryTests.testLike' started at 2026-02-27 22:54:37.898
+2026-02-27T22:54:37.9352630Z Test Case 'SQLiteAdvancedQueryTests.testLike' passed (0.001 seconds)
+2026-02-27T22:54:37.9353116Z Test Case 'SQLiteAdvancedQueryTests.testLimitOffset' started at 2026-02-27 22:54:37.900
+2026-02-27T22:54:37.9353649Z Test Case 'SQLiteAdvancedQueryTests.testLimitOffset' passed (0.002 seconds)
+2026-02-27T22:54:37.9354149Z Test Case 'SQLiteAdvancedQueryTests.testOrderBy' started at 2026-02-27 22:54:37.902
+2026-02-27T22:54:37.9354630Z Test Case 'SQLiteAdvancedQueryTests.testOrderBy' passed (0.001 seconds)
+2026-02-27T22:54:37.9355297Z Test Case 'SQLiteAdvancedQueryTests.testSubquery' started at 2026-02-27 22:54:37.903
+2026-02-27T22:54:37.9355795Z Test Case 'SQLiteAdvancedQueryTests.testSubquery' passed (0.001 seconds)
+2026-02-27T22:54:37.9356236Z Test Suite 'SQLiteAdvancedQueryTests' passed at 2026-02-27 22:54:37.904
+2026-02-27T22:54:37.9356657Z 	 Executed 8 tests, with 0 failures (0 unexpected) in 0.113 (0.113) seconds
+2026-02-27T22:54:37.9357087Z Test Suite 'SQLiteBackupTests' started at 2026-02-27 22:54:37.904
+2026-02-27T22:54:37.9357542Z Test Case 'SQLiteBackupTests.testDumpEmptyTable' started at 2026-02-27 22:54:37.904
+2026-02-27T22:54:37.9358037Z Test Case 'SQLiteBackupTests.testDumpEmptyTable' passed (0.003 seconds)
+2026-02-27T22:54:37.9358556Z Test Case 'SQLiteBackupTests.testDumpHandlesNullValues' started at 2026-02-27 22:54:37.906
+2026-02-27T22:54:37.9359111Z Test Case 'SQLiteBackupTests.testDumpHandlesNullValues' passed (0.003 seconds)
+2026-02-27T22:54:37.9359662Z Test Case 'SQLiteBackupTests.testDumpHandlesSpecialChars' started at 2026-02-27 22:54:37.909
+2026-02-27T22:54:37.9360420Z Test Case 'SQLiteBackupTests.testDumpHandlesSpecialChars' passed (0.003 seconds)
+2026-02-27T22:54:37.9360923Z Test Case 'SQLiteBackupTests.testDumpToFile' started at 2026-02-27 22:54:37.912
+2026-02-27T22:54:37.9361392Z Test Case 'SQLiteBackupTests.testDumpToFile' passed (0.003 seconds)
+2026-02-27T22:54:37.9361852Z Test Case 'SQLiteBackupTests.testLogicalDump' started at 2026-02-27 22:54:37.915
+2026-02-27T22:54:37.9362305Z Test Case 'SQLiteBackupTests.testLogicalDump' passed (0.002 seconds)
+2026-02-27T22:54:37.9362801Z Test Case 'SQLiteBackupTests.testLogicalDumpAndRestore' started at 2026-02-27 22:54:37.916
+2026-02-27T22:54:37.9363347Z Test Case 'SQLiteBackupTests.testLogicalDumpAndRestore' passed (0.004 seconds)
+2026-02-27T22:54:37.9363932Z Test Case 'SQLiteBackupTests.testLogicalDumpIncludesCreateTable' started at 2026-02-27 22:54:37.920
+2026-02-27T22:54:37.9364557Z Test Case 'SQLiteBackupTests.testLogicalDumpIncludesCreateTable' passed (0.002 seconds)
+2026-02-27T22:54:37.9365371Z Test Case 'SQLiteBackupTests.testLogicalDumpSpecificTables' started at 2026-02-27 22:54:37.921
+2026-02-27T22:54:37.9365950Z Test Case 'SQLiteBackupTests.testLogicalDumpSpecificTables' passed (0.002 seconds)
+2026-02-27T22:54:37.9366515Z Test Case 'SQLiteBackupTests.testNativeBinaryBackup' started at 2026-02-27 22:54:37.923
+2026-02-27T22:54:37.9367041Z Test Case 'SQLiteBackupTests.testNativeBinaryBackup' passed (0.004 seconds)
+2026-02-27T22:54:37.9367557Z Test Case 'SQLiteBackupTests.testNativeBinaryRestore' started at 2026-02-27 22:54:37.927
+2026-02-27T22:54:37.9368086Z Test Case 'SQLiteBackupTests.testNativeBinaryRestore' passed (0.003 seconds)
+2026-02-27T22:54:37.9368710Z Test Case 'SQLiteBackupTests.testRestoreFromFile' started at 2026-02-27 22:54:37.929
+2026-02-27T22:54:37.9369199Z Test Case 'SQLiteBackupTests.testRestoreFromFile' passed (0.003 seconds)
+2026-02-27T22:54:37.9369663Z Test Case 'SQLiteBackupTests.testSerialize' started at 2026-02-27 22:54:37.933
+2026-02-27T22:54:37.9370112Z Test Case 'SQLiteBackupTests.testSerialize' passed (0.001 seconds)
+2026-02-27T22:54:37.9370506Z Test Suite 'SQLiteBackupTests' passed at 2026-02-27 22:54:37.934
+2026-02-27T22:54:37.9370901Z 	 Executed 12 tests, with 0 failures (0 unexpected) in 0.03 (0.03) seconds
+2026-02-27T22:54:37.9371330Z Test Suite 'SQLiteBasicQueryTests' started at 2026-02-27 22:54:37.934
+2026-02-27T22:54:37.9371815Z Test Case 'SQLiteBasicQueryTests.testSelectBool' started at 2026-02-27 22:54:37.934
+2026-02-27T22:54:37.9372296Z Test Case 'SQLiteBasicQueryTests.testSelectBool' passed (0.0 seconds)
+2026-02-27T22:54:37.9372834Z Test Case 'SQLiteBasicQueryTests.testSelectCurrentTimestamp' started at 2026-02-27 22:54:37.934
+2026-02-27T22:54:38.0492057Z Test Case 'SQLiteBasicQueryTests.testSelectCurrentTimestamp' passed (0.0 seconds)
+2026-02-27T22:54:38.0493142Z Test Case 'SQLiteBasicQueryTests.testSelectEmptyResult' started at 2026-02-27 22:54:37.934
+2026-02-27T22:54:38.0494146Z Test Case 'SQLiteBasicQueryTests.testSelectEmptyResult' passed (0.001 seconds)
+2026-02-27T22:54:38.0495284Z Test Case 'SQLiteBasicQueryTests.testSelectFloat' started at 2026-02-27 22:54:37.935
+2026-02-27T22:54:38.0496175Z Test Case 'SQLiteBasicQueryTests.testSelectFloat' passed (0.1 seconds)
+2026-02-27T22:54:38.0497104Z Test Case 'SQLiteBasicQueryTests.testSelectMultipleColumns' started at 2026-02-27 22:54:38.035
+2026-02-27T22:54:38.0497925Z Test Case 'SQLiteBasicQueryTests.testSelectMultipleColumns' passed (0.001 seconds)
+2026-02-27T22:54:38.0498809Z Test Case 'SQLiteBasicQueryTests.testSelectNull' started at 2026-02-27 22:54:38.036
+2026-02-27T22:54:38.0499322Z Test Case 'SQLiteBasicQueryTests.testSelectNull' passed (0.0 seconds)
+2026-02-27T22:54:38.0499818Z Test Case 'SQLiteBasicQueryTests.testSelectScalar' started at 2026-02-27 22:54:38.036
+2026-02-27T22:54:38.0500319Z Test Case 'SQLiteBasicQueryTests.testSelectScalar' passed (0.0 seconds)
+2026-02-27T22:54:38.0500810Z Test Case 'SQLiteBasicQueryTests.testSelectString' started at 2026-02-27 22:54:38.037
+2026-02-27T22:54:38.0501497Z Test Case 'SQLiteBasicQueryTests.testSelectString' passed (0.0 seconds)
+2026-02-27T22:54:38.0501928Z Test Suite 'SQLiteBasicQueryTests' passed at 2026-02-27 22:54:38.037
+2026-02-27T22:54:38.0502344Z 	 Executed 8 tests, with 0 failures (0 unexpected) in 0.103 (0.103) seconds
+2026-02-27T22:54:38.0502786Z Test Suite 'SQLiteConnectionTests' started at 2026-02-27 22:54:38.037
+2026-02-27T22:54:38.0503242Z Test Case 'SQLiteConnectionTests.testClose' started at 2026-02-27 22:54:38.037
+2026-02-27T22:54:38.0503689Z Test Case 'SQLiteConnectionTests.testClose' passed (0.0 seconds)
+2026-02-27T22:54:38.0504191Z Test Case 'SQLiteConnectionTests.testMultipleConnections' started at 2026-02-27 22:54:38.037
+2026-02-27T22:54:38.0504932Z Test Case 'SQLiteConnectionTests.testMultipleConnections' passed (0.0 seconds)
+2026-02-27T22:54:38.0505441Z Test Case 'SQLiteConnectionTests.testOpenFile' started at 2026-02-27 22:54:38.038
+2026-02-27T22:54:38.0505913Z Test Case 'SQLiteConnectionTests.testOpenFile' passed (0.002 seconds)
+2026-02-27T22:54:38.0506385Z Test Case 'SQLiteConnectionTests.testOpenMemory' started at 2026-02-27 22:54:38.039
+2026-02-27T22:54:38.0506871Z Test Case 'SQLiteConnectionTests.testOpenMemory' passed (0.0 seconds)
+2026-02-27T22:54:38.0507287Z Test Suite 'SQLiteConnectionTests' passed at 2026-02-27 22:54:38.039
+2026-02-27T22:54:38.0507696Z 	 Executed 4 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+2026-02-27T22:54:38.0508098Z Test Suite 'SQLiteDMLTests' started at 2026-02-27 22:54:38.039
+2026-02-27T22:54:38.0508512Z Test Case 'SQLiteDMLTests.testAutoincrement' started at 2026-02-27 22:54:38.039
+2026-02-27T22:54:38.0509102Z Test Case 'SQLiteDMLTests.testAutoincrement' passed (0.001 seconds)
+2026-02-27T22:54:38.0509572Z Test Case 'SQLiteDMLTests.testCreateTableAndInsert' started at 2026-02-27 22:54:38.040
+2026-02-27T22:54:38.0510083Z Test Case 'SQLiteDMLTests.testCreateTableAndInsert' passed (0.001 seconds)
+2026-02-27T22:54:38.0510533Z Test Case 'SQLiteDMLTests.testDelete' started at 2026-02-27 22:54:38.041
+2026-02-27T22:54:38.0510931Z Test Case 'SQLiteDMLTests.testDelete' passed (0.001 seconds)
+2026-02-27T22:54:38.0511357Z Test Case 'SQLiteDMLTests.testInsertAndSelect' started at 2026-02-27 22:54:38.042
+2026-02-27T22:54:38.0511814Z Test Case 'SQLiteDMLTests.testInsertAndSelect' passed (0.001 seconds)
+2026-02-27T22:54:38.0512269Z Test Case 'SQLiteDMLTests.testMultipleInserts' started at 2026-02-27 22:54:38.043
+2026-02-27T22:54:38.0512723Z Test Case 'SQLiteDMLTests.testMultipleInserts' passed (0.002 seconds)
+2026-02-27T22:54:38.0513162Z Test Case 'SQLiteDMLTests.testUpdate' started at 2026-02-27 22:54:38.045
+2026-02-27T22:54:38.0513569Z Test Case 'SQLiteDMLTests.testUpdate' passed (0.001 seconds)
+2026-02-27T22:54:38.0513930Z Test Suite 'SQLiteDMLTests' passed at 2026-02-27 22:54:38.046
+2026-02-27T22:54:38.0514334Z 	 Executed 6 tests, with 0 failures (0 unexpected) in 0.006 (0.006) seconds
+2026-02-27T22:54:38.0514873Z Test Suite 'SQLiteDataTableTests' started at 2026-02-27 22:54:38.046
+2026-02-27T22:54:38.0515339Z Test Case 'SQLiteDataTableTests.testAsDataTable' started at 2026-02-27 22:54:38.046
+2026-02-27T22:54:38.0515823Z Test Case 'SQLiteDataTableTests.testAsDataTable' passed (0.001 seconds)
+2026-02-27T22:54:38.0516245Z Test Suite 'SQLiteDataTableTests' passed at 2026-02-27 22:54:38.047
+2026-02-27T22:54:38.0516650Z 	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+2026-02-27T22:54:38.0517058Z Test Suite 'SQLiteDataTypeTests' started at 2026-02-27 22:54:38.047
+2026-02-27T22:54:38.0517508Z Test Case 'SQLiteDataTypeTests.testBlobType' started at 2026-02-27 22:54:38.047
+2026-02-27T22:54:38.0517968Z Test Case 'SQLiteDataTypeTests.testBlobType' passed (0.001 seconds)
+2026-02-27T22:54:38.0518428Z Test Case 'SQLiteDataTypeTests.testIntegerType' started at 2026-02-27 22:54:38.048
+2026-02-27T22:54:38.0518907Z Test Case 'SQLiteDataTypeTests.testIntegerType' passed (0.001 seconds)
+2026-02-27T22:54:38.0519382Z Test Case 'SQLiteDataTypeTests.testLargeInteger' started at 2026-02-27 22:54:38.048
+2026-02-27T22:54:38.0519979Z Test Case 'SQLiteDataTypeTests.testLargeInteger' passed (0.0 seconds)
+2026-02-27T22:54:38.0520465Z Test Case 'SQLiteDataTypeTests.testNegativeInteger' started at 2026-02-27 22:54:38.049
+2026-02-27T22:54:38.1600116Z Test Case 'SQLiteDataTypeTests.testNegativeInteger' passed (0.0 seconds)
+2026-02-27T22:54:38.1601035Z Test Case 'SQLiteDataTypeTests.testNullType' started at 2026-02-27 22:54:38.049
+2026-02-27T22:54:38.1601936Z Test Case 'SQLiteDataTypeTests.testNullType' passed (0.101 seconds)
+2026-02-27T22:54:38.1602700Z Test Case 'SQLiteDataTypeTests.testRealType' started at 2026-02-27 22:54:38.150
+2026-02-27T22:54:38.1603202Z Test Case 'SQLiteDataTypeTests.testRealType' passed (0.001 seconds)
+2026-02-27T22:54:38.1603661Z Test Case 'SQLiteDataTypeTests.testTextType' started at 2026-02-27 22:54:38.151
+2026-02-27T22:54:38.1604108Z Test Case 'SQLiteDataTypeTests.testTextType' passed (0.001 seconds)
+2026-02-27T22:54:38.1605170Z Test Case 'SQLiteDataTypeTests.testUnicodeString' started at 2026-02-27 22:54:38.151
+2026-02-27T22:54:38.1606148Z Test Case 'SQLiteDataTypeTests.testUnicodeString' passed (0.0 seconds)
+2026-02-27T22:54:38.1606846Z Test Suite 'SQLiteDataTypeTests' passed at 2026-02-27 22:54:38.152
+2026-02-27T22:54:38.1607616Z 	 Executed 8 tests, with 0 failures (0 unexpected) in 0.104 (0.104) seconds
+2026-02-27T22:54:38.1608306Z Test Suite 'SQLiteDecodableTests' started at 2026-02-27 22:54:38.152
+2026-02-27T22:54:38.1609050Z Test Case 'SQLiteDecodableTests.testDecodeNullableField' started at 2026-02-27 22:54:38.152
+2026-02-27T22:54:38.1609845Z Test Case 'SQLiteDecodableTests.testDecodeNullableField' passed (0.001 seconds)
+2026-02-27T22:54:38.1611087Z Test Case 'SQLiteDecodableTests.testDecodeStruct' started at 2026-02-27 22:54:38.153
+2026-02-27T22:54:38.1612013Z Test Case 'SQLiteDecodableTests.testDecodeStruct' passed (0.001 seconds)
+2026-02-27T22:54:38.1612808Z Test Suite 'SQLiteDecodableTests' passed at 2026-02-27 22:54:38.154
+2026-02-27T22:54:38.1613388Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+2026-02-27T22:54:38.1613797Z Test Suite 'SQLiteErrorTests' started at 2026-02-27 22:54:38.154
+2026-02-27T22:54:38.1614313Z Test Case 'SQLiteErrorTests.testConnectionRecoveryAfterError' started at 2026-02-27 22:54:38.154
+2026-02-27T22:54:38.1615110Z Test Case 'SQLiteErrorTests.testConnectionRecoveryAfterError' passed (0.0 seconds)
+2026-02-27T22:54:38.1615804Z Test Case 'SQLiteErrorTests.testSyntaxError' started at 2026-02-27 22:54:38.154
+2026-02-27T22:54:38.1616267Z Test Case 'SQLiteErrorTests.testSyntaxError' passed (0.0 seconds)
+2026-02-27T22:54:38.1616724Z Test Case 'SQLiteErrorTests.testTableNotFound' started at 2026-02-27 22:54:38.155
+2026-02-27T22:54:38.1617196Z Test Case 'SQLiteErrorTests.testTableNotFound' passed (0.0 seconds)
+2026-02-27T22:54:38.1617702Z Test Case 'SQLiteErrorTests.testUniqueConstraintViolation' started at 2026-02-27 22:54:38.155
+2026-02-27T22:54:38.1618311Z Test Case 'SQLiteErrorTests.testUniqueConstraintViolation' passed (0.001 seconds)
+2026-02-27T22:54:38.1618962Z Test Suite 'SQLiteErrorTests' passed at 2026-02-27 22:54:38.156
+2026-02-27T22:54:38.1619449Z 	 Executed 4 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+2026-02-27T22:54:38.1619925Z Test Suite 'SQLiteMultiQueryTests' started at 2026-02-27 22:54:38.156
+2026-02-27T22:54:38.1620410Z Test Case 'SQLiteMultiQueryTests.testQueryMultiBasic' started at 2026-02-27 22:54:38.156
+2026-02-27T22:54:38.1621102Z Test Case 'SQLiteMultiQueryTests.testQueryMultiBasic' passed (0.0 seconds)
+2026-02-27T22:54:38.1621619Z Test Case 'SQLiteMultiQueryTests.testQueryMultiMixed' started at 2026-02-27 22:54:38.156
+2026-02-27T22:54:38.1622142Z Test Case 'SQLiteMultiQueryTests.testQueryMultiMixed' passed (0.001 seconds)
+2026-02-27T22:54:38.1622590Z Test Suite 'SQLiteMultiQueryTests' passed at 2026-02-27 22:54:38.157
+2026-02-27T22:54:38.1623079Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+2026-02-27T22:54:38.1623498Z Test Suite 'SQLiteParameterTests' started at 2026-02-27 22:54:38.157
+2026-02-27T22:54:38.1624428Z Test Case 'SQLiteParameterTests.testAtP1StyleParam' started at 2026-02-27 22:54:38.157
+2026-02-27T22:54:38.1625610Z Test Case 'SQLiteParameterTests.testAtP1StyleParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1626515Z Test Case 'SQLiteParameterTests.testBlobParam' started at 2026-02-27 22:54:38.158
+2026-02-27T22:54:38.1627403Z Test Case 'SQLiteParameterTests.testBlobParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1627908Z Test Case 'SQLiteParameterTests.testBoolParam' started at 2026-02-27 22:54:38.158
+2026-02-27T22:54:38.1628383Z Test Case 'SQLiteParameterTests.testBoolParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1628851Z Test Case 'SQLiteParameterTests.testFloatParam' started at 2026-02-27 22:54:38.158
+2026-02-27T22:54:38.1629327Z Test Case 'SQLiteParameterTests.testFloatParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1630006Z Test Case 'SQLiteParameterTests.testMultipleParams' started at 2026-02-27 22:54:38.159
+2026-02-27T22:54:38.1630518Z Test Case 'SQLiteParameterTests.testMultipleParams' passed (0.0 seconds)
+2026-02-27T22:54:38.1630999Z Test Case 'SQLiteParameterTests.testNullParam' started at 2026-02-27 22:54:38.159
+2026-02-27T22:54:38.1631465Z Test Case 'SQLiteParameterTests.testNullParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1631964Z Test Case 'SQLiteParameterTests.testQuestionMarkParam' started at 2026-02-27 22:54:38.159
+2026-02-27T22:54:38.1632490Z Test Case 'SQLiteParameterTests.testQuestionMarkParam' passed (0.0 seconds)
+2026-02-27T22:54:38.1633203Z Test Case 'SQLiteParameterTests.testSpecialCharsInString' started at 2026-02-27 22:54:38.160
+2026-02-27T22:54:38.1633930Z Test Case 'SQLiteParameterTests.testSpecialCharsInString' passed (0.0 seconds)
+2026-02-27T22:54:38.1634482Z Test Suite 'SQLiteParameterTests' passed at 2026-02-27 22:54:38.160
+2026-02-27T22:54:38.2848346Z 	 Executed 8 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+2026-02-27T22:54:38.2849114Z Test Suite 'SQLitePoolTests' started at 2026-02-27 22:54:38.160
+2026-02-27T22:54:38.2849911Z Test Case 'SQLitePoolTests.testPoolBasicUsage' started at 2026-02-27 22:54:38.160
+2026-02-27T22:54:38.2850760Z Test Case 'SQLitePoolTests.testPoolBasicUsage' passed (0.001 seconds)
+2026-02-27T22:54:38.2851575Z Test Case 'SQLitePoolTests.testPoolCloseAll' started at 2026-02-27 22:54:38.161
+2026-02-27T22:54:38.2852373Z Test Case 'SQLitePoolTests.testPoolCloseAll' passed (0.0 seconds)
+2026-02-27T22:54:38.2852870Z Test Case 'SQLitePoolTests.testPoolFileDatabase' started at 2026-02-27 22:54:38.161
+2026-02-27T22:54:38.2853367Z Test Case 'SQLitePoolTests.testPoolFileDatabase' passed (0.004 seconds)
+2026-02-27T22:54:38.2853882Z Test Case 'SQLitePoolTests.testPoolMultipleConnections' started at 2026-02-27 22:54:38.165
+2026-02-27T22:54:38.2854431Z Test Case 'SQLitePoolTests.testPoolMultipleConnections' passed (0.001 seconds)
+2026-02-27T22:54:38.2855196Z Test Suite 'SQLitePoolTests' passed at 2026-02-27 22:54:38.166
+2026-02-27T22:54:38.2855616Z 	 Executed 4 tests, with 0 failures (0 unexpected) in 0.006 (0.006) seconds
+2026-02-27T22:54:38.2856067Z Test Suite 'SQLiteSQLDatabaseTests' started at 2026-02-27 22:54:38.166
+2026-02-27T22:54:38.2856585Z Test Case 'SQLiteSQLDatabaseTests.testConformsToSQLDatabase' started at 2026-02-27 22:54:38.166
+2026-02-27T22:54:38.2857176Z Test Case 'SQLiteSQLDatabaseTests.testConformsToSQLDatabase' passed (0.0 seconds)
+2026-02-27T22:54:38.2857765Z Test Case 'SQLiteSQLDatabaseTests.testConvenienceQueryNoBinds' started at 2026-02-27 22:54:38.166
+2026-02-27T22:54:38.2858369Z Test Case 'SQLiteSQLDatabaseTests.testConvenienceQueryNoBinds' passed (0.0 seconds)
+2026-02-27T22:54:38.2858985Z Test Case 'SQLiteSQLDatabaseTests.testExecuteReturnsAffectedRows' started at 2026-02-27 22:54:38.167
+2026-02-27T22:54:38.2859632Z Test Case 'SQLiteSQLDatabaseTests.testExecuteReturnsAffectedRows' passed (0.001 seconds)
+2026-02-27T22:54:38.2860145Z Test Suite 'SQLiteSQLDatabaseTests' passed at 2026-02-27 22:54:38.167
+2026-02-27T22:54:38.2860559Z 	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+2026-02-27T22:54:38.2861223Z Test Suite 'SQLiteTransactionTests' started at 2026-02-27 22:54:38.167
+2026-02-27T22:54:38.2861683Z Test Case 'SQLiteTransactionTests.testCommit' started at 2026-02-27 22:54:38.167
+2026-02-27T22:54:38.2862152Z Test Case 'SQLiteTransactionTests.testCommit' passed (0.001 seconds)
+2026-02-27T22:54:38.2862621Z Test Case 'SQLiteTransactionTests.testRollback' started at 2026-02-27 22:54:38.168
+2026-02-27T22:54:38.2863092Z Test Case 'SQLiteTransactionTests.testRollback' passed (0.001 seconds)
+2026-02-27T22:54:38.2863616Z Test Case 'SQLiteTransactionTests.testTransactionIsolation' started at 2026-02-27 22:54:38.169
+2026-02-27T22:54:38.2864193Z Test Case 'SQLiteTransactionTests.testTransactionIsolation' passed (0.001 seconds)
+2026-02-27T22:54:38.2864979Z Test Case 'SQLiteTransactionTests.testWithTransactionCommit' started at 2026-02-27 22:54:38.170
+2026-02-27T22:54:38.2865581Z Test Case 'SQLiteTransactionTests.testWithTransactionCommit' passed (0.001 seconds)
+2026-02-27T22:54:38.2866221Z Test Case 'SQLiteTransactionTests.testWithTransactionRollbackOnError' started at 2026-02-27 22:54:38.171
+2026-02-27T22:54:38.2866907Z Test Case 'SQLiteTransactionTests.testWithTransactionRollbackOnError' passed (0.101 seconds)
+2026-02-27T22:54:38.2867429Z Test Suite 'SQLiteTransactionTests' passed at 2026-02-27 22:54:38.272
+2026-02-27T22:54:38.2867842Z 	 Executed 5 tests, with 0 failures (0 unexpected) in 0.105 (0.105) seconds
+2026-02-27T22:54:38.2868231Z Test Suite 'Selected tests' passed at 2026-02-27 22:54:38.273
+2026-02-27T22:54:38.2868605Z 	 Executed 75 tests, with 0 failures (0 unexpected) in 0.48 (0.48) seconds
+2026-02-27T22:54:38.2869282Z ◇ Test run started.
+2026-02-27T22:54:38.2869569Z ↳ Testing Library Version: 6.0.3 (18c42c19cac3faf)
+2026-02-27T22:54:38.2869928Z ✔ Test run with 0 tests passed after 0.001 seconds.
+2026-02-27T22:54:38.2913503Z ##[group]Run swift test --filter SQLNioCoreTests
+2026-02-27T22:54:38.2913856Z [36;1mswift test --filter SQLNioCoreTests[0m
+2026-02-27T22:54:38.2963849Z shell: /usr/bin/bash -e {0}
+2026-02-27T22:54:38.2964084Z ##[endgroup]
+2026-02-27T22:54:45.2639544Z [0/1] Planning build
+2026-02-27T22:54:49.3188596Z [1/1] Compiling plugin Swift-DocC
+2026-02-27T22:54:53.2096674Z [2/2] Compiling plugin Swift-DocC Preview
+2026-02-27T22:54:53.2097049Z Building for debugging...
+2026-02-27T22:54:53.4206443Z [2/4] Write swift-version-B948D857FCC5015.txt
+2026-02-27T22:54:53.4668818Z Build complete! (13.56s)
+2026-02-27T22:54:53.5486637Z Test Suite 'Selected tests' started at 2026-02-27 22:54:53.534
+2026-02-27T22:54:53.5487373Z Test Suite 'SQLErrorTests' started at 2026-02-27 22:54:53.535
+2026-02-27T22:54:53.5488018Z Test Case 'SQLErrorTests.testDescriptions' started at 2026-02-27 22:54:53.535
+2026-02-27T22:54:53.5488495Z Test Case 'SQLErrorTests.testDescriptions' passed (0.001 seconds)
+2026-02-27T22:54:53.5488946Z Test Suite 'SQLErrorTests' passed at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5489330Z 	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+2026-02-27T22:54:53.5489734Z Test Suite 'SQLRowTests' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5490119Z Test Case 'SQLRowTests.testIndexAccess' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5490531Z Test Case 'SQLRowTests.testIndexAccess' passed (0.0 seconds)
+2026-02-27T22:54:53.5490922Z Test Case 'SQLRowTests.testNameAccess' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5491318Z Test Case 'SQLRowTests.testNameAccess' passed (0.0 seconds)
+2026-02-27T22:54:53.5491773Z Test Case 'SQLRowTests.testRequireThrowsOnMissingColumn' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5492326Z Test Case 'SQLRowTests.testRequireThrowsOnMissingColumn' passed (0.0 seconds)
+2026-02-27T22:54:53.5492746Z Test Suite 'SQLRowTests' passed at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5493109Z 	 Executed 3 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+2026-02-27T22:54:53.5493490Z Test Suite 'SQLValueTests' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5493869Z Test Case 'SQLValueTests.testEquality' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5494258Z Test Case 'SQLValueTests.testEquality' passed (0.0 seconds)
+2026-02-27T22:54:53.5494653Z Test Case 'SQLValueTests.testLiteralInit' started at 2026-02-27 22:54:53.536
+2026-02-27T22:54:53.5495376Z Test Case 'SQLValueTests.testLiteralInit' passed (0.0 seconds)
+2026-02-27T22:54:53.5495802Z Test Case 'SQLValueTests.testTypedAccessors' started at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5496245Z Test Case 'SQLValueTests.testTypedAccessors' passed (0.0 seconds)
+2026-02-27T22:54:53.5496625Z Test Suite 'SQLValueTests' passed at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5496984Z 	 Executed 3 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+2026-02-27T22:54:53.5497353Z Test Suite 'Selected tests' passed at 2026-02-27 22:54:53.537
+2026-02-27T22:54:53.5497737Z 	 Executed 7 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+2026-02-27T22:54:53.5498275Z ◇ Test run started.
+2026-02-27T22:54:53.5498565Z ↳ Testing Library Version: 6.0.3 (18c42c19cac3faf)
+2026-02-27T22:54:53.5500644Z ✔ Test run with 0 tests passed after 0.001 seconds.
+2026-02-27T22:54:53.5643466Z Post job cleanup.
+2026-02-27T22:54:53.6590129Z [command]/usr/bin/git version
+2026-02-27T22:54:53.6628560Z git version 2.53.0
+2026-02-27T22:54:53.6672187Z Temporarily overriding HOME='/home/runner/work/_temp/cd645292-7989-4a7a-b303-41c14f412afc' before making global git config changes
+2026-02-27T22:54:53.6673535Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-27T22:54:53.6679141Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sql-nio/sql-nio
+2026-02-27T22:54:53.6720527Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-27T22:54:53.6753209Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-27T22:54:53.6989761Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-27T22:54:53.7010450Z http.https://github.com/.extraheader
+2026-02-27T22:54:53.7023194Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-02-27T22:54:53.7053209Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-27T22:54:53.7287179Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-27T22:54:53.7317886Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-27T22:54:53.7671822Z Cleaning up orphan processes
