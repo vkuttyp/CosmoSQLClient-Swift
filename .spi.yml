@@ -1,0 +1,11 @@
+version: 1
+builder:
+  configs:
+    - documentation_targets:
+        - SQLNioCore
+        - MSSQLNio
+        - PostgresNio
+        - MySQLNio
+        - SQLiteNio
+      swift_version: "6.0"
+      platform: macosSpm

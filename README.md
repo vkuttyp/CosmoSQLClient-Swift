@@ -1,0 +1,1010 @@
+# sql-nio
+
+A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL**, **MySQL/MariaDB**, and **SQLite** — all through a single, consistent `async/await` API built natively on [SwiftNIO](https://github.com/apple/swift-nio).
+
+> **No FreeTDS. No ODBC. No JDBC. No C libraries.**  
+> Pure Swift wire-protocol implementations — TDS 7.4 for SQL Server, PostgreSQL wire protocol v3, MySQL wire protocol v10 — and the built-in `sqlite3` system library for SQLite.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+  - [Microsoft SQL Server](#microsoft-sql-server)
+  - [PostgreSQL](#postgresql)
+  - [MySQL / MariaDB](#mysql--mariadb)
+  - [SQLite](#sqlite)
+- [Unified API](#unified-api-sqldatabase-protocol)
+- [Query Parameters](#query-parameters--placeholders)
+- [SQLValue — Type-Safe Values](#sqlvalue--type-safe-values)
+- [Reading Result Rows](#reading-result-rows)
+- [Decoding into Swift Types](#decoding-into-swift-types)
+- [SQLDataTable & SQLDataSet](#sqldatatable--sqldataset)
+- [Transactions](#transactions)
+- [Connection Pooling](#connection-pooling)
+- [Multiple Result Sets](#multiple-result-sets)
+- [Stored Procedures (SQL Server)](#stored-procedures-sql-server)
+- [Windows / NTLM Authentication (SQL Server)](#windows--ntlm-authentication-sql-server)
+- [TLS / SSL](#tls--ssl)
+- [Backup & Restore](#backup--restore)
+- [Error Handling](#error-handling)
+- [Supported Data Types](#supported-data-types)
+- [Platform Support](#platform-support)
+- [Architecture](#architecture)
+- [Testing](#testing)
+- [Related Projects](#related-projects)
+- [License](#license)
+
+---
+
+## Features
+
+| Feature | SQL Server | PostgreSQL | MySQL | SQLite |
+|---|:---:|:---:|:---:|:---:|
+| Native wire protocol | TDS 7.4 | v3 | v10 | sqlite3 |
+| TLS / SSL encryption | ✅ | ✅ | ✅ | N/A |
+| Unified `SQLDatabase` protocol | ✅ | ✅ | ✅ | ✅ |
+| `async/await` API | ✅ | ✅ | ✅ | ✅ |
+| Parameterized queries | ✅ | ✅ | ✅ | ✅ |
+| `@p1` placeholder style | ✅ | ✅ | ✅ | ✅ |
+| `?` placeholder style | — | — | ✅ | ✅ |
+| Transactions | ✅ | ✅ | ✅ | ✅ |
+| Connection pooling | ✅ | ✅ | ✅ | ✅ |
+| Multiple result sets | ✅ | ✅ | ✅ | ✅ |
+| Stored procedures | ✅ | ✅ | ✅ | — |
+| Windows / NTLM auth | ✅ | — | — | — |
+| `SQLDataTable` / `SQLDataSet` | ✅ | ✅ | ✅ | ✅ |
+| `Codable` row decoding | ✅ | ✅ | ✅ | ✅ |
+| Markdown table output | ✅ | ✅ | ✅ | ✅ |
+| Logical SQL dump | ✅ | ✅ | ✅ | ✅ |
+| Native binary backup | — | — | — | ✅ |
+| In-memory database | — | — | — | ✅ |
+| No external dependencies | ✅ | ✅ | ✅ | ✅ |
+
+---
+
+## Installation
+
+Add to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/vkuttyp/sql-nio.git", from: "1.0.0"),
+],
+```
+
+Then add the product(s) you need to your target:
+
+```swift
+.target(
+    name: "MyApp",
+    dependencies: [
+        .product(name: "MSSQLNio",    package: "sql-nio"),  // SQL Server
+        .product(name: "PostgresNio", package: "sql-nio"),  // PostgreSQL
+        .product(name: "MySQLNio",    package: "sql-nio"),  // MySQL / MariaDB
+        .product(name: "SQLiteNio",   package: "sql-nio"),  // SQLite
+        .product(name: "SQLNioCore",  package: "sql-nio"),  // Shared types only
+    ]
+),
+```
+
+You can import only the drivers you need — each is an independent library module.
+
+### Requirements
+
+- Swift 5.9+
+- macOS 13+, iOS 16+, tvOS 16+, watchOS 9+, visionOS 1+, Linux
+
+### Swift Package Manager dependencies pulled in automatically
+
+| Dependency | Purpose |
+|---|---|
+| `swift-nio` | Async networking foundation |
+| `swift-nio-ssl` | TLS for MSSQL, PostgreSQL, MySQL |
+| `swift-log` | Structured logging |
+| `swift-crypto` | MD5 / SHA for auth handshakes |
+
+---
+
+## Quick Start
+
+### Microsoft SQL Server
+
+```swift
+import MSSQLNio
+
+let config = MSSQLConnection.Configuration(
+    host:     "localhost",
+    port:     1433,          // default
+    database: "AdventureWorks",
+    username: "sa",
+    password: "YourPassword!"
+)
+
+let conn = try await MSSQLConnection.connect(configuration: config)
+defer { Task { try? await conn.close() } }
+
+// SELECT — returns [SQLRow]
+let rows = try await conn.query(
+    "SELECT id, name, salary FROM employees WHERE active = @p1",
+    [.bool(true)]
+)
+for row in rows {
+    let id     = row["id"].asInt32()!
+    let name   = row["name"].asString()!
+    let salary = row["salary"].asDecimal()!
+    print("\(id): \(name) — \(salary)")
+}
+
+// INSERT / UPDATE / DELETE — returns rows affected
+let affected = try await conn.execute(
+    "UPDATE employees SET salary = @p1 WHERE id = @p2",
+    [.decimal(Decimal(75000)), .int32(42)]
+)
+print("\(affected) row(s) updated")
+```
+
+### PostgreSQL
+
+```swift
+import PostgresNio
+
+let config = PostgresConnection.Configuration(
+    host:     "localhost",
+    port:     5432,          // default
+    database: "mydb",
+    username: "postgres",
+    password: "secret"
+)
+
+let conn = try await PostgresConnection.connect(configuration: config)
+defer { Task { try? await conn.close() } }
+
+let rows = try await conn.query(
+    "SELECT id, email FROM users WHERE created_at > $1",
+    [.date(Date().addingTimeInterval(-86400))]
+)
+```
+
+### MySQL / MariaDB
+
+```swift
+import MySQLNio
+
+let config = MySQLConnection.Configuration(
+    host:     "localhost",
+    port:     3306,          // default
+    database: "mydb",
+    username: "root",
+    password: "secret"
+)
+
+let conn = try await MySQLConnection.connect(configuration: config)
+defer { Task { try? await conn.close() } }
+
+// Use ? or @p1 placeholders — both work
+let rows = try await conn.query(
+    "SELECT id, name FROM products WHERE price < @p1",
+    [.double(50.0)]
+)
+```
+
+### SQLite
+
+```swift
+import SQLiteNio
+
+// In-memory database (great for testing)
+let conn = try SQLiteConnection.open()
+
+// File-based database (WAL mode enabled automatically)
+let conn = try SQLiteConnection.open(
+    configuration: .init(storage: .file(path: "/var/db/myapp.sqlite"))
+)
+
+defer { Task { try? await conn.close() } }
+
+try await conn.execute("""
+    CREATE TABLE IF NOT EXISTS notes (
+        id    INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        body  TEXT
+    )
+""")
+
+_ = try await conn.execute(
+    "INSERT INTO notes (title, body) VALUES (@p1, @p2)",
+    [.string("Meeting notes"), .string("Discussed roadmap.")]
+)
+
+let notes = try await conn.query("SELECT * FROM notes")
+```
+
+---
+
+## Unified API (`SQLDatabase` Protocol)
+
+All four drivers conform to the same `SQLDatabase` protocol, so you can write database-agnostic code:
+
+```swift
+import SQLNioCore
+
+protocol SQLDatabase {
+    func query(_ sql: String, _ binds: [SQLValue]) async throws -> [SQLRow]
+    func execute(_ sql: String, _ binds: [SQLValue]) async throws -> Int
+    func close() async throws
+
+    // Convenience (no binds):
+    func query(_ sql: String) async throws -> [SQLRow]
+    func execute(_ sql: String) async throws -> Int
+
+    // Decode directly into Codable types:
+    func query<T: Decodable>(_ sql: String, _ binds: [SQLValue], as: T.Type) async throws -> [T]
+}
+```
+
+Write business logic once, run on any database:
+
+```swift
+func createUser(db: any SQLDatabase, name: String, email: String) async throws {
+    try await db.execute(
+        "INSERT INTO users (name, email) VALUES (@p1, @p2)",
+        [.string(name), .string(email)]
+    )
+}
+
+// All four work identically:
+try await createUser(db: mssqlConn,    name: "Alice", email: "alice@example.com")
+try await createUser(db: postgresConn, name: "Alice", email: "alice@example.com")
+try await createUser(db: mysqlConn,    name: "Alice", email: "alice@example.com")
+try await createUser(db: sqliteConn,   name: "Alice", email: "alice@example.com")
+```
+
+> **Note on placeholder syntax:** While the `SQLDatabase` protocol accepts `@p1` style universally, each database also natively supports its own placeholder syntax. See [Query Parameters](#query-parameters--placeholders).
+
+---
+
+## Query Parameters & Placeholders
+
+sql-nio supports `@p1`-style numbered parameters on **all four databases** for maximum portability. Each driver's native syntax is also supported:
+
+| Database   | Native syntax | sql-nio universal |
+|------------|--------------|-------------------|
+| SQL Server | `@p1`, `@p2`, … | ✅ same |
+| PostgreSQL | `$1`, `$2`, … | ✅ `@p1` also works |
+| MySQL      | `?` | ✅ `@p1` also works |
+| SQLite     | `?`, `?1` | ✅ `@p1` also works |
+
+```swift
+// Portable — works on all databases:
+let rows = try await conn.query(
+    "SELECT * FROM orders WHERE user_id = @p1 AND status = @p2",
+    [.int32(userId), .string("shipped")]
+)
+
+// PostgreSQL native style also works:
+let rows = try await pgConn.query(
+    "SELECT * FROM orders WHERE user_id = $1 AND status = $2",
+    [.int32(userId), .string("shipped")]
+)
+```
+
+Parameters are always sent as **bound values** — never string-interpolated into the SQL — preventing SQL injection.
+
+---
+
+## `SQLValue` — Type-Safe Values
+
+`SQLValue` is the unified currency type for all bind parameters and result values:
+
+```swift
+public enum SQLValue {
+    case null
+    case bool(Bool)
+    case int(Int)
+    case int8(Int8)
+    case int16(Int16)
+    case int32(Int32)
+    case int64(Int64)
+    case float(Float)
+    case double(Double)
+    case decimal(Decimal)  // Exact — DECIMAL, NUMERIC, MONEY
+    case string(String)
+    case bytes([UInt8])    // BINARY, VARBINARY, BLOB
+    case uuid(UUID)
+    case date(Date)        // Maps to DATETIME2, TIMESTAMP, DATETIME
+}
+```
+
+### Literal syntax (no `.` case needed)
+
+`SQLValue` conforms to all Swift literal protocols:
+
+```swift
+let binds: [SQLValue] = [
+    "Alice",              // .string("Alice")
+    42,                   // .int(42)
+    3.14,                 // .double(3.14)
+    true,                 // .bool(true)
+    nil,                  // .null
+]
+```
+
+### Typed accessors
+
+```swift
+let v: SQLValue = row["salary"]
+
+v.asInt()      // → Int?
+v.asInt32()    // → Int32?
+v.asInt64()    // → Int64?
+v.asDouble()   // → Double?
+v.asDecimal()  // → Decimal?
+v.asString()   // → String?
+v.asBool()     // → Bool?
+v.asDate()     // → Date?
+v.asUUID()     // → UUID?
+v.asBytes()    // → [UInt8]?
+v.isNull       // → Bool
+
+// Unsigned widening (returns nil if value is negative)
+v.asUInt8()    // → UInt8?
+v.asUInt16()   // → UInt16?
+v.asUInt32()   // → UInt32?
+v.asUInt64()   // → UInt64?
+```
+
+---
+
+## Reading Result Rows
+
+`[SQLRow]` is returned from all `query()` calls. Each `SQLRow` provides access by column name or index:
+
+```swift
+let rows = try await conn.query("SELECT id, name, email FROM users")
+
+for row in rows {
+    // Access by name (case-insensitive)
+    let id    = row["id"].asInt32()!
+    let name  = row["name"].asString() ?? "(none)"
+    let email = row["email"].asString()  // nil if NULL
+
+    // Access by column index
+    let first = row[0].asInt32()
+
+    // Check null
+    if row["deleted_at"].isNull {
+        print("\(name) is active")
+    }
+
+    // Column metadata
+    for col in row.columns {
+        print("\(col.name): \(row[col].asString() ?? "NULL")")
+    }
+}
+```
+
+### Column names and metadata
+
+```swift
+let col = row.columns[0]
+col.name    // → "id"
+col.table   // → "users" (if available)
+```
+
+---
+
+## Decoding into Swift Types
+
+Use `Codable` conformance for zero-boilerplate row mapping:
+
+```swift
+struct User: Codable {
+    let id:    Int
+    let name:  String
+    let email: String?
+}
+
+// Decode directly from query:
+let users: [User] = try await conn.query(
+    "SELECT id, name, email FROM users WHERE active = @p1",
+    [.bool(true)],
+    as: User.self
+)
+
+// Or decode an existing [SQLRow]:
+let rows = try await conn.query("SELECT id, name, email FROM users")
+let users = try rows.map { try SQLRowDecoder().decode(User.self, from: $0) }
+```
+
+Column names are matched to struct property names. By default, `snake_case` column names are converted to `camelCase` Swift properties (e.g., `first_name` → `firstName`).
+
+```swift
+struct Product: Codable {
+    let productId:   Int     // maps from "product_id"
+    let productName: String  // maps from "product_name"
+    let unitPrice:   Double  // maps from "unit_price"
+}
+```
+
+---
+
+## `SQLDataTable` & `SQLDataSet`
+
+`SQLDataTable` is a structured, `Codable` representation of a query result — useful when you need to pass results between layers, serialize to JSON, or render as a table:
+
+```swift
+// Convert [SQLRow] to SQLDataTable
+let rows  = try await conn.query("SELECT * FROM employees")
+let table = SQLDataTable(name: "employees", rows: rows)
+
+// Access by row/column
+let cell = table.row(at: 0)["salary"]!  // → SQLCellValue
+let col  = table.column(named: "name")  // → [SQLCellValue]
+
+print("Rows: \(table.rowCount), Columns: \(table.columnCount)")
+
+// Render as Markdown
+print(table.toMarkdown())
+// | id | name  | salary    |
+// |----|-------|-----------|
+// | 1  | Alice | 75000.00  |
+// | 2  | Bob   | 82000.00  |
+
+// Decode to Codable types
+struct Employee: Codable { let id: Int; let name: String }
+let employees: [Employee] = try table.decode(as: Employee.self)
+
+// Serialize to JSON
+let json = try JSONEncoder().encode(table)
+let decoded = try JSONDecoder().decode(SQLDataTable.self, from: json)
+```
+
+### `SQLDataSet` — multiple tables
+
+`SQLDataSet` holds multiple named `SQLDataTable` instances (e.g., from a stored procedure returning multiple result sets):
+
+```swift
+let resultSets = try await conn.queryMulti("""
+    SELECT * FROM orders WHERE user_id = @p1;
+    SELECT * FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE user_id = @p2)
+""", [.int32(userId), .int32(userId)])
+
+let dataSet = SQLDataSet(tables: resultSets.enumerated().map { i, rows in
+    SQLDataTable(name: "result\(i)", rows: rows)
+})
+
+let orders     = dataSet["result0"]  // → SQLDataTable?
+let orderItems = dataSet["result1"]
+```
+
+---
+
+## Transactions
+
+All four drivers support `BEGIN` / `COMMIT` / `ROLLBACK` with a convenient closure-based wrapper:
+
+```swift
+// Closure-based (auto-commits or rolls back on error):
+try await conn.withTransaction {
+    _ = try await conn.execute(
+        "INSERT INTO accounts (owner, balance) VALUES (@p1, @p2)",
+        [.string("Alice"), .decimal(1000)]
+    )
+    _ = try await conn.execute(
+        "UPDATE accounts SET balance = balance - @p1 WHERE owner = @p2",
+        [.decimal(100), .string("Alice")]
+    )
+    // Throws → automatic ROLLBACK
+    // Returns → automatic COMMIT
+}
+
+// Manual control:
+try await conn.beginTransaction()
+do {
+    _ = try await conn.execute("UPDATE ...")
+    try await conn.commitTransaction()
+} catch {
+    try await conn.rollbackTransaction()
+    throw error
+}
+```
+
+---
+
+## Connection Pooling
+
+All four drivers include a built-in actor-based connection pool for concurrent workloads:
+
+### SQL Server pool
+
+```swift
+import MSSQLNio
+
+let pool = MSSQLConnectionPool(
+    configuration: MSSQLConnection.Configuration(
+        host: "localhost", database: "MyDb", username: "sa", password: "Pass!"
+    ),
+    maxConnections: 10
+)
+
+// Use a pooled connection
+let result = try await pool.withConnection { conn in
+    try await conn.query("SELECT COUNT(*) AS cnt FROM orders")
+}
+
+// Or acquire/release manually
+let conn = try await pool.acquire()
+defer { pool.release(conn) }
+
+// Pool metrics
+print("Idle: \(pool.idleCount), Active: \(pool.activeCount), Waiting: \(pool.waiterCount)")
+
+// Shutdown
+await pool.closeAll()
+```
+
+### PostgreSQL pool
+
+```swift
+import PostgresNio
+
+let pool = PostgresConnectionPool(
+    configuration: PostgresConnection.Configuration(
+        host: "localhost", database: "mydb", username: "postgres", password: "secret"
+    ),
+    maxConnections: 20
+)
+
+let rows = try await pool.withConnection { conn in
+    try await conn.query("SELECT * FROM users")
+}
+```
+
+### MySQL pool
+
+```swift
+import MySQLNio
+
+let pool = MySQLConnectionPool(
+    configuration: MySQLConnection.Configuration(
+        host: "localhost", database: "mydb", username: "root", password: "secret"
+    ),
+    maxConnections: 10
+)
+```
+
+### SQLite pool
+
+```swift
+import SQLiteNio
+
+let pool = SQLiteConnectionPool(
+    configuration: SQLiteConnection.Configuration(
+        storage: .file(path: "/var/db/myapp.sqlite")
+    ),
+    maxConnections: 5
+)
+```
+
+---
+
+## Multiple Result Sets
+
+Use `queryMulti(_:_:)` when a SQL batch or stored procedure returns more than one result set:
+
+```swift
+// SQL Server / PostgreSQL / MySQL
+let sets: [[SQLRow]] = try await conn.queryMulti("""
+    SELECT * FROM customers WHERE region = @p1;
+    SELECT * FROM orders WHERE region = @p2
+""", [.string("West"), .string("West")])
+
+let customers = sets[0]
+let orders    = sets[1]
+```
+
+---
+
+## Stored Procedures (SQL Server)
+
+`MSSQLConnection` provides first-class stored procedure support with `INPUT`, `OUTPUT`, and `RETURN` values:
+
+```swift
+import MSSQLNio
+
+// Define parameters (INPUT and OUTPUT)
+let params: [SQLParameter] = [
+    SQLParameter(name: "@DeptID",   value: .int32(5),  isOutput: false),
+    SQLParameter(name: "@Budget",   value: .null,      isOutput: true),   // OUTPUT param
+    SQLParameter(name: "@EmpCount", value: .null,      isOutput: true),
+]
+
+let result = try await conn.callProcedure("GetDepartmentBudget", parameters: params)
+
+// Read result sets returned by the procedure
+let employees = result.tables[0]   // first SELECT result set
+
+// Read OUTPUT parameters by name
+let budget   = result.outputParams["@Budget"]?.asDecimal()
+let empCount = result.outputParams["@EmpCount"]?.asInt32()
+
+// RETURN value
+let returnCode = result.returnCode  // → Int32
+```
+
+Stored procedures also work on PostgreSQL (functions) and MySQL:
+
+```swift
+// PostgreSQL — call a function returning a table
+let rows = try await pgConn.query(
+    "SELECT * FROM get_active_users($1)", [.int32(tenantId)]
+)
+
+// MySQL — CALL stored procedure
+let sets = try await mysqlConn.queryMulti(
+    "CALL GetOrdersByStatus(?)", [.string("pending")]
+)
+```
+
+---
+
+## Windows / NTLM Authentication (SQL Server)
+
+Connect to SQL Server using Windows domain credentials (NTLM/Kerberos):
+
+```swift
+import MSSQLNio
+
+// Windows authentication — username and password are optional
+var config = MSSQLConnection.Configuration(
+    host:     "sqlserver.corp.example.com",
+    database: "Northwind"
+)
+config.domain   = "CORP"       // Windows domain name
+config.username = "jsmith"     // optional when using the current user context
+config.password = "WinPass!"   // optional when using the current user context
+
+let conn = try await MSSQLConnection.connect(configuration: config)
+```
+
+When `domain` is set, sql-nio negotiates NTLM authentication automatically during the TDS handshake. This is compatible with:
+
+- SQL Server on Windows joined to an Active Directory domain
+- SQL Server on Linux with Active Directory integration (e.g., `adutil`)
+- Azure SQL Managed Instance with AD authentication
+
+---
+
+## TLS / SSL
+
+Configure TLS per-connection on all network drivers:
+
+```swift
+// Require TLS — fail if server doesn't offer it
+config.tls = .require
+
+// Use TLS if available, plain text otherwise (default)
+config.tls = .prefer
+
+// Disable TLS — plain text only
+config.tls = .disable
+```
+
+For development/testing with self-signed certificates, disable certificate verification:
+
+> **Warning:** Never use in production.
+
+```swift
+// MSSQL
+var config = MSSQLConnection.Configuration(...)
+config.tls = .prefer   // MSSQL defaults to TLS-first via pre-login negotiation
+```
+
+---
+
+## Backup & Restore
+
+sql-nio provides logical SQL dump / restore across all four databases, plus native binary backup for SQLite.
+
+### Logical SQL dump (all databases)
+
+```swift
+// Export all tables to a SQL string
+let sql = try await conn.dump()
+
+// Export specific tables only
+let sql = try await conn.dump(tables: ["users", "orders"])
+
+// Write to a file
+try await conn.dump(to: "/var/backups/myapp.sql")
+
+// Restore from a SQL string
+try await conn.restore(from: sql)
+
+// Restore from a file
+try await conn.restore(fromFile: "/var/backups/myapp.sql")
+```
+
+The dump format includes:
+- A header comment with dialect, database name, and timestamp
+- `CREATE TABLE` statements (SQLite only — other databases use pre-existing schema)
+- `INSERT` statements for every row with dialect-appropriate literal escaping
+
+### SQLite native binary backup
+
+```swift
+import SQLiteNio
+
+// Copy the live database to a new file (safe on open connections)
+try await conn.backup(to: "/var/backups/myapp.sqlite")
+
+// Restore from a binary backup into the current connection
+try await conn.restore(fromBackup: "/var/backups/myapp.sqlite")
+
+// Serialize to Data (snapshot in memory)
+let data: Data = try await conn.serialize()
+// Store data in S3, iCloud, Core Data, etc.
+```
+
+### Restore from file — round trip example
+
+```swift
+import SQLiteNio
+
+// Source database
+let source = try SQLiteConnection.open(
+    configuration: .init(storage: .file(path: "production.sqlite"))
+)
+try await source.dump(to: "/tmp/backup.sql")
+try await source.close()
+
+// Restore into a fresh database
+let dest = try SQLiteConnection.open()
+try await dest.restore(fromFile: "/tmp/backup.sql")
+let count = try await dest.query("SELECT COUNT(*) AS n FROM users")
+print(count[0]["n"].asInt64()!)
+```
+
+---
+
+## Error Handling
+
+All errors are thrown as `SQLError`:
+
+```swift
+import SQLNioCore
+
+do {
+    let rows = try await conn.query("SELECT * FROM nonexistent_table")
+} catch SQLError.serverError(let code, let message, let state) {
+    // Database engine returned an error (e.g., table not found, constraint violation)
+    print("Server error \(code) [state \(state)]: \(message)")
+} catch SQLError.authenticationFailed(let message) {
+    // Wrong credentials or auth method not supported
+    print("Auth failed: \(message)")
+} catch SQLError.connectionError(let message) {
+    // TCP connection problem (host unreachable, port closed, etc.)
+    print("Cannot connect: \(message)")
+} catch SQLError.tlsError(let message) {
+    // TLS handshake or certificate error
+    print("TLS error: \(message)")
+} catch SQLError.timeout {
+    // Query or connection timed out
+    print("Operation timed out")
+} catch SQLError.connectionClosed {
+    // The connection was already closed
+    print("Connection is closed")
+} catch SQLError.columnNotFound(let name) {
+    print("Column not found: \(name)")
+} catch SQLError.typeMismatch(let expected, let got) {
+    print("Type mismatch — expected \(expected), got \(got)")
+} catch SQLError.unsupported(let feature) {
+    print("Not supported: \(feature)")
+}
+```
+
+---
+
+## Supported Data Types
+
+### Binding parameters
+
+| Swift / `SQLValue` | SQL Server | PostgreSQL | MySQL | SQLite |
+|-|-|-|-|-|
+| `.null` | NULL | NULL | NULL | NULL |
+| `.bool(Bool)` | BIT | BOOLEAN | TINYINT(1) | INTEGER |
+| `.int32(Int32)` | INT | INTEGER | INT | INTEGER |
+| `.int64(Int64)` | BIGINT | BIGINT | BIGINT | INTEGER |
+| `.double(Double)` | FLOAT | DOUBLE PRECISION | DOUBLE | REAL |
+| `.decimal(Decimal)` | DECIMAL/MONEY | NUMERIC | DECIMAL | TEXT |
+| `.string(String)` | NVARCHAR | TEXT | VARCHAR | TEXT |
+| `.bytes([UInt8])` | VARBINARY | BYTEA | BLOB | BLOB |
+| `.uuid(UUID)` | UNIQUEIDENTIFIER | UUID | CHAR(36) | TEXT |
+| `.date(Date)` | DATETIME2 | TIMESTAMPTZ | DATETIME | TEXT |
+
+### Reading results
+
+All database column types are mapped back to the appropriate `SQLValue` case. Use the typed accessors (`asInt32()`, `asString()`, `asDecimal()`, etc.) to extract values safely.
+
+---
+
+## Platform Support
+
+| Platform | Minimum version |
+|----------|----------------|
+| macOS | 13.0+ |
+| iOS | 16.0+ |
+| tvOS | 16.0+ |
+| watchOS | 9.0+ |
+| visionOS | 1.0+ |
+| Linux | Ubuntu 20.04+, Amazon Linux 2 |
+
+SQLite is available on all Apple platforms via the system `sqlite3` library. On Linux, `libsqlite3-dev` must be installed:
+
+```bash
+apt-get install libsqlite3-dev   # Debian / Ubuntu
+yum install sqlite-devel         # Amazon Linux / RHEL
+```
+
+---
+
+## Architecture
+
+```
+sql-nio/
+├── Sources/
+│   ├── SQLNioCore/              # Shared protocol, types & utilities
+│   │   ├── SQLDatabase.swift        # SQLDatabase protocol
+│   │   ├── SQLValue.swift           # Unified value enum + accessors
+│   │   ├── SQLRow.swift             # Query result row
+│   │   ├── SQLColumn.swift          # Column metadata
+│   │   ├── SQLError.swift           # Error enum
+│   │   ├── SQLDataTable.swift       # SQLDataTable + SQLDataSet + SQLCellValue
+│   │   ├── SQLRowDecoder.swift      # Codable row → struct mapping
+│   │   ├── SQLParameter.swift       # Stored procedure parameter
+│   │   ├── SQLDump.swift            # Backup/restore dialect helpers
+│   │   └── AsyncChannelBridge.swift # NIO ↔ async/await bridge
+│   │
+│   ├── MSSQLNio/                # TDS 7.4 — Microsoft SQL Server
+│   │   ├── MSSQLConnection.swift
+│   │   ├── MSSQLConnectionPool.swift
+│   │   ├── MSSQLBackup.swift
+│   │   └── TDS/
+│   │       ├── TDSPacket.swift
+│   │       ├── TDSMessages.swift
+│   │       ├── TDSPreLogin.swift
+│   │       ├── TDSLogin7.swift      # SQL + NTLM auth
+│   │       ├── TDSDecoder.swift
+│   │       └── TDSHandler.swift
+│   │
+│   ├── PostgresNio/             # PostgreSQL wire protocol v3
+│   │   ├── PostgresConnection.swift
+│   │   ├── PostgresConnectionPool.swift
+│   │   ├── PostgresBackup.swift
+│   │   └── Protocol/
+│   │       ├── PGFrontend.swift
+│   │       └── PGMessageDecoder.swift
+│   │
+│   ├── MySQLNio/                # MySQL wire protocol v10
+│   │   ├── MySQLConnection.swift
+│   │   ├── MySQLConnectionPool.swift
+│   │   ├── MySQLBackup.swift
+│   │   └── Protocol/
+│   │       ├── MySQLMessages.swift
+│   │       └── MySQLDecoder.swift
+│   │
+│   └── SQLiteNio/               # SQLite (embedded, system sqlite3)
+│       ├── SQLiteConnection.swift
+│       ├── SQLiteConnectionPool.swift
+│       └── SQLiteBackup.swift   # Binary + logical backup
+│
+└── Tests/
+    ├── SQLNioCoreTests/         # Value & type tests (~30 tests)
+    ├── MSSQLNioTests/           # Integration tests (~168 tests)
+    ├── PostgresNioTests/        # Integration tests (~98 tests)
+    ├── MySQLNioTests/           # Integration tests (~95 tests)
+    └── SQLiteNioTests/          # In-memory tests — no Docker (~75 tests)
+```
+
+---
+
+## Testing
+
+### SQLite (no setup required)
+
+SQLite tests use in-memory databases and run instantly without any external dependencies:
+
+```bash
+swift test --filter SQLiteNioTests
+```
+
+### SQL Server
+
+```bash
+# Start SQL Server in Docker
+docker run -d --name sqlserver \
+  -e ACCEPT_EULA=Y \
+  -e SA_PASSWORD=aBCD111 \
+  -p 1433:1433 \
+  mcr.microsoft.com/mssql/server:2022-latest
+
+# Run tests
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=aBCD111 swift test --filter MSSQLNioTests
+```
+
+### PostgreSQL
+
+```bash
+docker run -d --name pg-test \
+  -e POSTGRES_USER=pguser \
+  -e POSTGRES_PASSWORD=pgPass123 \
+  -e POSTGRES_DB=PostgresNioTestDb \
+  -p 5432:5432 postgres:16-alpine
+
+PG_TEST_HOST=127.0.0.1 swift test --filter PostgresNioTests
+```
+
+### MySQL
+
+```bash
+docker run -d --name mysql-test \
+  -e MYSQL_DATABASE=MySQLNioTestDb \
+  -e MYSQL_USER=mysqluser \
+  -e MYSQL_PASSWORD=mysqlPass123 \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -p 3306:3306 mysql:8
+
+MYSQL_TEST_HOST=127.0.0.1 swift test --filter MySQLNioTests
+```
+
+### Run all tests
+
+```bash
+# Run SQLite tests (always)
+swift test --filter SQLiteNioTests
+
+# Run all integration tests (requires all three containers above)
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=aBCD111 \
+PG_TEST_HOST=127.0.0.1 \
+MYSQL_TEST_HOST=127.0.0.1 \
+swift test
+```
+
+### Environment variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `MSSQL_TEST_HOST` | (skip) | SQL Server host — set to enable MSSQL tests |
+| `MSSQL_TEST_PORT` | `1433` | SQL Server port |
+| `MSSQL_TEST_DB` | `MSSQLNioTestDb` | Database name |
+| `MSSQL_TEST_USER` | `sa` | Username |
+| `MSSQL_TEST_PASS` | (required) | Password |
+| `PG_TEST_HOST` | (skip) | PostgreSQL host — set to enable PG tests |
+| `PG_TEST_PORT` | `5432` | PostgreSQL port |
+| `PG_TEST_DB` | `PostgresNioTestDb` | Database name |
+| `PG_TEST_USER` | `pguser` | Username |
+| `PG_TEST_PASS` | `pgPass123` | Password |
+| `MYSQL_TEST_HOST` | (skip) | MySQL host — set to enable MySQL tests |
+| `MYSQL_TEST_PORT` | `3306` | MySQL port |
+| `MYSQL_TEST_DB` | `MySQLNioTestDb` | Database name |
+| `MYSQL_TEST_USER` | `mysqluser` | Username |
+| `MYSQL_TEST_PASS` | `mysqlPass123` | Password |
+
+---
+
+## Related Projects
+
+- [SQLClient-Swift](https://github.com/vkuttyp/SQLClient-Swift) — The original MSSQL driver using FreeTDS (predecessor to this package)
+- [SwiftNIO](https://github.com/apple/swift-nio) — The async networking engine powering sql-nio
+- [swift-nio-ssl](https://github.com/apple/swift-nio-ssl) — TLS support
+- [postgres-nio](https://github.com/vapor/postgres-nio) — Vapor's PostgreSQL driver (separate project)
+- [mysql-nio](https://github.com/vapor/mysql-nio) — Vapor's MySQL driver (separate project)
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).

@@ -1,0 +1,198 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'          # v1.0.0
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'         # v1.0.0-beta.1
+
+permissions:
+  contents: write   # needed to create GitHub releases
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # 1. Verify all tests pass against the tagged commit before releasing
+  # ─────────────────────────────────────────────────────────────────────────
+  verify-sqlite:
+    name: Verify — SQLite tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - run: swift test --filter SQLiteNioTests
+      - run: swift test --filter SQLNioCoreTests
+
+  verify-postgres:
+    name: Verify — PostgreSQL tests
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB:       PostgresNioTestDb
+          POSTGRES_USER:     pguser
+          POSTGRES_PASSWORD: pgPass123
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pguser"
+          --health-interval 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - name: Run PostgreSQL tests
+        env:
+          PG_TEST_HOST: "127.0.0.1"
+          PG_TEST_DB:   PostgresNioTestDb
+          PG_TEST_USER: pguser
+          PG_TEST_PASS: pgPass123
+        run: swift test --filter PostgresNioTests
+
+  verify-mysql:
+    name: Verify — MySQL tests
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE:      MySQLNioTestDb
+          MYSQL_USER:          mysqluser
+          MYSQL_PASSWORD:      mysqlPass123
+          MYSQL_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -u mysqluser -pmysqlPass123"
+          --health-interval 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - name: Run MySQL tests
+        env:
+          MYSQL_TEST_HOST: "127.0.0.1"
+          MYSQL_TEST_DB:   MySQLNioTestDb
+          MYSQL_TEST_USER: mysqluser
+          MYSQL_TEST_PASS: mysqlPass123
+        run: swift test --filter MySQLNioTests
+
+  verify-mssql:
+    name: Verify — SQL Server tests
+    runs-on: ubuntu-24.04
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: "aBCD111!"
+          MSSQL_PID: Developer
+        ports: ["1433:1433"]
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'aBCD111!' -Q 'SELECT 1' -C"
+          --health-interval 10s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - name: Create test database
+        run: |
+          until /opt/mssql-tools18/bin/sqlcmd -S 127.0.0.1 -U sa -P 'aBCD111!' -C \
+            -Q "CREATE DATABASE MSSQLNioTestDb" 2>/dev/null; do
+            echo "Waiting for SQL Server..."; sleep 3
+          done
+      - name: Run MSSQL tests
+        env:
+          MSSQL_TEST_HOST: "127.0.0.1"
+          MSSQL_TEST_PASS: "aBCD111!"
+          MSSQL_TEST_DB:   MSSQLNioTestDb
+          MSSQL_TEST_USER: sa
+        run: swift test --filter MSSQLNioTests
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 2. Create the GitHub Release with auto-generated changelog
+  # ─────────────────────────────────────────────────────────────────────────
+  create-release:
+    name: Create GitHub Release
+    needs: [verify-sqlite, verify-postgres, verify-mysql, verify-mssql]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # full history for changelog
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"          # e.g. v1.2.3
+          VERSION="${TAG#v}"                 # e.g. 1.2.3
+          echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          # Determine if this is a pre-release (contains a hyphen: v1.0.0-beta.1)
+          if [[ "$VERSION" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build changelog
+        id: changelog
+        run: |
+          # Find the previous tag (or root commit if this is the first release)
+          PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' \
+                     | grep -v "^${{ steps.version.outputs.tag }}$" | head -1 || true)
+
+          if [[ -z "$PREV_TAG" ]]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+
+          echo "## What's Changed" > changelog.md
+          echo "" >> changelog.md
+
+          # Group commits by type
+          {
+            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h)" \
+                       --grep='^feat' --regexp-ignore-case 2>/dev/null || true)
+            FIXES=$(git log $RANGE --pretty=format:"- %s (%h)" \
+                    --grep='^fix' --regexp-ignore-case 2>/dev/null || true)
+            OTHERS=$(git log $RANGE --pretty=format:"- %s (%h)" \
+                     --invert-grep --grep='^feat\|^fix' 2>/dev/null | head -20 || true)
+
+            [[ -n "$FEATURES" ]] && echo "### ✨ Features" && echo "$FEATURES" && echo ""
+            [[ -n "$FIXES"    ]] && echo "### 🐛 Bug Fixes" && echo "$FIXES" && echo ""
+            [[ -n "$OTHERS"   ]] && echo "### 🔧 Other Changes" && echo "$OTHERS" && echo ""
+          } >> changelog.md
+
+          {
+            echo "### 📦 Installation"
+            echo ""
+            echo '```swift'
+            echo ".package(url: \"https://github.com/${{ github.repository }}.git\","
+            echo "         from: \"${{ steps.version.outputs.version }}\")"
+            echo '```'
+          } >> changelog.md
+
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          cat changelog.md >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name:    ${{ steps.version.outputs.tag }}
+          release_name: sql-nio ${{ steps.version.outputs.tag }}
+          body:        ${{ steps.changelog.outputs.body }}
+          draft:       false
+          prerelease:  ${{ steps.version.outputs.prerelease }}

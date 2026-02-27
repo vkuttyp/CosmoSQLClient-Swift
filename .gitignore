@@ -1,0 +1,11 @@
+.build/
+.swiftpm/
+*.o
+*.d
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.DS_Store
+
+# PosBackend Vapor app (separate project)
+PosBackend/
