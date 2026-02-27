@@ -1,5 +1,8 @@
 # sql-nio
 
+[![Swift Version Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2Fsql-nio%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/vkuttyp/sql-nio)
+[![Platform Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2Fsql-nio%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/vkuttyp/sql-nio)
+
 A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL**, **MySQL/MariaDB**, and **SQLite** — all through a single, consistent `async/await` API built natively on [SwiftNIO](https://github.com/apple/swift-nio).
 
 > **No FreeTDS. No ODBC. No JDBC. No C libraries.**  
