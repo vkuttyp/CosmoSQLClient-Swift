@@ -1493,7 +1493,7 @@ final class MySQLBackupTests: XCTestCase {
     }
 
     func testLogicalDump() {
-        run { [self] in
+        run {
             let conn = try await MySQLTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             _ = try await conn.execute(
@@ -1509,7 +1509,7 @@ final class MySQLBackupTests: XCTestCase {
     }
 
     func testDumpAndRestoreRoundTrip() {
-        run { [self] in
+        run {
             let conn = try await MySQLTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             _ = try await conn.execute(
@@ -1530,7 +1530,7 @@ final class MySQLBackupTests: XCTestCase {
     func testDumpToFile() {
         let path = NSTemporaryDirectory() + "mysql_dump_\(UUID()).sql"
         defer { try? FileManager.default.removeItem(atPath: path) }
-        run { [self] in
+        run {
             let conn = try await MySQLTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             _ = try await conn.execute(
@@ -1546,7 +1546,7 @@ final class MySQLBackupTests: XCTestCase {
     }
 
     func testDumpHandlesNulls() {
-        run { [self] in
+        run {
             let conn = try await MySQLTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             _ = try await conn.execute(
