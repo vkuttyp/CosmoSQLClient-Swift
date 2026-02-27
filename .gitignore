@@ -9,3 +9,6 @@ DerivedData/
 
 # PosBackend Vapor app (separate project)
 PosBackend/
+
+# Downloaded CI logs
+logs_*/

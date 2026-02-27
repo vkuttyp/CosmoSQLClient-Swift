@@ -1,9 +1,0 @@
-﻿2026-02-27T22:51:38.7877656Z ##[group]Run sudo apt-get install -y libsqlite3-dev
-2026-02-27T22:51:38.7878095Z [36;1msudo apt-get install -y libsqlite3-dev[0m
-2026-02-27T22:51:38.7935707Z shell: /usr/bin/bash -e {0}
-2026-02-27T22:51:38.7935973Z ##[endgroup]
-2026-02-27T22:51:38.8263766Z Reading package lists...
-2026-02-27T22:51:38.9923602Z Building dependency tree...
-2026-02-27T22:51:38.9931658Z Reading state information...
-2026-02-27T22:51:39.1715785Z libsqlite3-dev is already the newest version (3.45.1-1ubuntu2.5).
-2026-02-27T22:51:39.1716569Z 0 upgraded, 0 newly installed, 0 to remove and 25 not upgraded.
