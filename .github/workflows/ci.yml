@@ -70,25 +70,11 @@ jobs:
 
   # ───────────────────────────────────────────────────────────────────────────
   # 2. SQL Server integration tests
-  #    Uses GitHub Actions service container — Linux only.
+  #    Connects to Mac via frpc tunnel on VPS (no service container).
   # ───────────────────────────────────────────────────────────────────────────
   test-mssql:
     name: SQL Server integration tests
     runs-on: ubuntu-24.04
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          ACCEPT_EULA: "Y"
-          SA_PASSWORD: "aBCD111!"
-          MSSQL_PID: Developer
-        ports:
-          - 1433:1433
-        options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'aBCD111!' -Q 'SELECT 1' -C"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -100,6 +86,16 @@ jobs:
 
       - name: Install SQLite
         run: sudo apt-get install -y libsqlite3-dev
+
+      - name: Install sqlcmd
+        run: |
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] \
+            https://packages.microsoft.com/ubuntu/24.04/prod noble main" \
+            | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get update -q
+          sudo ACCEPT_EULA=Y apt-get install -y sqlcmd
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -111,52 +107,33 @@ jobs:
 
       - name: Create test database
         run: |
-          container_id=$(docker ps --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" \
-            --format "{{.ID}}" | head -1)
-          for i in $(seq 1 30); do
-            docker exec "$container_id" /opt/mssql-tools18/bin/sqlcmd \
-              -S localhost -U sa -P 'aBCD111!' -C \
-              -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb" \
-              2>/dev/null && echo "SQL Server ready." && break
-            echo "Waiting for SQL Server... ($i/30)"; sleep 5
-          done
+          sqlcmd -S "${{ secrets.DB_HOST }},1433" -U sa \
+            -P "${{ secrets.MSSQL_TEST_PASS }}" \
+            --trust-server-certificate \
+            -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb"
 
       - name: Seed SQL Server database
         run: |
-          container_id=$(docker ps --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" \
-            --format "{{.ID}}" | head -1)
-          docker cp Tests/Resources/mssql_seed.sql "$container_id:/tmp/seed.sql"
-          docker exec "$container_id" /opt/mssql-tools18/bin/sqlcmd \
-            -S localhost -U sa -P 'aBCD111!' -C -i /tmp/seed.sql
+          sqlcmd -S "${{ secrets.DB_HOST }},1433" -U sa \
+            -P "${{ secrets.MSSQL_TEST_PASS }}" \
+            --trust-server-certificate \
+            -i Tests/Resources/mssql_seed.sql
 
       - name: Run MSSQL tests
         env:
-          MSSQL_TEST_HOST: "127.0.0.1"
-          MSSQL_TEST_PASS: "aBCD111!"
+          MSSQL_TEST_HOST: ${{ secrets.DB_HOST }}
+          MSSQL_TEST_PASS: ${{ secrets.MSSQL_TEST_PASS }}
           MSSQL_TEST_DB:   "MSSQLNioTestDb"
           MSSQL_TEST_USER: "sa"
         run: swift test --filter MSSQLNioTests 2>&1
 
   # ───────────────────────────────────────────────────────────────────────────
   # 3. PostgreSQL integration tests
+  #    Connects to Mac via frpc tunnel on VPS (no service container).
   # ───────────────────────────────────────────────────────────────────────────
   test-postgres:
     name: PostgreSQL integration tests
     runs-on: ubuntu-24.04
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB:       PostgresNioTestDb
-          POSTGRES_USER:     pguser
-          POSTGRES_PASSWORD: pgPass123
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U pguser"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -166,8 +143,8 @@ jobs:
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
 
-      - name: Install SQLite
-        run: sudo apt-get install -y libsqlite3-dev
+      - name: Install SQLite and psql
+        run: sudo apt-get install -y libsqlite3-dev postgresql-client
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -179,38 +156,25 @@ jobs:
 
       - name: Seed PostgreSQL database
         run: |
-          PGPASSWORD=pgPass123 psql -h 127.0.0.1 -U pguser -d PostgresNioTestDb \
+          PGPASSWORD="${{ secrets.PG_TEST_PASS }}" psql \
+            -h "${{ secrets.DB_HOST }}" -U pguser -d PostgresNioTestDb \
             -f Tests/Resources/postgres_seed.sql
 
       - name: Run PostgreSQL tests
         env:
-          PG_TEST_HOST: "127.0.0.1"
+          PG_TEST_HOST: ${{ secrets.DB_HOST }}
           PG_TEST_DB:   PostgresNioTestDb
           PG_TEST_USER: pguser
-          PG_TEST_PASS: pgPass123
+          PG_TEST_PASS: ${{ secrets.PG_TEST_PASS }}
         run: swift test --filter PostgresNioTests 2>&1
 
   # ───────────────────────────────────────────────────────────────────────────
   # 4. MySQL integration tests
+  #    Connects to Mac via frpc tunnel on VPS (no service container).
   # ───────────────────────────────────────────────────────────────────────────
   test-mysql:
     name: MySQL integration tests
     runs-on: ubuntu-24.04
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_DATABASE:      MySQLNioTestDb
-          MYSQL_USER:          mysqluser
-          MYSQL_PASSWORD:      mysqlPass123
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -u mysqluser -pmysqlPass123"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -220,8 +184,8 @@ jobs:
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
 
-      - name: Install SQLite
-        run: sudo apt-get install -y libsqlite3-dev
+      - name: Install SQLite and mysql client
+        run: sudo apt-get install -y libsqlite3-dev default-mysql-client
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -233,14 +197,16 @@ jobs:
 
       - name: Seed MySQL database
         run: |
-          mysql -h 127.0.0.1 -u mysqluser -pmysqlPass123 MySQLNioTestDb < Tests/Resources/mysql_seed.sql
+          mysql -h "${{ secrets.DB_HOST }}" \
+            -u mysqluser -p"${{ secrets.MYSQL_TEST_PASS }}" \
+            MySQLNioTestDb < Tests/Resources/mysql_seed.sql
 
       - name: Run MySQL tests
         env:
-          MYSQL_TEST_HOST: "127.0.0.1"
+          MYSQL_TEST_HOST: ${{ secrets.DB_HOST }}
           MYSQL_TEST_DB:   MySQLNioTestDb
           MYSQL_TEST_USER: mysqluser
-          MYSQL_TEST_PASS: mysqlPass123
+          MYSQL_TEST_PASS: ${{ secrets.MYSQL_TEST_PASS }}
         run: swift test --filter MySQLNioTests 2>&1
 
   # ───────────────────────────────────────────────────────────────────────────

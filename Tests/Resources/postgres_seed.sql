@@ -1,5 +1,18 @@
 -- PostgreSQL seed data for sql-nio integration tests
 -- Run against PostgresNioTestDb before executing PostgresNioTests
+-- Idempotent: drops all objects before recreating
+
+-- ─── Drop existing objects ────────────────────────────────────────────────────
+
+DROP TABLE IF EXISTS order_items CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS type_samples CASCADE;
+DROP TABLE IF EXISTS employees CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS departments CASCADE;
+DROP FUNCTION IF EXISTS add_numbers(INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS get_department_budget(INTEGER);
+DROP FUNCTION IF EXISTS get_employee_count(INTEGER);
 
 -- ─── Schema ───────────────────────────────────────────────────────────────────
 

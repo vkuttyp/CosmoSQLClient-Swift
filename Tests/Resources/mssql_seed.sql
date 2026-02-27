@@ -4,6 +4,19 @@
 USE MSSQLNioTestDb;
 GO
 
+-- ─── Drop existing objects ────────────────────────────────────────────────────
+
+IF OBJECT_ID('dbo.sp_GetEmployeesAsJSON',       'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeesAsJSON;
+IF OBJECT_ID('dbo.sp_GetDepartmentSummary',      'P') IS NOT NULL DROP PROCEDURE sp_GetDepartmentSummary;
+IF OBJECT_ID('dbo.sp_InsertEmployee',            'P') IS NOT NULL DROP PROCEDURE sp_InsertEmployee;
+IF OBJECT_ID('dbo.sp_GetEmployeesByDepartment',  'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeesByDepartment;
+IF OBJECT_ID('dbo.sp_GetEmployeeById',           'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeeById;
+IF OBJECT_ID('dbo.BulkTestTable', 'U') IS NOT NULL DROP TABLE BulkTestTable;
+IF OBJECT_ID('dbo.TypesTable',    'U') IS NOT NULL DROP TABLE TypesTable;
+IF OBJECT_ID('dbo.Employees',     'U') IS NOT NULL DROP TABLE Employees;
+IF OBJECT_ID('dbo.Departments',   'U') IS NOT NULL DROP TABLE Departments;
+GO
+
 -- ─── Departments ─────────────────────────────────────────────────────────────
 
 CREATE TABLE Departments (

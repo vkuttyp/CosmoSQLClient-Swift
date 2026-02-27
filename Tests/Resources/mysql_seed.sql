@@ -1,5 +1,18 @@
 -- MySQL seed data for sql-nio integration tests
 -- Run against MySQLNioTestDb before executing MySQLNioTests
+-- Idempotent: drops all objects before recreating
+
+-- ─── Drop existing objects ────────────────────────────────────────────────────
+
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS type_samples;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS departments;
+DROP PROCEDURE IF EXISTS add_numbers;
+DROP PROCEDURE IF EXISTS get_department_budget;
+DROP PROCEDURE IF EXISTS get_employee_count;
 
 -- ─── Schema ───────────────────────────────────────────────────────────────────
 
