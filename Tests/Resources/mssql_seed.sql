@@ -6,12 +6,20 @@ GO
 
 -- ─── Drop existing objects ────────────────────────────────────────────────────
 
-IF OBJECT_ID('dbo.sp_GetEmployeesAsJSON',       'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeesAsJSON;
+IF OBJECT_ID('dbo.sp_PrintMessage',            'P') IS NOT NULL DROP PROCEDURE sp_PrintMessage;
+IF OBJECT_ID('dbo.sp_GetEmployeeWithOutput',   'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeeWithOutput;
+IF OBJECT_ID('dbo.sp_GetMultipleResultSets',   'P') IS NOT NULL DROP PROCEDURE sp_GetMultipleResultSets;
+IF OBJECT_ID('dbo.CompatRPC_StrProc',          'P') IS NOT NULL DROP PROCEDURE CompatRPC_StrProc;
+IF OBJECT_ID('dbo.CompatRPC_SelectProc',       'P') IS NOT NULL DROP PROCEDURE CompatRPC_SelectProc;
+IF OBJECT_ID('dbo.CompatRPC_NamedParams',      'P') IS NOT NULL DROP PROCEDURE CompatRPC_NamedParams;
+IF OBJECT_ID('dbo.CompatRPC_IntProc',          'P') IS NOT NULL DROP PROCEDURE CompatRPC_IntProc;
+IF OBJECT_ID('dbo.sp_GetEmployeesAsJSON',      'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeesAsJSON;
 IF OBJECT_ID('dbo.sp_GetDepartmentSummary',      'P') IS NOT NULL DROP PROCEDURE sp_GetDepartmentSummary;
 IF OBJECT_ID('dbo.sp_InsertEmployee',            'P') IS NOT NULL DROP PROCEDURE sp_InsertEmployee;
 IF OBJECT_ID('dbo.sp_GetEmployeesByDepartment',  'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeesByDepartment;
 IF OBJECT_ID('dbo.sp_GetEmployeeById',           'P') IS NOT NULL DROP PROCEDURE sp_GetEmployeeById;
 IF OBJECT_ID('dbo.BulkTestTable', 'U') IS NOT NULL DROP TABLE BulkTestTable;
+IF OBJECT_ID('dbo.LargeData',     'U') IS NOT NULL DROP TABLE LargeData;
 IF OBJECT_ID('dbo.TypesTable',    'U') IS NOT NULL DROP TABLE TypesTable;
 IF OBJECT_ID('dbo.Employees',     'U') IS NOT NULL DROP TABLE Employees;
 IF OBJECT_ID('dbo.Departments',   'U') IS NOT NULL DROP TABLE Departments;
@@ -181,7 +189,7 @@ INSERT INTO TypesTable (
 );
 
 -- Update row 2 col_nvarchar_max to 5000 'X' chars (multi-packet PLP test)
-DECLARE @big NVARCHAR(MAX) = REPLICATE(N'X', 5000);
+DECLARE @big NVARCHAR(MAX) = REPLICATE(CAST(N'X' AS NVARCHAR(MAX)), 5000);
 UPDATE TypesTable SET col_nvarchar_max = @big WHERE id = 2;
 GO
 
@@ -260,5 +268,75 @@ BEGIN
     FROM Employees
     ORDER BY name
     FOR JSON PATH;
+END;
+GO
+
+-- ─── LargeData ───────────────────────────────────────────────────────────────
+
+CREATE TABLE LargeData (
+    id      INT IDENTITY(1,1) PRIMARY KEY,
+    payload NVARCHAR(MAX) NOT NULL,
+    label   NVARCHAR(100) NOT NULL
+);
+GO
+
+-- ─── Additional Stored Procedures ────────────────────────────────────────────
+
+CREATE PROCEDURE sp_GetMultipleResultSets
+AS
+BEGIN
+    SELECT id, name FROM Departments ORDER BY id;
+    SELECT id, name, department_id FROM Employees ORDER BY id;
+END;
+GO
+
+CREATE PROCEDURE sp_GetEmployeeWithOutput
+    @EmployeeId      UNIQUEIDENTIFIER,
+    @FullName        NVARCHAR(200) OUTPUT,
+    @DepartmentName  NVARCHAR(100) OUTPUT
+AS
+BEGIN
+    SELECT @FullName = e.name,
+           @DepartmentName = d.name
+    FROM Employees e
+    JOIN Departments d ON e.department_id = d.id
+    WHERE e.id = @EmployeeId;
+    RETURN 0;
+END;
+GO
+
+CREATE PROCEDURE sp_PrintMessage @Msg NVARCHAR(500)
+AS
+BEGIN
+    PRINT @Msg;
+END;
+GO
+
+CREATE PROCEDURE CompatRPC_IntProc @InVal INT, @OutVal INT OUTPUT
+AS
+BEGIN
+    SET @OutVal = @InVal * 2;
+    RETURN 77;
+END;
+GO
+
+CREATE PROCEDURE CompatRPC_NamedParams @Val INT, @Str NVARCHAR(50)
+AS
+BEGIN
+    SELECT @Val + 1 AS Result, @Str AS Msg;
+END;
+GO
+
+CREATE PROCEDURE CompatRPC_SelectProc @N INT
+AS
+BEGIN
+    SELECT @N AS Val, @N * 2 AS [Double];
+END;
+GO
+
+CREATE PROCEDURE CompatRPC_StrProc @InStr NVARCHAR(50), @OutStr NVARCHAR(50) OUTPUT
+AS
+BEGIN
+    SET @OutStr = N'Hello ' + @InStr;
 END;
 GO
