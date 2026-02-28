@@ -95,25 +95,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-mssql-
 
-      - name: Create test database
-        run: |
-          docker run --rm \
-            mcr.microsoft.com/mssql-tools \
-            /opt/mssql-tools/bin/sqlcmd \
-              -S "${{ secrets.DB_HOST }},1433" -U sa \
-              -P "${{ secrets.MSSQL_TEST_PASS }}" -C \
-              -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb"
-
-      - name: Seed SQL Server database
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}/Tests/Resources:/seed \
-            mcr.microsoft.com/mssql-tools \
-            /opt/mssql-tools/bin/sqlcmd \
-              -S "${{ secrets.DB_HOST }},1433" -U sa \
-              -P "${{ secrets.MSSQL_TEST_PASS }}" -C \
-              -i /seed/mssql_seed.sql
-
       - name: Run MSSQL tests
         env:
           MSSQL_TEST_HOST: ${{ secrets.DB_HOST }}
@@ -138,8 +119,8 @@ jobs:
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
 
-      - name: Install SQLite and psql
-        run: sudo apt-get install -y libsqlite3-dev postgresql-client
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -148,12 +129,6 @@ jobs:
           key: ${{ runner.os }}-spm-pg-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-pg-
-
-      - name: Seed PostgreSQL database
-        run: |
-          PGPASSWORD="${{ secrets.PG_TEST_PASS }}" psql \
-            -h "${{ secrets.DB_HOST }}" -U pguser -d PostgresNioTestDb \
-            -f Tests/Resources/postgres_seed.sql
 
       - name: Run PostgreSQL tests
         env:
@@ -179,8 +154,8 @@ jobs:
         with:
           swift-version: ${{ env.SWIFT_VERSION }}
 
-      - name: Install SQLite and mysql client
-        run: sudo apt-get install -y libsqlite3-dev default-mysql-client
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
@@ -189,12 +164,6 @@ jobs:
           key: ${{ runner.os }}-spm-mysql-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-mysql-
-
-      - name: Seed MySQL database
-        run: |
-          mysql -h "${{ secrets.DB_HOST }}" \
-            -u mysqluser -p"${{ secrets.MYSQL_TEST_PASS }}" \
-            MySQLNioTestDb < Tests/Resources/mysql_seed.sql
 
       - name: Run MySQL tests
         env:
