@@ -87,15 +87,6 @@ jobs:
       - name: Install SQLite
         run: sudo apt-get install -y libsqlite3-dev
 
-      - name: Install sqlcmd
-        run: |
-          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-            | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
-          echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/24.04/prod noble main" \
-            | sudo tee /etc/apt/sources.list.d/mssql-release.list
-          sudo apt-get update -q
-          sudo ACCEPT_EULA=Y apt-get install -y sqlcmd
-
       - name: Cache SPM
         uses: actions/cache@v4
         with:
@@ -106,17 +97,22 @@ jobs:
 
       - name: Create test database
         run: |
-          sqlcmd -S "${{ secrets.DB_HOST }},1433" -U sa \
-            -P "${{ secrets.MSSQL_TEST_PASS }}" \
-            --trust-server-certificate \
-            -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb"
+          docker run --rm \
+            mcr.microsoft.com/mssql-tools \
+            /opt/mssql-tools/bin/sqlcmd \
+              -S "${{ secrets.DB_HOST }},1433" -U sa \
+              -P "${{ secrets.MSSQL_TEST_PASS }}" -C \
+              -Q "IF DB_ID('MSSQLNioTestDb') IS NULL CREATE DATABASE MSSQLNioTestDb"
 
       - name: Seed SQL Server database
         run: |
-          sqlcmd -S "${{ secrets.DB_HOST }},1433" -U sa \
-            -P "${{ secrets.MSSQL_TEST_PASS }}" \
-            --trust-server-certificate \
-            -i Tests/Resources/mssql_seed.sql
+          docker run --rm \
+            -v ${{ github.workspace }}/Tests/Resources:/seed \
+            mcr.microsoft.com/mssql-tools \
+            /opt/mssql-tools/bin/sqlcmd \
+              -S "${{ secrets.DB_HOST }},1433" -U sa \
+              -P "${{ secrets.MSSQL_TEST_PASS }}" -C \
+              -i /seed/mssql_seed.sql
 
       - name: Run MSSQL tests
         env:
