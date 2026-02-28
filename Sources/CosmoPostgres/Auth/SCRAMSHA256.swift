@@ -12,6 +12,19 @@
 import Foundation
 import Crypto
 
+// MARK: - SaltedPassword cache
+//
+// PostgreSQL stores a fixed salt per user in pg_authid (it only changes when the user
+// resets their password). Every connection by the same user sees the same server-first
+// salt string.  Caching SaltedPassword = Hi(password, salt, iterations) eliminates
+// 4096 HMAC-SHA256 rounds on every cold connect after the first one.
+//
+// Cache key: "<iterations>:<saltB64>:<password>" → [UInt8] SaltedPassword
+// Invalidation: automatic — password change produces a new salt from the server.
+
+private let _scramCacheLock = NSLock()
+private nonisolated(unsafe) var _scramCache: [String: [UInt8]] = [:]
+
 // MARK: - SCRAM-SHA-256 authenticator
 
 struct SCRAMSHA256 {
@@ -54,12 +67,18 @@ struct SCRAMSHA256 {
         }
 
         // SaltedPassword = Hi(Normalize(password), salt, i)
-        let saltedPassword = try hi(password: password,
-                                    salt: Array(saltBytes),
-                                    iterations: iterations)
+        // Cached: same password+salt+iterations always produces the same result.
+        let saltedPassword = try cachedHi(password: password,
+                                           saltB64: saltB64,
+                                           salt: Array(saltBytes),
+                                           iterations: iterations)
+
+        // Reuse a single SymmetricKey for all derivations from SaltedPassword
+        let spKey = SymmetricKey(data: saltedPassword)
 
         // ClientKey = HMAC(SaltedPassword, "Client Key")
-        let clientKey = hmacSHA256(key: saltedPassword, data: [UInt8]("Client Key".utf8))
+        let clientKey = Array(HMAC<SHA256>.authenticationCode(
+            for: [UInt8]("Client Key".utf8), using: spKey))
 
         // StoredKey = H(ClientKey)
         let storedKey = Array(SHA256.hash(data: clientKey))
@@ -68,18 +87,23 @@ struct SCRAMSHA256 {
         let channelBinding = "c=" + Data("n,,".utf8).base64EncodedString()
         let clientFinalWithoutProof = "\(channelBinding),r=\(combinedNonce)"
         let authMessage = "\(clientFirstMessageBare),\(serverFirstMessage),\(clientFinalWithoutProof)"
+        let authBytes = [UInt8](authMessage.utf8)
 
         // ClientSignature = HMAC(StoredKey, AuthMessage)
-        let clientSignature = hmacSHA256(key: storedKey, data: [UInt8](authMessage.utf8))
+        let storedKey_ = SymmetricKey(data: storedKey)
+        let clientSignature = Array(HMAC<SHA256>.authenticationCode(for: authBytes, using: storedKey_))
 
-        // ClientProof = ClientKey XOR ClientSignature
-        let clientProof = zip(clientKey, clientSignature).map { $0 ^ $1 }
+        // ClientProof = ClientKey XOR ClientSignature  (in-place)
+        var clientProof = clientKey
+        for i in 0..<clientProof.count { clientProof[i] ^= clientSignature[i] }
 
         // ServerKey = HMAC(SaltedPassword, "Server Key")
-        let serverKey = hmacSHA256(key: saltedPassword, data: [UInt8]("Server Key".utf8))
+        let serverKey = Array(HMAC<SHA256>.authenticationCode(
+            for: [UInt8]("Server Key".utf8), using: spKey))
 
         // ServerSignature = HMAC(ServerKey, AuthMessage)
-        let serverSignature = hmacSHA256(key: serverKey, data: [UInt8](authMessage.utf8))
+        let serverKey_ = SymmetricKey(data: serverKey)
+        let serverSignature = Array(HMAC<SHA256>.authenticationCode(for: authBytes, using: serverKey_))
 
         let clientFinal = "\(clientFinalWithoutProof),p=\(Data(clientProof).base64EncodedString())"
         return (clientFinal, serverSignature)
@@ -103,24 +127,45 @@ struct SCRAMSHA256 {
 
     // MARK: - Crypto helpers
 
-    // PBKDF2-HMAC-SHA256: Hi(str, salt, i)
-    private static func hi(password: String, salt: [UInt8], iterations: Int) throws -> [UInt8] {
-        let passwordBytes = [UInt8](password.utf8)
+    // PBKDF2-HMAC-SHA256: Hi(str, salt, i) with SaltedPassword caching.
+    // Cache hit: O(1) dictionary lookup — skips 4096 HMAC-SHA256 rounds.
+    private static func cachedHi(password: String, saltB64: String,
+                                  salt: [UInt8], iterations: Int) throws -> [UInt8] {
+        let cacheKey = "\(iterations):\(saltB64):\(password)"
+        _scramCacheLock.lock()
+        if let cached = _scramCache[cacheKey] {
+            _scramCacheLock.unlock()
+            return cached
+        }
+        _scramCacheLock.unlock()
+
+        let result = hi(password: password, salt: salt, iterations: iterations)
+
+        _scramCacheLock.lock()
+        _scramCache[cacheKey] = result
+        _scramCacheLock.unlock()
+        return result
+    }
+
+    // Pure PBKDF2-HMAC-SHA256 (no cache). Creates SymmetricKey once; XORs in-place.
+    private static func hi(password: String, salt: [UInt8], iterations: Int) -> [UInt8] {
+        let passwordKey = SymmetricKey(data: Data(password.utf8))   // created once
 
         // U1 = HMAC(password, salt + INT(1))
         var saltPlusOne = salt
         saltPlusOne.append(contentsOf: [0, 0, 0, 1])
-        var u = hmacSHA256(key: passwordBytes, data: saltPlusOne)
+        var u = Array(HMAC<SHA256>.authenticationCode(for: saltPlusOne, using: passwordKey))
         var result = u
 
         for _ in 1..<iterations {
-            u = hmacSHA256(key: passwordBytes, data: u)
-            result = zip(result, u).map { $0 ^ $1 }
+            u = Array(HMAC<SHA256>.authenticationCode(for: u, using: passwordKey))
+            // In-place XOR — avoids allocating a new [UInt8] per iteration
+            for i in 0..<result.count { result[i] ^= u[i] }
         }
         return result
     }
 
-    // HMAC-SHA-256
+    // HMAC-SHA-256 (used externally)
     private static func hmacSHA256(key: [UInt8], data: [UInt8]) -> [UInt8] {
         let symmetricKey = SymmetricKey(data: key)
         let mac = HMAC<SHA256>.authenticationCode(for: data, using: symmetricKey)

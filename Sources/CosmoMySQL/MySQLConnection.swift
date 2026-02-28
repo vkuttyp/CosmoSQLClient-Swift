@@ -574,6 +574,9 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     }
 }
 
+// Shared ISO8601 formatter — avoids allocating one per date value in mysqlLiteral.
+private nonisolated(unsafe) let _mysqlDateFmt: ISO8601DateFormatter = ISO8601DateFormatter()
+
 // MARK: - SQLValue → MySQL literal
 
 private extension SQLValue {
@@ -597,8 +600,7 @@ private extension SQLValue {
         case .bytes(let v):  return "0x" + v.map { String(format: "%02X", $0) }.joined()
         case .uuid(let v):   return "'\(v.uuidString)'"
         case .date(let v):
-            let fmt = ISO8601DateFormatter()
-            return "'\(fmt.string(from: v))'"
+            return "'\(_mysqlDateFmt.string(from: v))'"
         }
     }
 }

@@ -209,7 +209,8 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     public static func connect(
         configuration: Configuration,
-        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
+        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton,
+        sslContext: NIOSSLContext? = nil
     ) async throws -> MSSQLConnection {        let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
             // Swift 6: ClientBootstrap is not Sendable; capture host/port as value types instead.
             let host = configuration.host
@@ -223,7 +224,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         let conn = MSSQLConnection(channel: channel,
                                    config: configuration,
                                    logger: configuration.logger)
-        try await conn.handshake()
+        try await conn.handshake(sslContext: sslContext)
         return conn
     }
 
@@ -237,7 +238,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     private let tlsFramer = TDSTLSFramer()
 
-    private func handshake() async throws {
+    private func handshake(sslContext: NIOSSLContext? = nil) async throws {
         // 1. Add pipeline: TDSTLSFramer (pass-through initially) + framing + bridge
         let bridge = AsyncStreamBridge()
         // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
@@ -262,7 +263,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         case .disable: needTLS = false
         }
         if needTLS {
-            try await upgradeTLS()
+            try await upgradeTLS(sslContext: sslContext)
             logger.debug("TLS established")
         }
 
@@ -298,12 +299,18 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     // Pipeline after handshake (TDSTLSFramer switches to pass-through):
     //   Network ↔ TDSTLSFramer(pass-through) ↔ NIOSSLClientHandler ↔ TDSFramingHandler ↔ Bridge
 
-    private func upgradeTLS() async throws {
-        var tlsConfig = TLSConfiguration.makeClientConfiguration()
-        if config.trustServerCertificate {
-            tlsConfig.certificateVerification = .none
+    private func upgradeTLS(sslContext sslCtx: NIOSSLContext? = nil) async throws {
+        // Use pre-built context from pool, or build one on the fly for direct connections.
+        let sslContext: NIOSSLContext
+        if let ctx = sslCtx {
+            sslContext = ctx
+        } else {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            if config.trustServerCertificate {
+                tlsConfig.certificateVerification = .none
+            }
+            sslContext = try NIOSSLContext(configuration: tlsConfig)
         }
-        let sslContext = try NIOSSLContext(configuration: tlsConfig)
         // IP addresses cannot be used for SNI — pass nil to disable SNI for IP hosts
         let sniHostname: String? = {
             // IPv4: all chars are digits or dots

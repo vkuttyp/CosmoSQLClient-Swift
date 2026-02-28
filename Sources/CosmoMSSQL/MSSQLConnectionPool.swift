@@ -1,6 +1,7 @@
 import Foundation
 import NIOCore
 import NIOPosix
+import NIOSSL
 import CosmoSQLCore
 
 // ── MSSQLConnectionPool ───────────────────────────────────────────────────────
@@ -45,6 +46,9 @@ public actor MSSQLConnectionPool {
     private var isClosed:       Bool = false
     private var keepAliveTask:  Task<Void, Never>? = nil
     private var minIdleTarget:  Int = 0
+    // Pre-built SSL context shared across all TLS connections — avoids rebuilding
+    // NIOSSLContext (OpenSSL SSL_CTX) on every cold connect.
+    private let sslContext:     NIOSSLContext?
 
     // MARK: - Init / deinit
 
@@ -56,6 +60,15 @@ public actor MSSQLConnectionPool {
         self.configuration  = configuration
         self.maxConnections = max(1, maxConnections)
         self.eventLoopGroup = eventLoopGroup
+        if configuration.tls != .disable {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            if configuration.trustServerCertificate {
+                tlsConfig.certificateVerification = .none
+            }
+            self.sslContext = try? NIOSSLContext(configuration: tlsConfig)
+        } else {
+            self.sslContext = nil
+        }
     }
 
     // MARK: - Acquire
@@ -213,7 +226,8 @@ public actor MSSQLConnectionPool {
     private func openConnection() async throws -> MSSQLConnection {
         try await MSSQLConnection.connect(
             configuration: configuration,
-            eventLoopGroup: eventLoopGroup
+            eventLoopGroup: eventLoopGroup,
+            sslContext: sslContext
         )
     }
 
