@@ -30,9 +30,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: macos-spm-docs-${{ hashFiles('Package.resolved') }}
+          key: macos-spm-docs-v2-${{ hashFiles('Package.resolved') }}
           restore-keys: |
-            macos-spm-docs-
+            macos-spm-docs-v2-
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -40,7 +40,7 @@ jobs:
       - name: Build documentation for all modules
         run: |
           mkdir -p docs
-          for TARGET in SQLNioCore MSSQLNio PostgresNio MySQLNio SQLiteNio; do
+          for TARGET in CosmoSQLCore CosmoMSSQL CosmoPostgres CosmoMySQL CosmoSQLite; do
             echo "▶ Building docs for $TARGET"
             swift package \
               --allow-writing-to-directory "docs/$TARGET" \
@@ -48,7 +48,7 @@ jobs:
               --target "$TARGET" \
               --disable-indexing \
               --transform-for-static-hosting \
-              --hosting-base-path "sql-nio/$TARGET" \
+              --hosting-base-path "CosmoSQLClient-Swift/$TARGET" \
               --output-path "docs/$TARGET"
           done
 
@@ -61,7 +61,7 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>sql-nio Documentation</title>
+            <title>CosmoSQLClient-Swift Documentation</title>
             <style>
               body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
                      max-width: 720px; margin: 60px auto; padding: 0 24px; color: #1d1d1f; }
@@ -77,27 +77,27 @@ jobs:
             </style>
           </head>
           <body>
-            <h1>sql-nio</h1>
+            <h1>CosmoSQLClient-Swift</h1>
             <p>A unified Swift NIO-based SQL driver for SQL Server, PostgreSQL, MySQL, and SQLite.</p>
             <ul>
-              <li><a href="SQLNioCore/documentation/sqlniocore/">
-                <strong>SQLNioCore</strong>
+              <li><a href="CosmoSQLCore/documentation/cosmosqlcore/">
+                <strong>CosmoSQLCore</strong>
                 <span>Shared protocol, types &amp; utilities — SQLDatabase, SQLValue, SQLRow, SQLDataTable</span>
               </a></li>
-              <li><a href="MSSQLNio/documentation/mssqlnio/">
-                <strong>MSSQLNio</strong>
+              <li><a href="CosmoMSSQL/documentation/cosmomssql/">
+                <strong>CosmoMSSQL</strong>
                 <span>Microsoft SQL Server driver — TDS 7.4 wire protocol, NTLM auth, stored procedures</span>
               </a></li>
-              <li><a href="PostgresNio/documentation/postgresnio/">
-                <strong>PostgresNio</strong>
+              <li><a href="CosmoPostgres/documentation/cosmopostgres/">
+                <strong>CosmoPostgres</strong>
                 <span>PostgreSQL driver — wire protocol v3, SCRAM-SHA-256 auth</span>
               </a></li>
-              <li><a href="MySQLNio/documentation/mysqlnio/">
-                <strong>MySQLNio</strong>
+              <li><a href="CosmoMySQL/documentation/cosmomysql/">
+                <strong>CosmoMySQL</strong>
                 <span>MySQL / MariaDB driver — wire protocol v10, caching_sha2_password auth</span>
               </a></li>
-              <li><a href="SQLiteNio/documentation/sqlitenio/">
-                <strong>SQLiteNio</strong>
+              <li><a href="CosmoSQLite/documentation/cosmosqlite/">
+                <strong>CosmoSQLite</strong>
                 <span>Embedded SQLite — in-memory &amp; file databases, native binary backup</span>
               </a></li>
             </ul>
