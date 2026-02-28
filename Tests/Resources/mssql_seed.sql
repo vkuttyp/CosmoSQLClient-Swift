@@ -280,6 +280,17 @@ CREATE TABLE LargeData (
 );
 GO
 
+-- ─── LargeData seed rows ─────────────────────────────────────────────────────
+
+DECLARE @p3k  NVARCHAR(MAX) = REPLICATE(CAST(N'A' AS NVARCHAR(MAX)),  3000);
+DECLARE @p5k  NVARCHAR(MAX) = REPLICATE(CAST(N'B' AS NVARCHAR(MAX)),  5000);
+DECLARE @p10k NVARCHAR(MAX) = REPLICATE(CAST(N'C' AS NVARCHAR(MAX)), 10000);
+INSERT INTO LargeData (payload, label) VALUES
+    (@p3k,  N'medium_3000'),
+    (@p5k,  N'large_5000'),
+    (@p10k, N'xlarge_10000');
+GO
+
 -- ─── Additional Stored Procedures ────────────────────────────────────────────
 
 CREATE PROCEDURE sp_GetMultipleResultSets
