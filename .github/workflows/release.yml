@@ -111,12 +111,8 @@ jobs:
         run: sudo apt-get install -y libsqlite3-dev
       - name: Install sqlcmd
         run: |
-          curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/24.04/prod noble main" \
-            | sudo tee /etc/apt/sources.list.d/mssql-tools.list
-          sudo apt-get update -q
-          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
-          echo "/opt/mssql-tools18/bin" >> "$GITHUB_PATH"
+          curl -sSL https://github.com/microsoft/go-sqlcmd/releases/latest/download/sqlcmd-linux-amd64.tar.gz \
+            | tar -xz -C /usr/local/bin sqlcmd
       - name: Create test database
         timeout-minutes: 3
         run: |
