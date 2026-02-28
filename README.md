@@ -1,7 +1,7 @@
-# sql-nio
+# CosmoSQLClient-Swift
 
-[![Swift Version Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2Fsql-nio%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/vkuttyp/sql-nio)
-[![Platform Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2Fsql-nio%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/vkuttyp/sql-nio)
+[![Swift Version Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2FCosmoSQLClient-Swift%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/vkuttyp/CosmoSQLClient-Swift)
+[![Platform Compatibility](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fvkuttyp%2FCosmoSQLClient-Swift%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/vkuttyp/CosmoSQLClient-Swift)
 
 A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL**, **MySQL/MariaDB**, and **SQLite** — all through a single, consistent `async/await` API built natively on [SwiftNIO](https://github.com/apple/swift-nio).
 
@@ -78,7 +78,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/vkuttyp/sql-nio.git", from: "1.0.0"),
+    .package(url: "https://github.com/vkuttyp/CosmoSQLClient-Swift.git", from: "1.0.0"),
 ],
 ```
 
@@ -88,11 +88,11 @@ Then add the product(s) you need to your target:
 .target(
     name: "MyApp",
     dependencies: [
-        .product(name: "MSSQLNio",    package: "sql-nio"),  // SQL Server
-        .product(name: "PostgresNio", package: "sql-nio"),  // PostgreSQL
-        .product(name: "MySQLNio",    package: "sql-nio"),  // MySQL / MariaDB
-        .product(name: "SQLiteNio",   package: "sql-nio"),  // SQLite
-        .product(name: "SQLNioCore",  package: "sql-nio"),  // Shared types only
+        .product(name: "CosmoMSSQL",    package: "cosmo-sql-client"),  // SQL Server
+        .product(name: "CosmoPostgres", package: "cosmo-sql-client"),  // PostgreSQL
+        .product(name: "CosmoMySQL",    package: "cosmo-sql-client"),  // MySQL / MariaDB
+        .product(name: "CosmoSQLite",   package: "cosmo-sql-client"),  // SQLite
+        .product(name: "CosmoSQLCore",  package: "cosmo-sql-client"),  // Shared types only
     ]
 ),
 ```
@@ -120,7 +120,7 @@ You can import only the drivers you need — each is an independent library modu
 ### Microsoft SQL Server
 
 ```swift
-import MSSQLNio
+import CosmoMSSQL
 
 // Programmatic configuration
 let config = MSSQLConnection.Configuration(
@@ -165,7 +165,7 @@ print("\(affected) row(s) updated")
 ### PostgreSQL
 
 ```swift
-import PostgresNio
+import CosmoPostgres
 
 let config = PostgresConnection.Configuration(
     host:     "localhost",
@@ -187,7 +187,7 @@ let rows = try await conn.query(
 ### MySQL / MariaDB
 
 ```swift
-import MySQLNio
+import CosmoMySQL
 
 let config = MySQLConnection.Configuration(
     host:     "localhost",
@@ -210,7 +210,7 @@ let rows = try await conn.query(
 ### SQLite
 
 ```swift
-import SQLiteNio
+import CosmoSQLite
 
 // In-memory database (great for testing)
 let conn = try SQLiteConnection.open()
@@ -245,7 +245,7 @@ let notes = try await conn.query("SELECT * FROM notes")
 All four drivers conform to the same `SQLDatabase` protocol, so you can write database-agnostic code:
 
 ```swift
-import SQLNioCore
+import CosmoSQLCore
 
 protocol SQLDatabase {
     func query(_ sql: String, _ binds: [SQLValue]) async throws -> [SQLRow]
@@ -284,9 +284,9 @@ try await createUser(db: sqliteConn,   name: "Alice", email: "alice@example.com"
 
 ## Query Parameters & Placeholders
 
-sql-nio supports `@p1`-style numbered parameters on **all four databases** for maximum portability. Each driver's native syntax is also supported:
+CosmoSQLClient-Swift supports `@p1`-style numbered parameters on **all four databases** for maximum portability. Each driver's native syntax is also supported:
 
-| Database   | Native syntax | sql-nio universal |
+| Database   | Native syntax | CosmoSQLClient-Swift universal |
 |------------|--------------|-------------------|
 | SQL Server | `@p1`, `@p2`, … | ✅ same |
 | PostgreSQL | `$1`, `$2`, … | ✅ `@p1` also works |
@@ -537,7 +537,7 @@ All four drivers include a built-in actor-based connection pool for concurrent w
 ### SQL Server pool
 
 ```swift
-import MSSQLNio
+import CosmoMSSQL
 
 let pool = MSSQLConnectionPool(
     configuration: MSSQLConnection.Configuration(
@@ -565,7 +565,7 @@ await pool.closeAll()
 ### PostgreSQL pool
 
 ```swift
-import PostgresNio
+import CosmoPostgres
 
 let pool = PostgresConnectionPool(
     configuration: PostgresConnection.Configuration(
@@ -582,7 +582,7 @@ let rows = try await pool.withConnection { conn in
 ### MySQL pool
 
 ```swift
-import MySQLNio
+import CosmoMySQL
 
 let pool = MySQLConnectionPool(
     configuration: MySQLConnection.Configuration(
@@ -595,7 +595,7 @@ let pool = MySQLConnectionPool(
 ### SQLite pool
 
 ```swift
-import SQLiteNio
+import CosmoSQLite
 
 let pool = SQLiteConnectionPool(
     configuration: SQLiteConnection.Configuration(
@@ -629,7 +629,7 @@ let orders    = sets[1]
 `MSSQLConnection` provides first-class stored procedure support with `INPUT`, `OUTPUT`, and `RETURN` values:
 
 ```swift
-import MSSQLNio
+import CosmoMSSQL
 
 // Define parameters (INPUT and OUTPUT)
 let params: [SQLParameter] = [
@@ -672,7 +672,7 @@ let sets = try await mysqlConn.queryMulti(
 Connect to SQL Server using Windows domain credentials (NTLM/Kerberos):
 
 ```swift
-import MSSQLNio
+import CosmoMSSQL
 
 // Windows authentication — username and password are optional
 var config = MSSQLConnection.Configuration(
@@ -686,7 +686,7 @@ config.password = "WinPass!"   // optional when using the current user context
 let conn = try await MSSQLConnection.connect(configuration: config)
 ```
 
-When `domain` is set, sql-nio negotiates NTLM authentication automatically during the TDS handshake. This is compatible with:
+When `domain` is set, CosmoSQLClient-Swift negotiates NTLM authentication automatically during the TDS handshake. This is compatible with:
 
 - SQL Server on Windows joined to an Active Directory domain
 - SQL Server on Linux with Active Directory integration (e.g., `adutil`)
@@ -743,7 +743,7 @@ let conn = try await MSSQLConnection.connect(configuration: config)
 
 ## Backup & Restore
 
-sql-nio provides logical SQL dump / restore across all four databases, plus native binary backup for SQLite.
+CosmoSQLClient-Swift provides logical SQL dump / restore across all four databases, plus native binary backup for SQLite.
 
 ### Logical SQL dump (all databases)
 
@@ -772,7 +772,7 @@ The dump format includes:
 ### SQLite native binary backup
 
 ```swift
-import SQLiteNio
+import CosmoSQLite
 
 // Copy the live database to a new file (safe on open connections)
 try await conn.backup(to: "/var/backups/myapp.sqlite")
@@ -788,7 +788,7 @@ let data: Data = try await conn.serialize()
 ### Restore from file — round trip example
 
 ```swift
-import SQLiteNio
+import CosmoSQLite
 
 // Source database
 let source = try SQLiteConnection.open(
@@ -811,7 +811,7 @@ print(count[0]["n"].asInt64()!)
 All errors are thrown as `SQLError`:
 
 ```swift
-import SQLNioCore
+import CosmoSQLCore
 
 do {
     let rows = try await conn.query("SELECT * FROM nonexistent_table")
@@ -890,9 +890,9 @@ yum install sqlite-devel         # Amazon Linux / RHEL
 ## Architecture
 
 ```
-sql-nio/
+CosmoSQLClient-Swift/
 ├── Sources/
-│   ├── SQLNioCore/              # Shared protocol, types & utilities
+│   ├── CosmoSQLCore/              # Shared protocol, types & utilities
 │   │   ├── SQLDatabase.swift        # SQLDatabase protocol
 │   │   ├── SQLValue.swift           # Unified value enum + accessors
 │   │   ├── SQLRow.swift             # Query result row
@@ -904,7 +904,7 @@ sql-nio/
 │   │   ├── SQLDump.swift            # Backup/restore dialect helpers
 │   │   └── AsyncChannelBridge.swift # NIO ↔ async/await bridge
 │   │
-│   ├── MSSQLNio/                # TDS 7.4 — Microsoft SQL Server
+│   ├── CosmoMSSQL/                # TDS 7.4 — Microsoft SQL Server
 │   │   ├── MSSQLConnection.swift
 │   │   ├── MSSQLConnectionPool.swift
 │   │   ├── MSSQLBackup.swift
@@ -916,7 +916,7 @@ sql-nio/
 │   │       ├── TDSDecoder.swift
 │   │       └── TDSHandler.swift
 │   │
-│   ├── PostgresNio/             # PostgreSQL wire protocol v3
+│   ├── CosmoPostgres/             # PostgreSQL wire protocol v3
 │   │   ├── PostgresConnection.swift
 │   │   ├── PostgresConnectionPool.swift
 │   │   ├── PostgresBackup.swift
@@ -924,7 +924,7 @@ sql-nio/
 │   │       ├── PGFrontend.swift
 │   │       └── PGMessageDecoder.swift
 │   │
-│   ├── MySQLNio/                # MySQL wire protocol v10
+│   ├── CosmoMySQL/                # MySQL wire protocol v10
 │   │   ├── MySQLConnection.swift
 │   │   ├── MySQLConnectionPool.swift
 │   │   ├── MySQLBackup.swift
@@ -932,17 +932,17 @@ sql-nio/
 │   │       ├── MySQLMessages.swift
 │   │       └── MySQLDecoder.swift
 │   │
-│   └── SQLiteNio/               # SQLite (embedded, system sqlite3)
+│   └── CosmoSQLite/               # SQLite (embedded, system sqlite3)
 │       ├── SQLiteConnection.swift
 │       ├── SQLiteConnectionPool.swift
 │       └── SQLiteBackup.swift   # Binary + logical backup
 │
 └── Tests/
-    ├── SQLNioCoreTests/         # Value & type tests (~30 tests)
-    ├── MSSQLNioTests/           # Integration tests (~168 tests)
-    ├── PostgresNioTests/        # Integration tests (~98 tests)
-    ├── MySQLNioTests/           # Integration tests (~95 tests)
-    └── SQLiteNioTests/          # In-memory tests — no Docker (~75 tests)
+    ├── CosmoSQLCoreTests/         # Value & type tests (~30 tests)
+    ├── CosmoMSSQLTests/           # Integration tests (~168 tests)
+    ├── CosmoPostgresTests/        # Integration tests (~98 tests)
+    ├── CosmoMySQLTests/           # Integration tests (~95 tests)
+    └── CosmoSQLiteTests/          # In-memory tests — no Docker (~75 tests)
 ```
 
 ---
@@ -954,7 +954,7 @@ sql-nio/
 SQLite tests use in-memory databases and run instantly without any external dependencies:
 
 ```bash
-swift test --filter SQLiteNioTests
+swift test --filter CosmoSQLiteTests
 ```
 
 ### SQL Server
@@ -968,7 +968,7 @@ docker run -d --name sqlserver \
   mcr.microsoft.com/mssql/server:2022-latest
 
 # Run tests
-MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! swift test --filter MSSQLNioTests
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! swift test --filter CosmoMSSQLTests
 ```
 
 ### PostgreSQL
@@ -977,30 +977,30 @@ MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! swift test --filte
 docker run -d --name pg-test \
   -e POSTGRES_USER=pguser \
   -e POSTGRES_PASSWORD=pgPass123 \
-  -e POSTGRES_DB=PostgresNioTestDb \
+  -e POSTGRES_DB=CosmoPostgresTestDb \
   -p 5432:5432 postgres:16-alpine
 
-PG_TEST_HOST=127.0.0.1 swift test --filter PostgresNioTests
+PG_TEST_HOST=127.0.0.1 swift test --filter CosmoPostgresTests
 ```
 
 ### MySQL
 
 ```bash
 docker run -d --name mysql-test \
-  -e MYSQL_DATABASE=MySQLNioTestDb \
+  -e MYSQL_DATABASE=CosmoMySQLTestDb \
   -e MYSQL_USER=mysqluser \
   -e MYSQL_PASSWORD=mysqlPass123 \
   -e MYSQL_ROOT_PASSWORD=root \
   -p 3306:3306 mysql:8
 
-MYSQL_TEST_HOST=127.0.0.1 swift test --filter MySQLNioTests
+MYSQL_TEST_HOST=127.0.0.1 swift test --filter CosmoMySQLTests
 ```
 
 ### Run all tests
 
 ```bash
 # Run SQLite tests (always)
-swift test --filter SQLiteNioTests
+swift test --filter CosmoSQLiteTests
 
 # Run all integration tests (requires all three containers above)
 MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! \
@@ -1015,17 +1015,17 @@ swift test
 |---|---|---|
 | `MSSQL_TEST_HOST` | (skip) | SQL Server host — set to enable MSSQL tests |
 | `MSSQL_TEST_PORT` | `1433` | SQL Server port |
-| `MSSQL_TEST_DB` | `MSSQLNioTestDb` | Database name |
+| `MSSQL_TEST_DB` | `CosmoMSSQLTestDb` | Database name |
 | `MSSQL_TEST_USER` | `sa` | Username |
 | `MSSQL_TEST_PASS` | (required) | Password |
 | `PG_TEST_HOST` | (skip) | PostgreSQL host — set to enable PG tests |
 | `PG_TEST_PORT` | `5432` | PostgreSQL port |
-| `PG_TEST_DB` | `PostgresNioTestDb` | Database name |
+| `PG_TEST_DB` | `CosmoPostgresTestDb` | Database name |
 | `PG_TEST_USER` | `pguser` | Username |
 | `PG_TEST_PASS` | `pgPass123` | Password |
 | `MYSQL_TEST_HOST` | (skip) | MySQL host — set to enable MySQL tests |
 | `MYSQL_TEST_PORT` | `3306` | MySQL port |
-| `MYSQL_TEST_DB` | `MySQLNioTestDb` | Database name |
+| `MYSQL_TEST_DB` | `CosmoMySQLTestDb` | Database name |
 | `MYSQL_TEST_USER` | `mysqluser` | Username |
 | `MYSQL_TEST_PASS` | `mysqlPass123` | Password |
 
@@ -1034,10 +1034,10 @@ swift test
 ## Related Projects
 
 - [SQLClient-Swift](https://github.com/vkuttyp/SQLClient-Swift) — The original MSSQL driver using FreeTDS (predecessor to this package)
-- [SwiftNIO](https://github.com/apple/swift-nio) — The async networking engine powering sql-nio
+- [SwiftNIO](https://github.com/apple/swift-nio) — The async networking engine powering CosmoSQLClient-Swift
 - [swift-nio-ssl](https://github.com/apple/swift-nio-ssl) — TLS support
 - [postgres-nio](https://github.com/vapor/postgres-nio) — Vapor's PostgreSQL driver (separate project)
-- [mysql-nio](https://github.com/vapor/mysql-nio) — Vapor's MySQL driver (separate project)
+- [myCosmoSQLClient-Swift](https://github.com/vapor/myCosmoSQLClient-Swift) — Vapor's MySQL driver (separate project)
 
 ---
 

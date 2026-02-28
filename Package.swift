@@ -16,7 +16,7 @@ let sqliteNioLinkerSettings:  [LinkerSetting] = []
 #endif
 
 let package = Package(
-    name: "sql-nio",
+    name: "cosmo-sql-client",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
@@ -25,11 +25,11 @@ let package = Package(
         .visionOS(.v1),
     ],
     products: [
-        .library(name: "SQLNioCore",    targets: ["SQLNioCore"]),
-        .library(name: "MSSQLNio",      targets: ["MSSQLNio"]),
-        .library(name: "PostgresNio",   targets: ["PostgresNio"]),
-        .library(name: "MySQLNio",      targets: ["MySQLNio"]),
-        .library(name: "SQLiteNio",     targets: ["SQLiteNio"]),
+        .library(name: "CosmoSQLCore",    targets: ["CosmoSQLCore"]),
+        .library(name: "CosmoMSSQL",      targets: ["CosmoMSSQL"]),
+        .library(name: "CosmoPostgres",   targets: ["CosmoPostgres"]),
+        .library(name: "CosmoMySQL",      targets: ["CosmoMySQL"]),
+        .library(name: "CosmoSQLite",     targets: ["CosmoSQLite"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git",          from: "2.65.0"),
@@ -41,7 +41,7 @@ let package = Package(
     targets: [
         // ── Core ─────────────────────────────────────────────────────────────
         .target(
-            name: "SQLNioCore",
+            name: "CosmoSQLCore",
             dependencies: [
                 .product(name: "NIOCore",   package: "swift-nio"),
                 .product(name: "Logging",   package: "swift-log"),
@@ -51,9 +51,9 @@ let package = Package(
 
         // ── MSSQL (TDS 7.4) ──────────────────────────────────────────────────
         .target(
-            name: "MSSQLNio",
+            name: "CosmoMSSQL",
             dependencies: [
-                .target(name: "SQLNioCore"),
+                .target(name: "CosmoSQLCore"),
                 .product(name: "NIOCore",       package: "swift-nio"),
                 .product(name: "NIOTLS",        package: "swift-nio"),
                 .product(name: "NIOPosix",      package: "swift-nio"),
@@ -66,9 +66,9 @@ let package = Package(
 
         // ── PostgreSQL (wire protocol v3) ────────────────────────────────────
         .target(
-            name: "PostgresNio",
+            name: "CosmoPostgres",
             dependencies: [
-                .target(name: "SQLNioCore"),
+                .target(name: "CosmoSQLCore"),
                 .product(name: "NIOCore",       package: "swift-nio"),
                 .product(name: "NIOPosix",      package: "swift-nio"),
                 .product(name: "NIOSSL",        package: "swift-nio-ssl"),
@@ -80,9 +80,9 @@ let package = Package(
 
         // ── MySQL (wire protocol v10) ─────────────────────────────────────────
         .target(
-            name: "MySQLNio",
+            name: "CosmoMySQL",
             dependencies: [
-                .target(name: "SQLNioCore"),
+                .target(name: "CosmoSQLCore"),
                 .product(name: "NIOCore",       package: "swift-nio"),
                 .product(name: "NIOPosix",      package: "swift-nio"),
                 .product(name: "NIOSSL",        package: "swift-nio-ssl"),
@@ -94,9 +94,9 @@ let package = Package(
 
         // ── SQLite (embedded) ─────────────────────────────────────────────────
         .target(
-            name: "SQLiteNio",
+            name: "CosmoSQLite",
             dependencies: [
-                .target(name: "SQLNioCore"),
+                .target(name: "CosmoSQLCore"),
                 .product(name: "NIOCore",   package: "swift-nio"),
                 .product(name: "NIOPosix",  package: "swift-nio"),
                 .product(name: "Logging",   package: "swift-log"),
@@ -107,40 +107,40 @@ let package = Package(
 
         // ── Tests ─────────────────────────────────────────────────────────────
         .testTarget(
-            name: "SQLNioCoreTests",
+            name: "CosmoSQLCoreTests",
             dependencies: [
-                .target(name: "SQLNioCore"),
+                .target(name: "CosmoSQLCore"),
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "MSSQLNioTests",
+            name: "CosmoMSSQLTests",
             dependencies: [
-                .target(name: "MSSQLNio"),
+                .target(name: "CosmoMSSQL"),
                 .product(name: "NIOEmbedded", package: "swift-nio"),
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "PostgresNioTests",
+            name: "CosmoPostgresTests",
             dependencies: [
-                .target(name: "PostgresNio"),
+                .target(name: "CosmoPostgres"),
                 .product(name: "NIOEmbedded", package: "swift-nio"),
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "MySQLNioTests",
+            name: "CosmoMySQLTests",
             dependencies: [
-                .target(name: "MySQLNio"),
+                .target(name: "CosmoMySQL"),
                 .product(name: "NIOEmbedded", package: "swift-nio"),
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
-            name: "SQLiteNioTests",
+            name: "CosmoSQLiteTests",
             dependencies: [
-                .target(name: "SQLiteNio"),
+                .target(name: "CosmoSQLite"),
             ],
             swiftSettings: swiftSettings
         ),
