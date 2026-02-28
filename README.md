@@ -65,6 +65,8 @@ A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL
 | `SQLDataTable` / `SQLDataSet` | ✅ | ✅ | ✅ | ✅ |
 | `Codable` row decoding | ✅ | ✅ | ✅ | ✅ |
 | Markdown table output | ✅ | ✅ | ✅ | ✅ |
+| JSON output (`toJson(pretty:)`) | ✅ | ✅ | ✅ | ✅ |
+| Codable row mapping (`decode<T: Decodable>`) | ✅ | ✅ | ✅ | ✅ |
 | Logical SQL dump | ✅ | ✅ | ✅ | ✅ |
 | Native binary backup | — | — | — | ✅ |
 | In-memory database | — | — | — | ✅ |
@@ -88,11 +90,11 @@ Then add the product(s) you need to your target:
 .target(
     name: "MyApp",
     dependencies: [
-        .product(name: "CosmoMSSQL",    package: "cosmo-sql-client"),  // SQL Server
-        .product(name: "CosmoPostgres", package: "cosmo-sql-client"),  // PostgreSQL
-        .product(name: "CosmoMySQL",    package: "cosmo-sql-client"),  // MySQL / MariaDB
-        .product(name: "CosmoSQLite",   package: "cosmo-sql-client"),  // SQLite
-        .product(name: "CosmoSQLCore",  package: "cosmo-sql-client"),  // Shared types only
+        .product(name: "CosmoMSSQL",    package: "CosmoSQLClient"),  // SQL Server
+        .product(name: "CosmoPostgres", package: "CosmoSQLClient"),  // PostgreSQL
+        .product(name: "CosmoMySQL",    package: "CosmoSQLClient"),  // MySQL / MariaDB
+        .product(name: "CosmoSQLite",   package: "CosmoSQLClient"),  // SQLite
+        .product(name: "CosmoSQLCore",  package: "CosmoSQLClient"),  // Shared types only
     ]
 ),
 ```
@@ -494,6 +496,51 @@ let dataSet = SQLDataSet(tables: resultSets.enumerated().map { i, rows in
 
 let orders     = dataSet["result0"]  // → SQLDataTable?
 let orderItems = dataSet["result1"]
+```
+
+---
+
+## SQLDataTable & Output Formats
+
+Convert query results to a rich in-memory table with multiple output formats:
+
+```swift
+let rows = try await conn.query("SELECT * FROM Accounts", [])
+let table = rows.asDataTable(name: "Accounts")
+
+print("Rows: \(table.rowCount), Columns: \(table.columnCount)")
+
+// Markdown table
+print(table.toMarkdown())
+
+// JSON array (pretty-printed by default)
+print(table.toJson())
+
+// Compact JSON
+print(table.toJson(pretty: false))
+
+// Codable mapping — like Swift's Decodable
+let accounts = try table.decode(as: Account.self)
+```
+
+```swift
+struct Account: Decodable {
+    let accountNo: String
+    let accountName: String
+    let isMain: Bool
+}
+```
+
+The `toJson()` output uses native types:
+```json
+[
+  {
+    "AccountNo": "1",
+    "AccountName": "Assets",
+    "IsMain": true,
+    "AccountTypeID": 1
+  }
+]
 ```
 
 ---
@@ -1037,7 +1084,8 @@ swift test
 - [SwiftNIO](https://github.com/apple/swift-nio) — The async networking engine powering CosmoSQLClient-Swift
 - [swift-nio-ssl](https://github.com/apple/swift-nio-ssl) — TLS support
 - [postgres-nio](https://github.com/vapor/postgres-nio) — Vapor's PostgreSQL driver (separate project)
-- [myCosmoSQLClient-Swift](https://github.com/vapor/myCosmoSQLClient-Swift) — Vapor's MySQL driver (separate project)
+- [mysql-nio](https://github.com/vapor/mysql-nio) — Vapor's MySQL driver (separate project)
+- [CosmoSQLClient-Dotnet](https://github.com/vkuttyp/CosmoSQLClient-Dotnet) — The .NET port of this package (MSSQL, PostgreSQL, MySQL, SQLite)
 
 ---
 
