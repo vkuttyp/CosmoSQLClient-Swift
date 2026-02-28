@@ -1,3 +1,4 @@
+import Foundation
 import NIOCore
 import NIOPosix
 import CosmoSQLCore
@@ -31,10 +32,12 @@ public actor MySQLConnectionPool {
 
     // MARK: - State
 
-    private var idle:     [MySQLConnection] = []
-    private var active:   Int = 0
-    private var waiters:  [CheckedContinuation<MySQLConnection, any Error>] = []
-    private var isClosed: Bool = false
+    private var idle:           [MySQLConnection] = []
+    private var active:         Int = 0
+    private var waiters:        [CheckedContinuation<MySQLConnection, any Error>] = []
+    private var isClosed:       Bool = false
+    private var keepAliveTask:  Task<Void, Never>? = nil
+    private var minIdleTarget:  Int = 0
 
     // MARK: - Init
 
@@ -126,6 +129,8 @@ public actor MySQLConnectionPool {
 
     public func closeAll() async {
         isClosed = true
+        keepAliveTask?.cancel()
+        keepAliveTask = nil
         drainWaiters(with: .connectionClosed)
         let toClose = idle
         idle = []
@@ -139,6 +144,42 @@ public actor MySQLConnectionPool {
     public var idleCount:   Int { idle.count }
     public var activeCount: Int { active }
     public var waiterCount: Int { waiters.count }
+
+    // MARK: - Warm-up / keep-alive
+
+    public func warmUp(minIdle: Int = 2, pingInterval: TimeInterval = 30) async {
+        guard !isClosed else { return }
+        minIdleTarget = minIdle
+        let needed = max(0, minIdle - (idle.count + active))
+        for _ in 0..<needed {
+            guard idle.count + active < maxConnections, !isClosed else { break }
+            do { idle.append(try await openConnection()) } catch { break }
+        }
+        keepAliveTask?.cancel()
+        keepAliveTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(pingInterval))
+                guard !Task.isCancelled else { break }
+                await self.pingIdleConnections()
+            }
+        }
+    }
+
+    private func pingIdleConnections() async {
+        guard !isClosed else { return }
+        idle.removeAll(where: { !$0.isOpen })
+        var healthy: [MySQLConnection] = []
+        for conn in idle {
+            do { _ = try await conn.query("SELECT 1", []); healthy.append(conn) }
+            catch { try? await conn.close() }
+        }
+        idle = healthy
+        let toOpen = max(0, minIdleTarget - idle.count)
+        for _ in 0..<toOpen {
+            guard idle.count + active < maxConnections, !isClosed else { break }
+            do { idle.append(try await openConnection()) } catch { break }
+        }
+    }
 
     // MARK: - Private helpers
 

@@ -1,3 +1,4 @@
+import Foundation
 import NIOCore
 import NIOPosix
 import CosmoSQLCore
@@ -38,10 +39,12 @@ public actor PostgresConnectionPool {
 
     // MARK: - State
 
-    private var idle:     [PostgresConnection] = []
-    private var active:   Int = 0
-    private var waiters:  [CheckedContinuation<PostgresConnection, any Error>] = []
-    private var isClosed: Bool = false
+    private var idle:           [PostgresConnection] = []
+    private var active:         Int = 0
+    private var waiters:        [CheckedContinuation<PostgresConnection, any Error>] = []
+    private var isClosed:       Bool = false
+    private var keepAliveTask:  Task<Void, Never>? = nil
+    private var minIdleTarget:  Int = 0
 
     // MARK: - Init
 
@@ -142,6 +145,8 @@ public actor PostgresConnectionPool {
     /// Close all idle connections and fail pending waiters.
     public func closeAll() async {
         isClosed = true
+        keepAliveTask?.cancel()
+        keepAliveTask = nil
         drainWaiters(with: .connectionClosed)
         let toClose = idle
         idle = []
@@ -158,6 +163,45 @@ public actor PostgresConnectionPool {
     public var activeCount: Int { active }
     /// Number of callers waiting for a connection.
     public var waiterCount: Int { waiters.count }
+
+    // MARK: - Warm-up / keep-alive
+
+    /// Pre-open `minIdle` connections so first requests don't pay connection latency.
+    /// Starts a background keep-alive loop that pings idle connections every `pingInterval`
+    /// seconds and replaces any that have gone stale.
+    public func warmUp(minIdle: Int = 2, pingInterval: TimeInterval = 30) async {
+        guard !isClosed else { return }
+        minIdleTarget = minIdle
+        let needed = max(0, minIdle - (idle.count + active))
+        for _ in 0..<needed {
+            guard idle.count + active < maxConnections, !isClosed else { break }
+            do { idle.append(try await openConnection()) } catch { break }
+        }
+        keepAliveTask?.cancel()
+        keepAliveTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(pingInterval))
+                guard !Task.isCancelled else { break }
+                await self.pingIdleConnections()
+            }
+        }
+    }
+
+    private func pingIdleConnections() async {
+        guard !isClosed else { return }
+        idle.removeAll(where: { !$0.isOpen })
+        var healthy: [PostgresConnection] = []
+        for conn in idle {
+            do { _ = try await conn.query("SELECT 1", []); healthy.append(conn) }
+            catch { try? await conn.close() }
+        }
+        idle = healthy
+        let toOpen = max(0, minIdleTarget - idle.count)
+        for _ in 0..<toOpen {
+            guard idle.count + active < maxConnections, !isClosed else { break }
+            do { idle.append(try await openConnection()) } catch { break }
+        }
+    }
 
     // MARK: - Private helpers
 
