@@ -1078,6 +1078,23 @@ swift test
 
 ---
 
+## Benchmarks
+
+> CosmoSQLClient (NIO) vs SQLClient-Swift (FreeTDS) · macOS · Apple Silicon · MSSQL Server 2019  
+> Table: 46 rows × 20 columns · 20 iterations per scenario
+
+| Scenario | CosmoSQL (NIO) | FreeTDS | Winner |
+|---|---|---|---|
+| Cold connect + query + close | 14.30 ms | 13.92 ms | ≈ tie |
+| Warm full-table query | **0.95 ms** | 1.58 ms | 🔵 **1.7× faster** |
+| Warm single-row query | **0.64 ms** | 1.10 ms | 🔵 **1.7× faster** |
+| Warm `decode<T>()` (Codable) | 1.53 ms | N/A | 🔵 only |
+| Warm `toJson()` | 1.56 ms | N/A | 🔵 only |
+
+Run the benchmarks yourself — see [`cosmo-benchmark/`](cosmo-benchmark/).
+
+---
+
 ## Related Projects
 
 - [SQLClient-Swift](https://github.com/vkuttyp/SQLClient-Swift) — The original MSSQL driver using FreeTDS (predecessor to this package)
