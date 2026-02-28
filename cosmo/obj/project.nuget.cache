@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "0GioTn4Awgg=",
+  "success": true,
+  "projectFilePath": "/Users/kutty/dev/sql-nio/cosmo/cosmo.csproj",
+  "expectedPackageFiles": [
+    "/Users/kutty/.nuget/packages/dotnetty.buffers/0.7.6/dotnetty.buffers.0.7.6.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/dotnetty.codecs/0.7.6/dotnetty.codecs.0.7.6.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/dotnetty.common/0.7.6/dotnetty.common.0.7.6.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/dotnetty.handlers/0.7.6/dotnetty.handlers.0.7.6.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/dotnetty.transport/0.7.6/dotnetty.transport.0.7.6.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.dependencyinjection/5.0.0/microsoft.extensions.dependencyinjection.5.0.0.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.3/microsoft.extensions.dependencyinjection.abstractions.10.0.3.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.logging/5.0.0/microsoft.extensions.logging.5.0.0.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.3/microsoft.extensions.logging.abstractions.10.0.3.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.options/5.0.0/microsoft.extensions.options.5.0.0.nupkg.sha512",
+    "/Users/kutty/.nuget/packages/microsoft.extensions.primitives/5.0.0/microsoft.extensions.primitives.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

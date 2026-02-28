@@ -54,6 +54,25 @@ public enum SQLCellValue: Sendable, Equatable {
 
     public var isNull: Bool { if case .null = self { return true }; return false }
 
+    /// Native value for use with JSONSerialization (nil = JSON null).
+    var jsonValue: Any? {
+        switch self {
+        case .null:           return nil
+        case .bool(let v):    return v
+        case .int(let v):     return v
+        case .int64(let v):   return v
+        case .double(let v):  return v
+        case .decimal(let v): return NSDecimalNumber(decimal: v)
+        case .string(let v):  return v
+        case .bytes(let v):   return Data(v).base64EncodedString()
+        case .uuid(let v):    return v.uuidString
+        case .date(let v):
+            let f = ISO8601DateFormatter()
+            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            return f.string(from: v)
+        }
+    }
+
     /// Human-readable string for display / Markdown rendering.
     public var displayString: String {
         switch self {
@@ -206,6 +225,23 @@ public struct SQLDataTable: Sendable {
     public func decode<T: Decodable>(as type: T.Type = T.self) throws -> [T] {
         let decoder = SQLRowDecoder()
         return try toSQLRows().map { try decoder.decode(T.self, from: $0) }
+    }
+
+    // MARK: JSON rendering
+
+    /// Renders the table as a JSON array of objects (column name → native value).
+    /// SQL NULL becomes JSON `null`. Dates are ISO-8601 strings.
+    public func toJson(pretty: Bool = true) -> String {
+        let array = rows.map { row -> [String: Any?] in
+            Dictionary(uniqueKeysWithValues: zip(columns.map(\.name), row.map(\.jsonValue)))
+        }
+        // JSONSerialization needs [String: Any] with NSNull for nulls
+        let sanitized = array.map { dict in
+            dict.mapValues { $0 ?? NSNull() as Any }
+        }
+        let opts: JSONSerialization.WritingOptions = pretty ? [.prettyPrinted, .sortedKeys] : []
+        let data = (try? JSONSerialization.data(withJSONObject: sanitized, options: opts)) ?? Data()
+        return String(data: data, encoding: .utf8) ?? "[]"
     }
 
     // MARK: Markdown rendering
