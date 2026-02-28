@@ -19,7 +19,7 @@ sudo apt install freetds-dev
 ```bash
 cd cosmo-benchmark
 
-# defaults: hanan.iserveus.com:1433  MurshiDb  sa  aBCD111
+# defaults: localhost:1433  MurshiDb  sa  (set BENCH_PASS)
 swift run -c release
 
 # custom server

@@ -7,11 +7,11 @@ import SQLClientSwift
 // MARK: - Configuration
 // ─────────────────────────────────────────────
 
-let host     = ProcessInfo.processInfo.environment["BENCH_HOST"]     ?? "localhost"
+let host     = ProcessInfo.processInfo.environment["BENCH_HOST"]     ?? ""
 let port     = UInt16(ProcessInfo.processInfo.environment["BENCH_PORT"] ?? "1433") ?? 1433
 let database = ProcessInfo.processInfo.environment["BENCH_DB"]       ?? "MurshiDb"
 let user     = ProcessInfo.processInfo.environment["BENCH_USER"]     ?? "sa"
-let password = ProcessInfo.processInfo.environment["BENCH_PASS"]     ?? "aBCD111"
+let password = ProcessInfo.processInfo.environment["BENCH_PASS"]     ?? ""
 let query    = ProcessInfo.processInfo.environment["BENCH_QUERY"]    ?? "SELECT * FROM Accounts"
 let iterations = Int(ProcessInfo.processInfo.environment["BENCH_ITER"] ?? "20") ?? 20
 

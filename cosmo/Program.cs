@@ -3,8 +3,12 @@ using CosmoSQLClient.Core;
 using CosmoSQLClient.MsSql;
 
 Console.WriteLine("Hello, World!");
+var host = Environment.GetEnvironmentVariable("MSSQL_HOST") ?? "localhost";
+var db   = Environment.GetEnvironmentVariable("MSSQL_DB")   ?? "MurshiDb";
+var user = Environment.GetEnvironmentVariable("MSSQL_USER") ?? "sa";
+var pass = Environment.GetEnvironmentVariable("MSSQL_PASS") ?? "";
 await using var conn = await MsSqlConnection.OpenAsync(
-    "Server=localhost,1433;Database=MurshiDb;User Id=sa;Password=aBCD111;Encrypt=True;TrustServerCertificate=True;");
+    $"Server={host},1433;Database={db};User Id={user};Password={pass};Encrypt=True;TrustServerCertificate=True;");
 
 var table = await conn.QueryTableAsync("SELECT TOP 3 AccountNo, AccountName, AccountTypeID, IsMain FROM Accounts");
 

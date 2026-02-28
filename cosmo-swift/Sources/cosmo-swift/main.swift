@@ -4,7 +4,7 @@ import CosmoSQLCore
 print("Hello, World!")
 
 let conn = try await MSSQLConnection.connect(configuration: .init(
-    connectionString: "Server=localhost,1433;Database=MurshiDb;User Id=sa;Password=aBCD111;Encrypt=true;TrustServerCertificate=true"
+    connectionString: "Server=\(ProcessInfo.processInfo.environment["MSSQL_HOST"] ?? "localhost"),1433;Database=\(ProcessInfo.processInfo.environment["MSSQL_DB"] ?? "MurshiDb");User Id=\(ProcessInfo.processInfo.environment["MSSQL_USER"] ?? "sa");Password=\(ProcessInfo.processInfo.environment["MSSQL_PASS"] ?? "");Encrypt=true;TrustServerCertificate=true"
 ))
 defer { Task { try? await conn.close() } }
 
