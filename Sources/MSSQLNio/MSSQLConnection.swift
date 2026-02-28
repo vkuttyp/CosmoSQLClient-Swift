@@ -153,13 +153,13 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             self.password = get("password", "pwd") ?? ""
             self.domain   = get("domain")
 
-            // Encrypt → tls
+            // Encrypt → tls  (supports: True/False/Disable/Strict/Request/Optional/Mandatory)
             if let enc = get("encrypt") {
                 switch enc.lowercased() {
-                case "true",  "yes", "mandatory": self.tls = .require
-                case "false", "no",  "optional":  self.tls = .prefer
-                case "disable":                    self.tls = .disable
-                default:                           self.tls = .prefer
+                case "true",  "yes", "mandatory", "require", "strict": self.tls = .require
+                case "false", "no",  "optional",  "request":           self.tls = .prefer
+                case "disable", "off":                                  self.tls = .disable
+                default:                                                self.tls = .prefer
                 }
             } else {
                 self.tls = .prefer
@@ -170,6 +170,22 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
                 .flatMap { Double($0) } ?? 30
             self.readOnly = get("applicationintent", "application intent")?
                 .lowercased() == "readonly"
+        }
+
+        /// Verify the server is reachable at TCP level before attempting a full connection.
+        ///
+        /// Equivalent to `SQLClient.checkReachability(server:port:)` in SQLClient-Swift.
+        /// Use this for a fast fail-early check before calling `MSSQLConnection.connect(configuration:)`.
+        ///
+        /// - Parameter timeout: Maximum seconds to wait for a TCP connection. Default 5.
+        /// - Throws: `SQLError.connectionError` if the host/port is not reachable.
+        public func checkReachability(
+            timeout: TimeInterval = 5,
+            eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
+        ) async throws {
+            try await MSSQLConnection.checkReachability(
+                host: host, port: port, timeout: timeout, eventLoopGroup: eventLoopGroup
+            )
         }
     }
 
