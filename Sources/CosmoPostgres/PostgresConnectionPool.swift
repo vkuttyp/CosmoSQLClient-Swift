@@ -1,6 +1,7 @@
 import Foundation
 import NIOCore
 import NIOPosix
+import NIOSSL
 import CosmoSQLCore
 
 // ── PostgresConnectionPool ────────────────────────────────────────────────────
@@ -45,6 +46,10 @@ public actor PostgresConnectionPool {
     private var isClosed:       Bool = false
     private var keepAliveTask:  Task<Void, Never>? = nil
     private var minIdleTarget:  Int = 0
+    // Pre-built SSL context shared across all connections — avoids ~60ms NIOSSLContext
+    // construction cost on every cold connect. NIOSSLContext (OpenSSL SSL_CTX) is
+    // thread-safe and designed to be shared across multiple TLS connections.
+    private let sslContext:     NIOSSLContext?
 
     // MARK: - Init
 
@@ -56,6 +61,14 @@ public actor PostgresConnectionPool {
         self.configuration  = configuration
         self.maxConnections = max(1, maxConnections)
         self.eventLoopGroup = eventLoopGroup
+        // Build NIOSSLContext once here; reused for every cold connect.
+        if configuration.tls != .disable {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            tlsConfig.certificateVerification = .none
+            self.sslContext = try? NIOSSLContext(configuration: tlsConfig)
+        } else {
+            self.sslContext = nil
+        }
     }
 
     // MARK: - Acquire
@@ -208,7 +221,8 @@ public actor PostgresConnectionPool {
     private func openConnection() async throws -> PostgresConnection {
         try await PostgresConnection.connect(
             configuration: configuration,
-            eventLoopGroup: eventLoopGroup
+            eventLoopGroup: eventLoopGroup,
+            sslContext: sslContext
         )
     }
 

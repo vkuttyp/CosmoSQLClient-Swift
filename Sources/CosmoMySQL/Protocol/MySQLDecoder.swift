@@ -185,11 +185,11 @@ func mysqlCachingSHA2Password(password: String, nonce: [UInt8]) -> [UInt8] {
 
 // Static formatters — DateFormatter construction is expensive; allocating one per cell
 // (old behaviour) added significant overhead for date/datetime-heavy result sets.
-private nonisolated(unsafe) let _mysqlDateFmt: DateFormatter = {
+private let _mysqlDateFmt: DateFormatter = {
     let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
     f.dateFormat = "yyyy-MM-dd"; return f
 }()
-private nonisolated(unsafe) let _mysqlDateTimeFmt: DateFormatter = {
+private let _mysqlDateTimeFmt: DateFormatter = {
     let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
     f.dateFormat = "yyyy-MM-dd HH:mm:ss"; return f
 }()

@@ -1,6 +1,7 @@
 import Foundation
 import NIOCore
 import NIOPosix
+import NIOSSL
 import CosmoSQLCore
 
 // ── MySQLConnectionPool ───────────────────────────────────────────────────────
@@ -38,6 +39,8 @@ public actor MySQLConnectionPool {
     private var isClosed:       Bool = false
     private var keepAliveTask:  Task<Void, Never>? = nil
     private var minIdleTarget:  Int = 0
+    // Pre-built SSL context shared across all connections — avoids per-connect NIOSSLContext creation.
+    private let sslContext:     NIOSSLContext?
 
     // MARK: - Init
 
@@ -49,6 +52,13 @@ public actor MySQLConnectionPool {
         self.configuration  = configuration
         self.maxConnections = max(1, maxConnections)
         self.eventLoopGroup = eventLoopGroup
+        if configuration.tls != .disable {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            tlsConfig.certificateVerification = .none
+            self.sslContext = try? NIOSSLContext(configuration: tlsConfig)
+        } else {
+            self.sslContext = nil
+        }
     }
 
     // MARK: - Acquire
@@ -186,7 +196,8 @@ public actor MySQLConnectionPool {
     private func openConnection() async throws -> MySQLConnection {
         try await MySQLConnection.connect(
             configuration: configuration,
-            eventLoopGroup: eventLoopGroup
+            eventLoopGroup: eventLoopGroup,
+            sslContext: sslContext
         )
     }
 

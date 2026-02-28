@@ -52,7 +52,21 @@ public final class AsyncChannelBridge: ChannelInboundHandler, RemovableChannelHa
     ///
     /// - Parameter eventLoop: The channel's event loop; used to serialize queue access.
     public func waitForMessage(on eventLoop: any EventLoop) async throws -> ByteBuffer {
-        try await withCheckedThrowingContinuation { cont in
+        // Fast path: if we're already on the event loop (e.g., called from channelRead
+        // context) and there's buffered data, return synchronously without a thread hop.
+        if eventLoop.inEventLoop {
+            if !queue.isEmpty {
+                return queue.removeFirst()
+            }
+            // Still on event loop but no data yet — suspend and wait.
+            return try await withCheckedThrowingContinuation { cont in
+                precondition(self.waiter == nil,
+                             "AsyncChannelBridge: only one concurrent waitForMessage is allowed")
+                self.waiter = cont
+            }
+        }
+        // Slow path: hop to the event loop to safely read from the queue.
+        return try await withCheckedThrowingContinuation { cont in
             eventLoop.execute {
                 if !self.queue.isEmpty {
                     cont.resume(returning: self.queue.removeFirst())

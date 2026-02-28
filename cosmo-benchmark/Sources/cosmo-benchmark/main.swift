@@ -184,10 +184,10 @@ func benchPostgresCosmo() async -> [BenchResult] {
         return []
     }
     let config = PostgresConnection.Configuration(
-        host: pgHost, port: pgPort, database: pgDb, username: pgUser, password: pgPass, tls: .prefer)
+        host: pgHost, port: pgPort, database: pgDb, username: pgUser, password: pgPass, tls: .disable)
     var results: [BenchResult] = []
 
-    results.append(await measure(label: "Cold  connect + query + close", iterations: iterations) {
+    results.append(await measure(label: "Cold  connect + query + close (tls:off)", iterations: iterations) {
         let c = try await PostgresConnection.connect(configuration: config)
         defer { Task { try? await c.close() } }
         _ = try await c.query(pgQuery, [])
@@ -234,7 +234,7 @@ func benchPostgresNIO() async -> [BenchResult] {
         database: pgDb, tls: .disable)
     var results: [BenchResult] = []
 
-    results.append(await measure(label: "Cold  connect + query + close", iterations: iterations) {
+    results.append(await measure(label: "Cold  connect + query + close (tls:off)", iterations: iterations) {
         let c = try await PostgresNIO.PostgresConnection.connect(
             configuration: config, id: 0, logger: logger)
         defer { Task { try? await c.close() } }

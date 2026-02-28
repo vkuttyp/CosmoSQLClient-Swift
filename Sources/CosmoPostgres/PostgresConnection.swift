@@ -70,7 +70,8 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
     public static func connect(
         configuration: Configuration,
-        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
+        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton,
+        sslContext: NIOSSLContext? = nil   // supply pre-built context from pool to avoid per-connect creation cost
     ) async throws -> PostgresConnection {
         let bootstrap = ClientBootstrap(group: eventLoopGroup)
             .channelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
@@ -79,7 +80,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
                                                    port: configuration.port).get()
         let conn = PostgresConnection(channel: channel, config: configuration,
                                       logger: configuration.logger)
-        try await conn.handshake()
+        try await conn.handshake(sslContext: sslContext)
         return conn
     }
 
@@ -91,40 +92,47 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
     // MARK: - Handshake
 
-    private func handshake() async throws {
-        // The PostgreSQL SSL negotiation uses a single raw byte response ('S'/'N')
-        // which predates the standard PG framing format. We handle it by using a
-        // temporary raw bridge handler before installing the proper framing handler.
-        let rawBridge = AsyncChannelBridge()
-        try await channel.pipeline.addHandler(rawBridge).get()
+    private func handshake(sslContext: NIOSSLContext? = nil) async throws {
+        let b = AsyncChannelBridge()
+        bridge = b
 
-        // 1. Optionally request TLS
         if config.tls != .disable {
+            // Postgres SSL negotiation uses a raw single-byte response ('S'/'N') before
+            // the normal framing kicks in. Use a temporary raw bridge to read that byte,
+            // then swap in the proper framing handler.
+            let rawBridge = AsyncChannelBridge()
+            try await channel.pipeline.addHandler(rawBridge).get()
+
             let sslReq = PGFrontend.sslRequest(allocator: channel.allocator)
             try await send(sslReq)
-            // SSL response is a single raw byte, not a framed PG message
+
             var sslResponse = try await rawBridge.waitForMessage(on: channel.eventLoop)
             let sslByte = sslResponse.readInteger(as: UInt8.self) ?? UInt8(ascii: "N")
+
+            try await channel.pipeline.removeHandler(rawBridge).get()
+
+            // Install framing + bridge
+            let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
+            try await channel.eventLoop.submit {
+                try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+            }.get()
+
             if sslByte == UInt8(ascii: "S") {
-                try await upgradeTLS()
+                try await upgradeTLS(sslContext: sslContext)
                 logger.debug("PostgreSQL TLS established")
             } else if config.tls == .require {
                 throw SQLError.tlsError("Server does not support TLS")
             }
+        } else {
+            // No TLS — install framing + bridge directly, skipping the rawBridge cycle.
+            // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
+            let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
+            try await channel.eventLoop.submit {
+                try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+            }.get()
         }
 
-        // 2. Now switch to proper PG message framing
-        try await channel.pipeline.removeHandler(rawBridge).get()
-        let b = AsyncChannelBridge()
-        bridge = b
-        // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
-        // Use syncOperations from within the event loop to avoid the Sendable requirement.
-        let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
-        try await channel.eventLoop.submit {
-            try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
-        }.get()
-
-        // 3. Startup + authentication
+        // Startup + authentication
         let startup = PGFrontend.startup(user: config.username,
                                           database: config.database,
                                           allocator: channel.allocator)
@@ -133,11 +141,18 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         logger.debug("PostgreSQL connected as \(config.username)")
     }
 
-    private func upgradeTLS() async throws {
-        var tlsConfig = TLSConfiguration.makeClientConfiguration()
-        tlsConfig.certificateVerification = .none
-        let sslContext = try NIOSSLContext(configuration: tlsConfig)
-        let sslHandler = try NIOSSLClientHandler(context: sslContext,
+    // sslContext: reuse the pool-level NIOSSLContext instead of constructing one per connection.
+    // NIOSSLContext wraps OpenSSL's SSL_CTX which is safe to share across connections.
+    private func upgradeTLS(sslContext: NIOSSLContext? = nil) async throws {
+        let ctx: NIOSSLContext
+        if let provided = sslContext {
+            ctx = provided
+        } else {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            tlsConfig.certificateVerification = .none
+            ctx = try NIOSSLContext(configuration: tlsConfig)
+        }
+        let sslHandler = try NIOSSLClientHandler(context: ctx,
                                                   serverHostname: config.host)
         // Swift 6: NIOSSLHandler has Sendable marked unavailable (event-loop-bound).
         let sslBox = _UnsafeSendable(sslHandler)
@@ -466,7 +481,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
 // Static formatters — DateFormatter/ISO8601DateFormatter are expensive to construct;
 // allocating one per cell (old behaviour) added measurable overhead on date-heavy result sets.
-private nonisolated(unsafe) let _pgDateFmt: DateFormatter = {
+private let _pgDateFmt: DateFormatter = {
     let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
     f.dateFormat = "yyyy-MM-dd"; return f
 }()

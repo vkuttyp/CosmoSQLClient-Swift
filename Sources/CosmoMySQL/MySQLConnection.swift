@@ -73,7 +73,8 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
 
     public static func connect(
         configuration: Configuration,
-        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
+        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton,
+        sslContext: NIOSSLContext? = nil   // supply pre-built context from pool to avoid per-connect creation cost
     ) async throws -> MySQLConnection {
         let bootstrap = ClientBootstrap(group: eventLoopGroup)
             .channelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
@@ -82,7 +83,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
                                                    port: configuration.port).get()
         let conn = MySQLConnection(channel: channel, config: configuration,
                                    logger: configuration.logger)
-        try await conn.handshake()
+        try await conn.handshake(sslContext: sslContext)
         return conn
     }
 
@@ -94,7 +95,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
 
     // MARK: - Handshake
 
-    private func handshake() async throws {
+    private func handshake(sslContext: NIOSSLContext? = nil) async throws {
         let b = AsyncChannelBridge()
         bridge = b
         // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
@@ -117,7 +118,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
 
         if useTLS && serverHS.capabilities.contains(.ssl) {
             try await sendSSLRequest(serverCapabilities: serverHS.capabilities)
-            try await upgradeTLS()
+            try await upgradeTLS(sslContext: sslContext)
             logger.debug("MySQL TLS established")
         }
 
@@ -148,13 +149,19 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         try await send(pkt)
     }
 
-    private func upgradeTLS() async throws {
-        var tlsConfig = TLSConfiguration.makeClientConfiguration()
-        tlsConfig.certificateVerification = .none
-        let sslContext = try NIOSSLContext(configuration: tlsConfig)
+    // sslContext: reuse the pool-level NIOSSLContext instead of constructing one per connection.
+    private func upgradeTLS(sslContext: NIOSSLContext? = nil) async throws {
+        let ctx: NIOSSLContext
+        if let provided = sslContext {
+            ctx = provided
+        } else {
+            var tlsConfig = TLSConfiguration.makeClientConfiguration()
+            tlsConfig.certificateVerification = .none
+            ctx = try NIOSSLContext(configuration: tlsConfig)
+        }
         // SNI requires a hostname, not an IP address
         let sni = config.host.first?.isNumber == false ? config.host : nil
-        let sslHandler = try NIOSSLClientHandler(context: sslContext, serverHostname: sni)
+        let sslHandler = try NIOSSLClientHandler(context: ctx, serverHostname: sni)
         // Swift 6: NIOSSLHandler has Sendable marked unavailable (event-loop-bound).
         let sslBox = _UnsafeSendable(sslHandler)
         try await channel.eventLoop.submit {
