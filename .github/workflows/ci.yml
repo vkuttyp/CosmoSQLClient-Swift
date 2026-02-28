@@ -38,8 +38,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: macos-spm-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: macos-spm-${{ env.SWIFT_VERSION }}-
+          key: macos-spm-v2-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: macos-spm-v2-${{ env.SWIFT_VERSION }}-
       - run: swift test --filter SQLiteNioTests 2>&1
       - run: swift test --filter SQLNioCoreTests --skip-build 2>&1
 
@@ -65,8 +65,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: linux-spm-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: linux-spm-${{ env.SWIFT_VERSION }}-
+          key: linux-spm-v2-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: linux-spm-v2-${{ env.SWIFT_VERSION }}-
 
       - name: Build
         run: swift build --build-tests --configuration debug 2>&1
