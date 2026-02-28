@@ -2,10 +2,10 @@ version: 1
 builder:
   configs:
     - documentation_targets:
-        - SQLNioCore
-        - MSSQLNio
-        - PostgresNio
-        - MySQLNio
-        - SQLiteNio
+        - CosmoSQLCore
+        - CosmoMSSQL
+        - CosmoPostgres
+        - CosmoMySQL
+        - CosmoSQLite
       swift_version: "6.0"
       platform: macosSpm
