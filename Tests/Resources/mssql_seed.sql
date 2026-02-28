@@ -206,13 +206,13 @@ GO
 -- ─── Stored Procedures ───────────────────────────────────────────────────────
 
 CREATE PROCEDURE sp_GetEmployeeById
-    @p1 UNIQUEIDENTIFIER
+    @id UNIQUEIDENTIFIER
 AS
 BEGIN
     SET NOCOUNT ON;
     SELECT id, name, email, salary, department_id, is_active, notes
     FROM Employees
-    WHERE id = @p1;
+    WHERE id = @id;
 END;
 GO
 

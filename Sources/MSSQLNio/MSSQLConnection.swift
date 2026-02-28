@@ -37,6 +37,10 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         /// SQL Server password. Not required when using Windows/NTLM authentication (`domain` is set).
         public var password:       String     = ""
         public var tls:            SQLTLSConfiguration = .prefer
+        /// When `true`, the server's TLS certificate is accepted without verification
+        /// (equivalent to `TrustServerCertificate=true` in a SQL Server connection string).
+        /// Set this to `true` when connecting to servers with self-signed certificates (e.g. dev/test).
+        public var trustServerCertificate: Bool = false
         public var logger:         Logger     = Logger(label: "MSSQLNio")
         /// Timeout for establishing the TCP + TLS + Login7 handshake (seconds). nil = no limit.
         public var connectTimeout: TimeInterval? = 30
@@ -52,18 +56,20 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         public init(host: String, port: Int = 1433,
                     database: String, username: String, password: String,
                     tls: SQLTLSConfiguration = .prefer,
+                    trustServerCertificate: Bool = false,
                     connectTimeout: TimeInterval? = 30,
                     queryTimeout:   TimeInterval? = nil,
                     readOnly:       Bool = false) {
-            self.host           = host
-            self.port           = port
-            self.database       = database
-            self.username       = username
-            self.password       = password
-            self.tls            = tls
-            self.connectTimeout = connectTimeout
-            self.queryTimeout   = queryTimeout
-            self.readOnly       = readOnly
+            self.host                   = host
+            self.port                   = port
+            self.database               = database
+            self.username               = username
+            self.password               = password
+            self.tls                    = tls
+            self.trustServerCertificate = trustServerCertificate
+            self.connectTimeout         = connectTimeout
+            self.queryTimeout           = queryTimeout
+            self.readOnly               = readOnly
         }
 
         /// Windows/NTLM authentication. Username and password are optional;
@@ -75,19 +81,21 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
                     username: String = "",
                     password: String = "",
                     tls: SQLTLSConfiguration = .prefer,
+                    trustServerCertificate: Bool = false,
                     connectTimeout: TimeInterval? = 30,
                     queryTimeout:   TimeInterval? = nil,
                     readOnly:       Bool = false) {
-            self.host           = host
-            self.port           = port
-            self.database       = database
-            self.domain         = domain
-            self.username       = username
-            self.password       = password
-            self.tls            = tls
-            self.connectTimeout = connectTimeout
-            self.queryTimeout   = queryTimeout
-            self.readOnly       = readOnly
+            self.host                   = host
+            self.port                   = port
+            self.database               = database
+            self.domain                 = domain
+            self.username               = username
+            self.password               = password
+            self.tls                    = tls
+            self.trustServerCertificate = trustServerCertificate
+            self.connectTimeout         = connectTimeout
+            self.queryTimeout           = queryTimeout
+            self.readOnly               = readOnly
         }
     }
 
@@ -201,7 +209,9 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     private func upgradeTLS() async throws {
         var tlsConfig = TLSConfiguration.makeClientConfiguration()
-        tlsConfig.certificateVerification = .none   // dev/test; in production supply a CA cert
+        if config.trustServerCertificate {
+            tlsConfig.certificateVerification = .none
+        }
         let sslContext = try NIOSSLContext(configuration: tlsConfig)
         // IP addresses cannot be used for SNI — pass nil to disable SNI for IP hosts
         let sniHostname: String? = {

@@ -24,11 +24,12 @@ struct TestDatabase {
     static var configuration: MSSQLConnection.Configuration {
         let env = ProcessInfo.processInfo.environment
         return MSSQLConnection.Configuration(
-            host:     env["MSSQL_TEST_HOST"] ?? "127.0.0.1",
-            port:     Int(env["MSSQL_TEST_PORT"] ?? "1433") ?? 1433,
-            database: env["MSSQL_TEST_DB"]   ?? "MSSQLNioTestDb",
-            username: env["MSSQL_TEST_USER"] ?? "sa",
-            password: env["MSSQL_TEST_PASS"] ?? "aBCD111"
+            host:                   env["MSSQL_TEST_HOST"] ?? "127.0.0.1",
+            port:                   Int(env["MSSQL_TEST_PORT"] ?? "1433") ?? 1433,
+            database:               env["MSSQL_TEST_DB"]   ?? "MSSQLNioTestDb",
+            username:               env["MSSQL_TEST_USER"] ?? "sa",
+            password:               env["MSSQL_TEST_PASS"] ?? "aBCD111",
+            trustServerCertificate: true
         )
     }
 
