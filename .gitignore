@@ -13,3 +13,7 @@ PosBackend/
 # Downloaded CI logs
 logs_*/
 frpc.toml
+
+# C# build artifacts
+cosmo/bin/
+cosmo/obj/
