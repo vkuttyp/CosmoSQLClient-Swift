@@ -16,7 +16,7 @@ let sqliteNioLinkerSettings:  [LinkerSetting] = []
 #endif
 
 let package = Package(
-    name: "cosmo-sql-client",
+    name: "CosmoSQLClient",
     platforms: [
         .macOS(.v13),
         .iOS(.v16),
