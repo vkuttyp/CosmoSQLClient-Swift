@@ -27,169 +27,93 @@ env:
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────────
-  # 1. Build + SQLite tests — macOS and Linux, multiple Swift versions
-  #    No Docker needed — SQLite uses an in-memory database.
+  # 1. SQLite + Core tests — macOS (Swift pre-installed, ~1 min)
   # ───────────────────────────────────────────────────────────────────────────
-  test-sqlite:
-    name: SQLite — ${{ matrix.os }} / Swift ${{ matrix.swift }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-15, ubuntu-24.04]
-        swift: ["6.0"]
+  test-sqlite-macos:
+    name: SQLite — macOS / Swift ${{ env.SWIFT_VERSION }}
+    runs-on: macos-15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Cache SPM
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: macos-spm-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: macos-spm-${{ env.SWIFT_VERSION }}-
+      - run: swift test --filter SQLiteNioTests 2>&1
+      - run: swift test --filter SQLNioCoreTests --skip-build 2>&1
 
-      - name: Setup Swift ${{ matrix.swift }}
-        if: runner.os == 'Linux'
+  # ───────────────────────────────────────────────────────────────────────────
+  # 2. All integration tests in one Linux job — build once, test all three DBs
+  #    Connects to vps.marivil.com (Docker containers, always up).
+  # ───────────────────────────────────────────────────────────────────────────
+  test-integration:
+    name: Integration tests (MSSQL · PostgreSQL · MySQL · SQLite/Linux)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Swift ${{ env.SWIFT_VERSION }}
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: ${{ matrix.swift }}
+          swift-version: ${{ env.SWIFT_VERSION }}
+
+      - name: Install SQLite
+        run: sudo apt-get install -y libsqlite3-dev
 
       - name: Cache SPM
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ matrix.swift }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-${{ matrix.swift }}-
-
-      - name: Install SQLite (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get install -y libsqlite3-dev
+          key: linux-spm-${{ env.SWIFT_VERSION }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: linux-spm-${{ env.SWIFT_VERSION }}-
 
       - name: Build
         run: swift build --configuration debug 2>&1
 
-      - name: Run SQLite tests
-        run: swift test --filter SQLiteNioTests 2>&1
+      - name: SQLite tests
+        run: swift test --filter SQLiteNioTests --skip-build 2>&1
 
-      - name: Run Core tests
-        run: swift test --filter SQLNioCoreTests 2>&1
+      - name: SQLite Core tests
+        run: swift test --filter SQLNioCoreTests --skip-build 2>&1
 
-  # ───────────────────────────────────────────────────────────────────────────
-  # 2. SQL Server integration tests
-  #    Connects to Mac via frpc tunnel on VPS (no service container).
-  # ───────────────────────────────────────────────────────────────────────────
-  test-mssql:
-    name: SQL Server integration tests
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: ${{ env.SWIFT_VERSION }}
-
-      - name: Install SQLite
-        run: sudo apt-get install -y libsqlite3-dev
-
-      - name: Cache SPM
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: ${{ runner.os }}-spm-mssql-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-mssql-
-
-      - name: Run MSSQL tests
+      - name: MSSQL tests
         env:
-          MSSQL_TEST_HOST: ${{ secrets.DB_HOST }}
+          MSSQL_TEST_HOST: ${{ secrets.MSSQL_TEST_HOST }}
           MSSQL_TEST_PASS: ${{ secrets.MSSQL_TEST_PASS }}
-          MSSQL_TEST_DB:   "MSSQLNioTestDb"
-          MSSQL_TEST_USER: "sa"
-        run: swift test --filter MSSQLNioTests 2>&1
+          MSSQL_TEST_DB:   MSSQLNioTestDb
+          MSSQL_TEST_USER: sa
+        run: swift test --filter MSSQLNioTests --skip-build 2>&1
 
-  # ───────────────────────────────────────────────────────────────────────────
-  # 3. PostgreSQL integration tests
-  #    Connects to Mac via frpc tunnel on VPS (no service container).
-  # ───────────────────────────────────────────────────────────────────────────
-  test-postgres:
-    name: PostgreSQL integration tests
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: ${{ env.SWIFT_VERSION }}
-
-      - name: Install SQLite
-        run: sudo apt-get install -y libsqlite3-dev
-
-      - name: Cache SPM
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: ${{ runner.os }}-spm-pg-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-pg-
-
-      - name: Run PostgreSQL tests
+      - name: PostgreSQL tests
         env:
-          PG_TEST_HOST: ${{ secrets.DB_HOST }}
+          PG_TEST_HOST: ${{ secrets.PG_TEST_HOST }}
           PG_TEST_DB:   PostgresNioTestDb
           PG_TEST_USER: pguser
           PG_TEST_PASS: ${{ secrets.PG_TEST_PASS }}
-        run: swift test --filter PostgresNioTests 2>&1
+        run: swift test --filter PostgresNioTests --skip-build 2>&1
 
-  # ───────────────────────────────────────────────────────────────────────────
-  # 4. MySQL integration tests
-  #    Connects to Mac via frpc tunnel on VPS (no service container).
-  # ───────────────────────────────────────────────────────────────────────────
-  test-mysql:
-    name: MySQL integration tests
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: ${{ env.SWIFT_VERSION }}
-
-      - name: Install SQLite
-        run: sudo apt-get install -y libsqlite3-dev
-
-      - name: Cache SPM
-        uses: actions/cache@v4
-        with:
-          path: .build
-          key: ${{ runner.os }}-spm-mysql-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-mysql-
-
-      - name: Run MySQL tests
+      - name: MySQL tests
         env:
-          MYSQL_TEST_HOST: ${{ secrets.DB_HOST }}
+          MYSQL_TEST_HOST: ${{ secrets.MYSQL_TEST_HOST }}
           MYSQL_TEST_DB:   MySQLNioTestDb
           MYSQL_TEST_USER: mysqluser
           MYSQL_TEST_PASS: ${{ secrets.MYSQL_TEST_PASS }}
-        run: swift test --filter MySQLNioTests 2>&1
+        run: swift test --filter MySQLNioTests --skip-build 2>&1
 
   # ───────────────────────────────────────────────────────────────────────────
-  # 5. Summary / Required status check
-  #    PRs cannot be merged until all four test jobs pass.
+  # 3. Summary / Required status check
   # ───────────────────────────────────────────────────────────────────────────
   ci-success:
     name: All tests passed
     runs-on: ubuntu-24.04
-    needs: [test-sqlite, test-mssql, test-postgres, test-mysql]
+    needs: [test-sqlite-macos, test-integration]
     if: always()
     steps:
       - name: Check results
         run: |
-          if [[ "${{ needs.test-sqlite.result }}"  != "success" || \
-                "${{ needs.test-mssql.result }}"   != "success" || \
-                "${{ needs.test-postgres.result }}" != "success" || \
-                "${{ needs.test-mysql.result }}"    != "success" ]]; then
+          if [[ "${{ needs.test-sqlite-macos.result }}" != "success" || \
+                "${{ needs.test-integration.result }}"  != "success" ]]; then
             echo "One or more test jobs failed."
             exit 1
           fi
