@@ -75,7 +75,7 @@ INSERT INTO departments (name, budget, active) VALUES
     ('Marketing',    200000.00, TRUE),
     ('Sales',        350000.00, TRUE),
     ('HR',           150000.00, TRUE),
-    ('Operations',   250000.00, TRUE);
+    ('Operations',   250000.00, FALSE);
 
 -- 8 employees: 3 in Engineering (id=1), others distributed
 -- Alice Johnson is alphabetically first in dept=1 and highest paid overall
