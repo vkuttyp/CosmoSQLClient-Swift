@@ -5,7 +5,7 @@
 //
 // Environment variables (same as the rest of the test suite):
 //   MSSQL_TEST_HOST=127.0.0.1
-//   MSSQL_TEST_PASS=aBCD111
+//   MSSQL_TEST_PASS=SuperStr0ngP@ssword
 //   swift test --filter SQLClientCompat
 
 import XCTest

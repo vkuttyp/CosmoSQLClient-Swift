@@ -9,7 +9,7 @@ import MSSQLNio
 //   MSSQL_TEST_HOST=127.0.0.1 \
 //   MSSQL_TEST_PORT=1433 \
 //   MSSQL_TEST_USER=sa \
-//   MSSQL_TEST_PASS=aBCD111 \
+//   MSSQL_TEST_PASS=SuperStr0ngP@ssword \
 //   MSSQL_TEST_DB=MSSQLNioTestDb \
 //   swift test --filter MSSQLNio
 //
@@ -28,7 +28,7 @@ struct TestDatabase {
             port:                   Int(env["MSSQL_TEST_PORT"] ?? "1433") ?? 1433,
             database:               env["MSSQL_TEST_DB"]   ?? "MSSQLNioTestDb",
             username:               env["MSSQL_TEST_USER"] ?? "sa",
-            password:               env["MSSQL_TEST_PASS"] ?? "aBCD111",
+            password:               env["MSSQL_TEST_PASS"] ?? "SuperStr0ngP@ssword",
             trustServerCertificate: true
         )
     }

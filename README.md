@@ -48,6 +48,10 @@ A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL
 |---|:---:|:---:|:---:|:---:|
 | Native wire protocol | TDS 7.4 | v3 | v10 | sqlite3 |
 | TLS / SSL encryption | ✅ | ✅ | ✅ | N/A |
+| TrustServerCertificate | ✅ | — | — | — |
+| Connection string parsing | ✅ | — | — | — |
+| `checkReachability()` | ✅ | — | — | — |
+| Swift 6 strict concurrency | ✅ | ✅ | ✅ | ✅ |
 | Unified `SQLDatabase` protocol | ✅ | ✅ | ✅ | ✅ |
 | `async/await` API | ✅ | ✅ | ✅ | ✅ |
 | Parameterized queries | ✅ | ✅ | ✅ | ✅ |
@@ -118,12 +122,21 @@ You can import only the drivers you need — each is an independent library modu
 ```swift
 import MSSQLNio
 
+// Programmatic configuration
 let config = MSSQLConnection.Configuration(
-    host:     "localhost",
-    port:     1433,          // default
-    database: "AdventureWorks",
-    username: "sa",
-    password: "YourPassword!"
+    host:                   "localhost",
+    port:                   1433,
+    database:               "AdventureWorks",
+    username:               "sa",
+    password:               "YourPassword!",
+    trustServerCertificate: true   // set true for self-signed certs (dev/test)
+)
+
+// Or from a connection string
+let config = try MSSQLConnection.Configuration(connectionString:
+    "Server=localhost,1433;Database=AdventureWorks;" +
+    "User Id=sa;Password=YourPassword!;" +
+    "Encrypt=True;TrustServerCertificate=True;"
 )
 
 let conn = try await MSSQLConnection.connect(configuration: config)
@@ -696,14 +709,34 @@ config.tls = .prefer
 config.tls = .disable
 ```
 
-For development/testing with self-signed certificates, disable certificate verification:
+### TrustServerCertificate (SQL Server)
 
-> **Warning:** Never use in production.
+Self-signed certificates (Docker, local dev) require bypassing certificate verification:
 
 ```swift
-// MSSQL
-var config = MSSQLConnection.Configuration(...)
-config.tls = .prefer   // MSSQL defaults to TLS-first via pre-login negotiation
+// Via init:
+let config = MSSQLConnection.Configuration(
+    host: "localhost", database: "MyDb",
+    username: "sa", password: "pass",
+    trustServerCertificate: true
+)
+
+// Via connection string:
+let config = try MSSQLConnection.Configuration(connectionString:
+    "Server=localhost;Database=MyDb;User Id=sa;Password=pass;" +
+    "Encrypt=True;TrustServerCertificate=True;"
+)
+```
+
+> **Warning:** `trustServerCertificate: true` disables certificate validation. Use only in development/testing, never in production.
+
+### Reachability check (SQL Server)
+
+Perform a fast TCP pre-flight before a full TDS connection attempt:
+
+```swift
+try await config.checkReachability()          // throws if host:port unreachable
+let conn = try await MSSQLConnection.connect(configuration: config)
 ```
 
 ---
@@ -930,12 +963,12 @@ swift test --filter SQLiteNioTests
 # Start SQL Server in Docker
 docker run -d --name sqlserver \
   -e ACCEPT_EULA=Y \
-  -e SA_PASSWORD=aBCD111 \
+  -e SA_PASSWORD=SuperStr0ngP@ssword \
   -p 1433:1433 \
   mcr.microsoft.com/mssql/server:2022-latest
 
 # Run tests
-MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=aBCD111 swift test --filter MSSQLNioTests
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=SuperStr0ngP@ssword swift test --filter MSSQLNioTests
 ```
 
 ### PostgreSQL
@@ -970,7 +1003,7 @@ MYSQL_TEST_HOST=127.0.0.1 swift test --filter MySQLNioTests
 swift test --filter SQLiteNioTests
 
 # Run all integration tests (requires all three containers above)
-MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=aBCD111 \
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=SuperStr0ngP@ssword \
 PG_TEST_HOST=127.0.0.1 \
 MYSQL_TEST_HOST=127.0.0.1 \
 swift test
