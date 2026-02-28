@@ -1,6 +1,6 @@
-import NIOCore
-import NIOPosix
-import NIOSSL
+@preconcurrency import NIOCore
+@preconcurrency import NIOPosix
+@preconcurrency import NIOSSL
 import Logging
 import SQLNioCore
 import Foundation
@@ -117,10 +117,12 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         try await channel.pipeline.removeHandler(rawBridge).get()
         let b = AsyncChannelBridge()
         bridge = b
-        try await channel.pipeline.addHandlers([
-            ByteToMessageHandler(PGFramingHandler()),
-            b,
-        ]).get()
+        // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
+        // Use syncOperations from within the event loop to avoid the Sendable requirement.
+        let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+        }.get()
 
         // 3. Startup + authentication
         let startup = PGFrontend.startup(user: config.username,
@@ -137,7 +139,11 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         let sslContext = try NIOSSLContext(configuration: tlsConfig)
         let sslHandler = try NIOSSLClientHandler(context: sslContext,
                                                   serverHostname: config.host)
-        try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+        // Swift 6: NIOSSLHandler has Sendable marked unavailable (event-loop-bound).
+        let sslBox = _UnsafeSendable(sslHandler)
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandler(sslBox.value, position: .first)
+        }.get()
     }
 
     private func authenticate() async throws {

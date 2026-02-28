@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 import PackageDescription
 
 // SQLite is provided by the Apple SDK on Darwin; on Linux we need a system library.
@@ -148,6 +148,5 @@ let package = Package(
 )
 
 var swiftSettings: [SwiftSetting] { [
-    .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("StrictConcurrency"),
+    .swiftLanguageMode(.v6),
 ] }

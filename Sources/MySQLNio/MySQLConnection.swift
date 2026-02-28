@@ -1,6 +1,6 @@
-import NIOCore
-import NIOPosix
-import NIOSSL
+@preconcurrency import NIOCore
+@preconcurrency import NIOPosix
+@preconcurrency import NIOSSL
 import Logging
 import SQLNioCore
 import Foundation
@@ -97,10 +97,11 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     private func handshake() async throws {
         let b = AsyncChannelBridge()
         bridge = b
-        try await channel.pipeline.addHandlers([
-            ByteToMessageHandler(MySQLFramingHandler()),
-            b,
-        ]).get()
+        // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
+        let frameBox = _UnsafeSendable(ByteToMessageHandler(MySQLFramingHandler()))
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+        }.get()
 
         // 1. Receive server handshake
         var serverHSPacket = try await receivePacket()
@@ -154,7 +155,11 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         // SNI requires a hostname, not an IP address
         let sni = config.host.first?.isNumber == false ? config.host : nil
         let sslHandler = try NIOSSLClientHandler(context: sslContext, serverHostname: sni)
-        try await channel.pipeline.addHandler(sslHandler, position: .first).get()
+        // Swift 6: NIOSSLHandler has Sendable marked unavailable (event-loop-bound).
+        let sslBox = _UnsafeSendable(sslHandler)
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandler(sslBox.value, position: .first)
+        }.get()
     }
 
     private func sendHandshakeResponse(serverHS: MySQLHandshakeV10) async throws {

@@ -1,6 +1,6 @@
-import NIOCore
-import NIOPosix
-import NIOSSL
+@preconcurrency import NIOCore
+@preconcurrency import NIOPosix
+@preconcurrency import NIOSSL
 import Logging
 import SQLNioCore
 import Foundation
@@ -112,14 +112,14 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     public static func connect(
         configuration: Configuration,
         eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
-    ) async throws -> MSSQLConnection {
-        let bootstrap = ClientBootstrap(group: eventLoopGroup)
-            .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_KEEPALIVE), value: 1)
-            .channelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
-
-        let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
-            try await bootstrap.connect(host: configuration.host,
-                                        port: configuration.port).get()
+    ) async throws -> MSSQLConnection {        let channel = try await mssqlWithTimeout(configuration.connectTimeout) {
+            // Swift 6: ClientBootstrap is not Sendable; capture host/port as value types instead.
+            let host = configuration.host
+            let port = configuration.port
+            return try await ClientBootstrap(group: eventLoopGroup)
+                .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_KEEPALIVE), value: 1)
+                .channelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
+                .connect(host: host, port: port).get()
         }
 
         let conn = MSSQLConnection(channel: channel,
@@ -143,11 +143,12 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         // 1. Add pipeline: TDSTLSFramer (pass-through initially) + framing + bridge
         let b = AsyncChannelBridge()
         bridge = b
-        try await channel.pipeline.addHandlers([
-            tlsFramer,
-            ByteToMessageHandler(TDSFramingHandler()),
-            b,
-        ]).get()
+        // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
+        let frameBox = _UnsafeSendable(ByteToMessageHandler(TDSFramingHandler()))
+        let framer = tlsFramer
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandlers([framer, frameBox.value, b])
+        }.get()
 
         // 2. Pre-Login — negotiate encryption preference
         let preLoginResp = try await sendPreLogin()
@@ -225,8 +226,17 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         // Insert NIOSSLClientHandler and tracker between TDSTLSFramer and TDSFramingHandler.
         // Because the channel is already active, NIOSSLClientHandler's handlerAdded()
         // triggers the TLS handshake automatically.
-        try await channel.pipeline.addHandler(sslHandler, position: .after(tlsFramer)).get()
-        try await channel.pipeline.addHandler(tracker,    position: .after(sslHandler)).get()
+        //
+        // Swift 6: NIOSSLHandler explicitly marks Sendable unavailable (it is event-loop-bound).
+        // We use syncOperations (no Sendable requirement) from within an event-loop submit block,
+        // bridging with an @unchecked Sendable box since we immediately hand ownership to the loop.
+        let sslBox = _UnsafeSendable(sslHandler)
+        try await channel.eventLoop.submit {
+            try self.channel.pipeline.syncOperations.addHandler(
+                sslBox.value, position: .after(self.tlsFramer))
+            try self.channel.pipeline.syncOperations.addHandler(
+                tracker, position: .after(sslBox.value))
+        }.get()
 
         // Wait for TLS handshake to complete (tracker fulfils promise + deactivates framer)
         try await promise.futureResult.get()

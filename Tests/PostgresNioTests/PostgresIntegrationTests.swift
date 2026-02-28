@@ -1454,8 +1454,10 @@ final class PGNoticeTests: XCTestCase, @unchecked Sendable {
     func testNoticeCallback() {
         pgRunAsync {
             try await PGTestDatabase.withConnection { conn in
-                var notices: [String] = []
-                conn.onNotice = { msg in notices.append(msg) }
+                // Swift 6: @Sendable callback can't mutate a var capture; use a class ref instead.
+                final class MutableList: @unchecked Sendable { var items: [String] = [] }
+                let notices = MutableList()
+                conn.onNotice = { msg in notices.items.append(msg) }
 
                 // PostgreSQL RAISE NOTICE generates a notice message
                 _ = try await conn.execute("""
@@ -1464,8 +1466,8 @@ final class PGNoticeTests: XCTestCase, @unchecked Sendable {
                     END$$
                 """, [])
 
-                XCTAssertGreaterThan(notices.count, 0)
-                XCTAssertTrue(notices.joined().contains("Test notice"))
+                XCTAssertGreaterThan(notices.items.count, 0)
+                XCTAssertTrue(notices.items.joined().contains("Test notice"))
             }
         }
     }
