@@ -30,7 +30,7 @@ jobs:
   # 1. SQLite + Core tests — macOS (Swift pre-installed, ~1 min)
   # ───────────────────────────────────────────────────────────────────────────
   test-sqlite-macos:
-    name: SQLite — macOS / Swift ${{ env.SWIFT_VERSION }}
+    name: SQLite — macOS / Swift 6.0
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
