@@ -66,12 +66,15 @@ public enum SQLCellValue: Sendable, Equatable {
         case .string(let v):  return v
         case .bytes(let v):   return Data(v).base64EncodedString()
         case .uuid(let v):    return v.uuidString
-        case .date(let v):
-            let f = ISO8601DateFormatter()
-            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            return f.string(from: v)
+        case .date(let v):    return SQLCellValue._isoFormatter.string(from: v)
         }
     }
+
+    private nonisolated(unsafe) static let _isoFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
 
     /// Human-readable string for display / Markdown rendering.
     public var displayString: String {
@@ -85,10 +88,7 @@ public enum SQLCellValue: Sendable, Equatable {
         case .string(let v):  return v
         case .bytes(let v):   return "0x" + v.map { String(format: "%02X", $0) }.joined()
         case .uuid(let v):    return v.uuidString
-        case .date(let v):
-            let f = ISO8601DateFormatter()
-            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            return f.string(from: v)
+        case .date(let v):    return SQLCellValue._isoFormatter.string(from: v)
         }
     }
 }
@@ -223,8 +223,16 @@ public struct SQLDataTable: Sendable {
 
     /// Decode all rows into an array of the given `Decodable` type.
     public func decode<T: Decodable>(as type: T.Type = T.self) throws -> [T] {
+        // Build the shared column-name → index map once for all rows.
+        // This avoids O(columns) linear search per field per row in _RowDecoder.
+        let colIndex = Dictionary(
+            columns.enumerated().map { (i, col) in (col.name.lowercased(), i) },
+            uniquingKeysWith: { first, _ in first }
+        )
         let decoder = SQLRowDecoder()
-        return try toSQLRows().map { try decoder.decode(T.self, from: $0) }
+        return try rows.map { cells in
+            try decoder.decode(T.self, cells: cells, columns: columns, columnIndex: colIndex)
+        }
     }
 
     // MARK: JSON rendering
@@ -232,14 +240,16 @@ public struct SQLDataTable: Sendable {
     /// Renders the table as a JSON array of objects (column name → native value).
     /// SQL NULL becomes JSON `null`. Dates are ISO-8601 strings.
     public func toJson(pretty: Bool = true) -> String {
-        let array = rows.map { row -> [String: Any?] in
-            Dictionary(uniqueKeysWithValues: zip(columns.map(\.name), row.map(\.jsonValue)))
+        // Pre-compute column names once — not per row.
+        let names = columns.map(\.name)
+        let sanitized = rows.map { row -> [String: Any] in
+            var dict = [String: Any](minimumCapacity: names.count)
+            for (i, cell) in row.enumerated() where i < names.count {
+                dict[names[i]] = cell.jsonValue ?? NSNull()
+            }
+            return dict
         }
-        // JSONSerialization needs [String: Any] with NSNull for nulls
-        let sanitized = array.map { dict in
-            dict.mapValues { $0 ?? NSNull() as Any }
-        }
-        let opts: JSONSerialization.WritingOptions = pretty ? [.prettyPrinted, .sortedKeys] : []
+        let opts: JSONSerialization.WritingOptions = pretty ? [.prettyPrinted] : []
         let data = (try? JSONSerialization.data(withJSONObject: sanitized, options: opts)) ?? Data()
         return String(data: data, encoding: .utf8) ?? "[]"
     }
