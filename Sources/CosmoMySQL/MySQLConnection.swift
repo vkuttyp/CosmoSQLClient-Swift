@@ -63,7 +63,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     private var capabilities: MySQLCapabilities = .clientDefault
     private var sequenceID:   UInt8 = 0
     private var isClosed:     Bool  = false
-    private var bridge:       AsyncChannelBridge?
+    private var msgReader:    MessageReader?   // AsyncThrowingStream-based; no eventLoop hop per read
     private var inTransaction: Bool = false
 
     // Called for each MySQL warning/note message received from the server.
@@ -96,13 +96,14 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     // MARK: - Handshake
 
     private func handshake(sslContext: NIOSSLContext? = nil) async throws {
-        let b = AsyncChannelBridge()
-        bridge = b
+        let bridge = AsyncStreamBridge()
         // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
-        let frameBox = _UnsafeSendable(ByteToMessageHandler(MySQLFramingHandler()))
+        let bridgeBox = _UnsafeSendable(bridge)
+        let frameBox  = _UnsafeSendable(ByteToMessageHandler(MySQLFramingHandler()))
         try await channel.eventLoop.submit {
-            try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+            try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, bridgeBox.value])
         }.get()
+        msgReader = MessageReader(bridge)
 
         // 1. Receive server handshake
         var serverHSPacket = try await receivePacket()
@@ -146,7 +147,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         let pkt = ByteBuffer.mysqlPacket(sequenceID: sequenceID,
                                           body: body,
                                           allocator: channel.allocator)
-        try await send(pkt)
+        send(pkt)
     }
 
     // sslContext: reuse the pool-level NIOSSLContext instead of constructing one per connection.
@@ -207,7 +208,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         let pkt = ByteBuffer.mysqlPacket(sequenceID: sequenceID,
                                           body: body,
                                           allocator: channel.allocator)
-        try await send(pkt)
+        send(pkt)
     }
 
     private func readAuthResult(authPlugin: String, challenge: [UInt8]) async throws {
@@ -240,7 +241,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
                 sequenceID += 1
                 let pkt = ByteBuffer.mysqlPacket(sequenceID: sequenceID, body: body,
                                                   allocator: channel.allocator)
-                try await send(pkt)
+                send(pkt)
                 try await readAuthResult(authPlugin: authPlugin, challenge: challenge)
             case 0x02:
                 // Server requesting RSA public key (non-TLS path) — not implemented
@@ -350,7 +351,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         sequenceID = 0
         let pkt = ByteBuffer.mysqlPacket(sequenceID: sequenceID, body: body,
                                           allocator: channel.allocator)
-        try? await send(pkt)
+        send(pkt)
         try await channel.close().get()
     }
 
@@ -363,7 +364,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         sequenceID = 0
         let pkt = ByteBuffer.mysqlPacket(sequenceID: sequenceID, body: body,
                                           allocator: channel.allocator)
-        try await send(pkt)
+        send(pkt)
     }
 
     // MARK: - Result set reading
@@ -539,13 +540,15 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         return ResultSetChunk(rows: rows, hasMore: false)
     }
 
-    private func send(_ buffer: ByteBuffer) async throws {
-        try await channel.writeAndFlush(buffer).get()
+    private func send(_ buffer: ByteBuffer) {
+        channel.writeAndFlush(buffer, promise: nil)
     }
 
     private func receivePacket() async throws -> ByteBuffer {
-        guard let b = bridge else { throw SQLError.connectionClosed }
-        return try await b.waitForMessage(on: channel.eventLoop)
+        guard let reader = msgReader, let buf = try await reader.next() else {
+            throw SQLError.connectionClosed
+        }
+        return buf
     }
 
     // MARK: - Bind substitution

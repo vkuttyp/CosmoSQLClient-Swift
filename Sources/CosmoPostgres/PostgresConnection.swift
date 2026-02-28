@@ -56,11 +56,11 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
     // MARK: - State
 
-    private let channel:  any Channel
-    let config:           Configuration  // internal — used by backup extension
-    private let logger:   Logger
-    private var isClosed: Bool = false
-    private var bridge:   AsyncChannelBridge?
+    private let channel:   any Channel
+    let config:            Configuration  // internal — used by backup extension
+    private let logger:    Logger
+    private var isClosed:  Bool = false
+    private var msgReader: MessageReader?   // AsyncThrowingStream-based; no eventLoop hop per read
     private var inTransaction: Bool = false
 
     // Called for each NOTICE message received from the server.
@@ -93,28 +93,31 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
     // MARK: - Handshake
 
     private func handshake(sslContext: NIOSSLContext? = nil) async throws {
-        let b = AsyncChannelBridge()
-        bridge = b
+        let bridge = AsyncStreamBridge()
 
         if config.tls != .disable {
-            // Postgres SSL negotiation uses a raw single-byte response ('S'/'N') before
-            // the normal framing kicks in. Use a temporary raw bridge to read that byte,
-            // then swap in the proper framing handler.
-            let rawBridge = AsyncChannelBridge()
-            try await channel.pipeline.addHandler(rawBridge).get()
+            // Postgres SSL negotiation: the server sends a single raw byte ('S'/'N')
+            // before normal message framing begins. Install the bridge raw (no framing)
+            // to capture that byte, then insert the framing handler before it.
+            let bridgeBox = _UnsafeSendable(bridge)
+            try await channel.eventLoop.submit {
+                try self.channel.pipeline.syncOperations.addHandler(bridgeBox.value)
+            }.get()
+            msgReader = MessageReader(bridge)
 
             let sslReq = PGFrontend.sslRequest(allocator: channel.allocator)
-            try await send(sslReq)
+            send(sslReq)
 
-            var sslResponse = try await rawBridge.waitForMessage(on: channel.eventLoop)
+            guard let reader = msgReader, var sslResponse = try await reader.next() else {
+                throw SQLError.connectionClosed
+            }
             let sslByte = sslResponse.readInteger(as: UInt8.self) ?? UInt8(ascii: "N")
 
-            try await channel.pipeline.removeHandler(rawBridge).get()
-
-            // Install framing + bridge
+            // Insert framing handler BEFORE the already-installed bridge
             let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
             try await channel.eventLoop.submit {
-                try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+                try self.channel.pipeline.syncOperations.addHandler(frameBox.value,
+                                                                    position: .before(bridgeBox.value))
             }.get()
 
             if sslByte == UInt8(ascii: "S") {
@@ -124,19 +127,21 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
                 throw SQLError.tlsError("Server does not support TLS")
             }
         } else {
-            // No TLS — install framing + bridge directly, skipping the rawBridge cycle.
-            // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
-            let frameBox = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
+            // No TLS: install framing + bridge in one submit, no raw-byte probe needed.
+            let bridgeBox = _UnsafeSendable(bridge)
+            let frameBox  = _UnsafeSendable(ByteToMessageHandler(PGFramingHandler()))
             try await channel.eventLoop.submit {
-                try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, b])
+                try self.channel.pipeline.syncOperations.addHandlers([frameBox.value, bridgeBox.value])
             }.get()
+            msgReader = MessageReader(bridge)
         }
 
-        // Startup + authentication
+        // Startup + authentication — all reads now go through AsyncThrowingStream,
+        // avoiding the eventLoop.execute hop that AsyncChannelBridge required.
         let startup = PGFrontend.startup(user: config.username,
                                           database: config.database,
                                           allocator: channel.allocator)
-        try await send(startup)
+        send(startup)
         try await authenticate()
         logger.debug("PostgreSQL connected as \(config.username)")
     }
@@ -172,13 +177,13 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
             case .authRequestClearText:
                 let reply = PGFrontend.passwordMessage(config.password,
                                                         allocator: channel.allocator)
-                try await send(reply)
+                send(reply)
             case .authRequestMD5(let salt):
                 let hashed = pgMD5Password(user: config.username,
                                             password: config.password,
                                             salt: salt)
                 let reply = PGFrontend.passwordMessage(hashed, allocator: channel.allocator)
-                try await send(reply)
+                send(reply)
             case .authRequestSASL(let mechanisms):
                 guard mechanisms.contains("SCRAM-SHA-256") else {
                     throw SQLError.unsupported("No supported SASL mechanism (got: \(mechanisms.joined(separator: ", ")))")
@@ -205,7 +210,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
             mechanism: "SCRAM-SHA-256",
             clientFirstMessage: payload,
             allocator: channel.allocator)
-        try await send(initMsg)
+        send(initMsg)
 
         // 2. Receive AuthSASLContinue
         var serverFirstMessage = ""
@@ -224,7 +229,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
                 // 3. Send SASLResponse (client-final-message)
                 let finalMsg = PGFrontend.saslResponse(clientFinal, allocator: channel.allocator)
-                try await send(finalMsg)
+                send(finalMsg)
                 break loop
             case .error(_, _, let message):
                 throw SQLError.authenticationFailed(message)
@@ -274,7 +279,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         logger.debug("PostgreSQL query: \(rendered)")
 
         let msg = PGFrontend.query(rendered, allocator: channel.allocator)
-        try await send(msg)
+        send(msg)
         return try await collectResults()
     }
 
@@ -284,7 +289,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         logger.debug("PostgreSQL execute: \(rendered)")
 
         let msg = PGFrontend.query(rendered, allocator: channel.allocator)
-        try await send(msg)
+        send(msg)
         var rowsAffected = 0
         var pendingError: (any Error)?
         // Drain until ReadyForQuery so the connection stays clean after errors
@@ -317,7 +322,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         logger.debug("PostgreSQL queryMulti: \(rendered)")
 
         let msg = PGFrontend.query(rendered, allocator: channel.allocator)
-        try await send(msg)
+        send(msg)
 
         var allSets:    [[SQLRow]] = []
         var current:    [SQLRow]   = []
@@ -408,7 +413,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         guard !isClosed else { return }
         isClosed = true
         let terminate = PGFrontend.terminate(allocator: channel.allocator)
-        try? await send(terminate)
+        send(terminate)
         try await channel.close().get()
     }
 
@@ -455,13 +460,17 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
     // MARK: - Wire I/O
 
-    private func send(_ buffer: ByteBuffer) async throws {
-        try await channel.writeAndFlush(buffer).get()
+    // Fire-and-forget: enqueues the write on the event loop without awaiting completion.
+    // Safe for request-response protocols — the server can't reply until it receives the
+    // data, so the read will naturally follow the write.
+    private func send(_ buffer: ByteBuffer) {
+        channel.writeAndFlush(buffer, promise: nil)
     }
 
     private func receiveMessage() async throws -> PGBackendMessage {
-        guard let b = bridge else { throw SQLError.connectionClosed }
-        var buf = try await b.waitForMessage(on: channel.eventLoop)
+        guard let reader = msgReader, var buf = try await reader.next() else {
+            throw SQLError.connectionClosed
+        }
         return try PGMessageDecoder.decode(buffer: &buf)
     }
 

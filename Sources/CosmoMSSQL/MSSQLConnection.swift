@@ -197,7 +197,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     private var isClosed:      Bool = false
     /// True when the connection is still open and usable.
     public  var isOpen:        Bool { !isClosed }
-    private var bridge:        AsyncChannelBridge?
+    private var msgReader:     MessageReader?  // AsyncThrowingStream-based; no eventLoop hop per read
     /// Tracks whether we are inside an explicit transaction (BEGIN TRANSACTION).
     private var inTransaction: Bool = false
     /// Current transaction descriptor — updated from ENVCHANGE type 8/9/10 responses.
@@ -239,14 +239,15 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     private func handshake() async throws {
         // 1. Add pipeline: TDSTLSFramer (pass-through initially) + framing + bridge
-        let b = AsyncChannelBridge()
-        bridge = b
+        let bridge = AsyncStreamBridge()
         // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
-        let frameBox = _UnsafeSendable(ByteToMessageHandler(TDSFramingHandler()))
+        let bridgeBox = _UnsafeSendable(bridge)
+        let frameBox  = _UnsafeSendable(ByteToMessageHandler(TDSFramingHandler()))
         let framer = tlsFramer
         try await channel.eventLoop.submit {
-            try self.channel.pipeline.syncOperations.addHandlers([framer, frameBox.value, b])
+            try self.channel.pipeline.syncOperations.addHandlers([framer, frameBox.value, bridgeBox.value])
         }.get()
+        msgReader = MessageReader(bridge)
 
         // 2. Pre-Login — negotiate encryption preference
         let preLoginResp = try await sendPreLogin()
@@ -278,7 +279,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         let wantEnc: PreLoginEncryption = config.tls == .disable ? .off : .on
         let req = TDSPreLoginRequest(encryption: wantEnc)
         var payload = req.encode(allocator: channel.allocator)
-        try await sendPacket(type: .preLogin, payload: &payload)
+        sendPacket(type: .preLogin, payload: &payload)
         let responseBuffer = try await receivePacket()
         var buf = responseBuffer
         return try TDSPreLoginResponse.decode(from: &buf)
@@ -363,7 +364,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             login.optionFlags2 |= 0x80   // fIntSecurity: use integrated (SSPI) auth
         }
         var payload = login.encode(allocator: channel.allocator)
-        try await sendPacket(type: .tdsLogin7, payload: &payload)
+        sendPacket(type: .tdsLogin7, payload: &payload)
         let responseBuffer = try await receivePacket()
         var buf = responseBuffer
         var dec = TDSTokenDecoder()
@@ -385,7 +386,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             )
             var authBuf = channel.allocator.buffer(capacity: authenticate.count)
             authBuf.writeBytes(authenticate)
-            try await sendPacket(type: .sspiAuth, payload: &authBuf)
+            sendPacket(type: .sspiAuth, payload: &authBuf)
             let authResponse = try await receivePacket()
             var authBuf2 = authResponse
             var dec2 = TDSTokenDecoder()
@@ -479,7 +480,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         return try await withTimeout(config.queryTimeout) {
             let rpc = TDSRPCProcRequest(procName: name, parameters: parameters)
             var payload = rpc.encode(allocator: self.channel.allocator)
-            try await self.sendPacket(type: .rpc, payload: &payload)
+            self.sendPacket(type: .rpc, payload: &payload)
             var buf = try await self.receivePacket()
             var dec = TDSTokenDecoder()
             try dec.decode(buffer: &buf)
@@ -561,7 +562,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     /// Run a SQL batch and return the full decoder state (for callers needing resultSets).
     private func runBatchDecoder(_ sql: String) async throws -> TDSTokenDecoder {
         var payload = encodeSQLBatch(sql: sql)
-        try await sendPacket(type: .sqlBatch, payload: &payload)
+        sendPacket(type: .sqlBatch, payload: &payload)
         var buf = try await receivePacket()
         var dec = TDSTokenDecoder()
         try dec.decode(buffer: &buf)
@@ -575,7 +576,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     private func runRPCDecoder(_ sql: String, binds: [SQLValue]) async throws -> TDSTokenDecoder {
         let rpc = TDSRPCRequest(sql: sql, binds: binds)
         var payload = rpc.encode(allocator: channel.allocator)
-        try await sendPacket(type: .rpc, payload: &payload)
+        sendPacket(type: .rpc, payload: &payload)
         var buf = try await receivePacket()
         var dec = TDSTokenDecoder()
         try dec.decode(buffer: &buf)
@@ -622,7 +623,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         try await mssqlWithTimeout(seconds, work)
     }
 
-    private func sendPacket(type: TDSPacketType, payload: inout ByteBuffer) async throws {
+    private func sendPacket(type: TDSPacketType, payload: inout ByteBuffer) {
         // Encode TDS packet(s) and send each packet individually.
         // SQL Server can reject multi-packet TDS messages sent in a single write.
         let payloadSize = payload.readableBytes
@@ -646,8 +647,10 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             pkt.writeBytes(payload.getBytes(at: payload.readerIndex + offset, length: chunkLen)!)
 
             if isLast {
-                // Last chunk: writeAndFlush sends all buffered writes in one TCP segment
-                try await channel.writeAndFlush(pkt).get()
+                // Last chunk: writeAndFlush flushes all buffered writes in one TCP segment.
+                // Fire-and-forget — the server can't reply until it receives this, so reads
+                // will naturally follow the write through the event loop's FIFO ordering.
+                channel.writeAndFlush(pkt, promise: nil)
             } else {
                 channel.write(pkt, promise: nil)
             }
@@ -656,10 +659,12 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         }
     }
 
-    /// Receive one complete TDS message via the async bridge handler.
+    /// Receive one complete TDS message via the async stream bridge handler.
     private func receivePacket() async throws -> ByteBuffer {
-        guard let b = bridge else { throw SQLError.connectionClosed }
-        return try await b.waitForMessage(on: channel.eventLoop)
+        guard let reader = msgReader, let buf = try await reader.next() else {
+            throw SQLError.connectionClosed
+        }
+        return buf
     }
 
     // MARK: - SQL Batch encoding

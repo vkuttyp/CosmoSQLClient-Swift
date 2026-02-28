@@ -194,7 +194,8 @@ func benchPostgresCosmo() async -> [BenchResult] {
     })
     printResult(results.last!)
 
-    if let conn = try? await PostgresConnection.connect(configuration: config) {
+    do {
+        let conn = try await PostgresConnection.connect(configuration: config)
         results.append(await measure(label: "Warm  query (full table)", iterations: iterations) {
             _ = try await conn.query(pgQuery, [])
         })
@@ -217,7 +218,7 @@ func benchPostgresCosmo() async -> [BenchResult] {
         })
         printResult(results.last!)
         try? await conn.close()
-    } else { print("  ⚠️  Could not open persistent connection") }
+    } catch { print("  ⚠️  Postgres warm connect failed: \(error)") }
 
     return results
 }
@@ -284,7 +285,8 @@ func benchMySQLCosmo() async -> [BenchResult] {
     })
     printResult(results.last!)
 
-    if let conn = try? await MySQLConnection.connect(configuration: config) {
+    do {
+        let conn = try await MySQLConnection.connect(configuration: config)
         results.append(await measure(label: "Warm  query (full table)", iterations: iterations) {
             _ = try await conn.query(myQuery, [])
         })
@@ -307,7 +309,7 @@ func benchMySQLCosmo() async -> [BenchResult] {
         })
         printResult(results.last!)
         try? await conn.close()
-    } else { print("  ⚠️  Could not open persistent connection") }
+    } catch { print("  ⚠️  MySQL warm connect failed: \(error)") }
 
     return results
 }
