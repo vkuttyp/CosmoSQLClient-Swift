@@ -963,12 +963,12 @@ swift test --filter SQLiteNioTests
 # Start SQL Server in Docker
 docker run -d --name sqlserver \
   -e ACCEPT_EULA=Y \
-  -e SA_PASSWORD=SuperStr0ngP@ssword \
+  -e SA_PASSWORD=YourStrongPassword! \
   -p 1433:1433 \
   mcr.microsoft.com/mssql/server:2022-latest
 
 # Run tests
-MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=SuperStr0ngP@ssword swift test --filter MSSQLNioTests
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! swift test --filter MSSQLNioTests
 ```
 
 ### PostgreSQL
@@ -1003,7 +1003,7 @@ MYSQL_TEST_HOST=127.0.0.1 swift test --filter MySQLNioTests
 swift test --filter SQLiteNioTests
 
 # Run all integration tests (requires all three containers above)
-MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=SuperStr0ngP@ssword \
+MSSQL_TEST_HOST=127.0.0.1 MSSQL_TEST_PASS=YourStrongPassword! \
 PG_TEST_HOST=127.0.0.1 \
 MYSQL_TEST_HOST=127.0.0.1 \
 swift test
