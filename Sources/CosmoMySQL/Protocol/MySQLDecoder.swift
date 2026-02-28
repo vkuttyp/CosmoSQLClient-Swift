@@ -183,6 +183,17 @@ func mysqlCachingSHA2Password(password: String, nonce: [UInt8]) -> [UInt8] {
 
 // MARK: - MySQL type → SQLValue
 
+// Static formatters — DateFormatter construction is expensive; allocating one per cell
+// (old behaviour) added significant overhead for date/datetime-heavy result sets.
+private nonisolated(unsafe) let _mysqlDateFmt: DateFormatter = {
+    let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
+    f.dateFormat = "yyyy-MM-dd"; return f
+}()
+private nonisolated(unsafe) let _mysqlDateTimeFmt: DateFormatter = {
+    let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
+    f.dateFormat = "yyyy-MM-dd HH:mm:ss"; return f
+}()
+
 func mysqlDecode(columnType: UInt8, isUnsigned: Bool, text: String?) -> SQLValue {
     guard let text = text else { return .null }
     switch columnType {
@@ -206,11 +217,9 @@ func mysqlDecode(columnType: UInt8, isUnsigned: Bool, text: String?) -> SQLValue
     case 0xFE where text.count == 36:  // CHAR(36) — likely UUID
         return UUID(uuidString: text).map { .uuid($0) } ?? .string(text)
     case 0x0A:  // DATE
-        let fmt = DateFormatter(); fmt.dateFormat = "yyyy-MM-dd"
-        return fmt.date(from: text).map { .date($0) } ?? .string(text)
+        return _mysqlDateFmt.date(from: text).map { .date($0) } ?? .string(text)
     case 0x0B, 0x0C, 0x07: // TIME, DATETIME, TIMESTAMP
-        let fmt = DateFormatter(); fmt.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return fmt.date(from: text).map { .date($0) } ?? .string(text)
+        return _mysqlDateTimeFmt.date(from: text).map { .date($0) } ?? .string(text)
     default:
         return .string(text)
     }

@@ -645,7 +645,12 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             header.encode(into: &pkt)
             pkt.writeBytes(payload.getBytes(at: payload.readerIndex + offset, length: chunkLen)!)
 
-            try await channel.writeAndFlush(pkt).get()
+            if isLast {
+                // Last chunk: writeAndFlush sends all buffered writes in one TCP segment
+                try await channel.writeAndFlush(pkt).get()
+            } else {
+                channel.write(pkt, promise: nil)
+            }
             packetID = packetID == 255 ? 1 : packetID + 1
             offset += chunkLen
         }

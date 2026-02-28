@@ -307,6 +307,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         var allSets:    [[SQLRow]] = []
         var current:    [SQLRow]   = []
         var columns:    [PGColumnDesc] = []
+        var sqlCols:    [SQLColumn] = []   // computed once per RowDescription
         var pendingError: (any Error)?
 
         loop: while true {
@@ -314,10 +315,10 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
             switch m {
             case .rowDescription(let cols):
                 columns = cols
+                sqlCols = cols.map { SQLColumn(name: $0.name, dataTypeID: $0.typeOID) }
                 current = []
             case .dataRow(let rawValues):
                 if pendingError == nil {
-                    let sqlCols = columns.map { SQLColumn(name: $0.name, dataTypeID: $0.typeOID) }
                     let values  = zip(columns, rawValues).map { col, raw -> SQLValue in
                         guard var buf = raw else { return .null }
                         return pgDecode(typeOID: col.typeOID, buffer: &buf)
@@ -329,6 +330,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
                     allSets.append(current)
                     current  = []
                     columns  = []
+                    sqlCols  = []
                 }
             case .readyForQuery:
                 break loop
@@ -399,6 +401,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
     private func collectResults() async throws -> [SQLRow] {
         var columns: [PGColumnDesc] = []
+        var sqlCols: [SQLColumn] = []   // computed once per RowDescription, shared across rows
         var rows: [SQLRow] = []
         var pendingError: (any Error)?
 
@@ -407,11 +410,9 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
             switch msg {
             case .rowDescription(let cols):
                 columns = cols
+                sqlCols = cols.map { SQLColumn(name: $0.name, dataTypeID: $0.typeOID) }
             case .dataRow(let rawValues):
                 if pendingError == nil {
-                    let sqlCols = columns.map {
-                        SQLColumn(name: $0.name, dataTypeID: $0.typeOID)
-                    }
                     let values = zip(columns, rawValues).map { col, raw -> SQLValue in
                         guard var buf = raw else { return .null }
                         return pgDecode(typeOID: col.typeOID, buffer: &buf)
@@ -463,6 +464,24 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
 
 // MARK: - PostgreSQL text decoder
 
+// Static formatters — DateFormatter/ISO8601DateFormatter are expensive to construct;
+// allocating one per cell (old behaviour) added measurable overhead on date-heavy result sets.
+private nonisolated(unsafe) let _pgDateFmt: DateFormatter = {
+    let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
+    f.dateFormat = "yyyy-MM-dd"; return f
+}()
+private nonisolated(unsafe) let _pgTsFmt: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return f
+}()
+private nonisolated(unsafe) let _pgTsFmt2: ISO8601DateFormatter = {
+    // Postgres may omit fractional seconds
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime]
+    return f
+}()
+
 func pgDecode(typeOID: UInt32, buffer: inout ByteBuffer) -> SQLValue {
     let text = buffer.readString(length: buffer.readableBytes) ?? ""
     switch typeOID {
@@ -481,17 +500,21 @@ func pgDecode(typeOID: UInt32, buffer: inout ByteBuffer) -> SQLValue {
     case 2950: // uuid
         return UUID(uuidString: text).map { .uuid($0) } ?? .string(text)
     case 1082: // date
-        let fmt = DateFormatter(); fmt.dateFormat = "yyyy-MM-dd"
-        return fmt.date(from: text).map { .date($0) } ?? .string(text)
+        return _pgDateFmt.date(from: text).map { .date($0) } ?? .string(text)
     case 1114, 1184: // timestamp, timestamptz
-        let fmt = ISO8601DateFormatter()
-        return fmt.date(from: text).map { .date($0) } ?? .string(text)
+        return (_pgTsFmt.date(from: text) ?? _pgTsFmt2.date(from: text)).map { .date($0) } ?? .string(text)
     default:
         return .string(text)
     }
 }
 
 // MARK: - SQLValue → PostgreSQL literal
+
+private nonisolated(unsafe) let _pgLiteralFmt: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return f
+}()
 
 private extension SQLValue {
     var pgLiteral: String {
@@ -509,9 +532,7 @@ private extension SQLValue {
         case .string(let v): return "'\(v.replacingOccurrences(of: "'", with: "''"))'"
         case .bytes(let v):  return "E'\\\\x" + v.map { String(format: "%02x", $0) }.joined() + "'"
         case .uuid(let v):   return "'\(v.uuidString)'"
-        case .date(let v):
-            let fmt = ISO8601DateFormatter()
-            return "'\(fmt.string(from: v))'"
+        case .date(let v):   return "'\(_pgLiteralFmt.string(from: v))'"
         }
     }
 }

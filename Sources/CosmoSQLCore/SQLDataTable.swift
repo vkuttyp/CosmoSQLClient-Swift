@@ -165,6 +165,9 @@ public struct SQLDataTable: Sendable {
     public let columns: [SQLDataColumn]
     public let rows:    [[SQLCellValue]]
 
+    // O(1) column name → index lookup (case-insensitive, built once at init)
+    private let _colIndex: [String: Int]
+
     // MARK: Dimensions
 
     public var rowCount:    Int { rows.count }
@@ -178,6 +181,7 @@ public struct SQLDataTable: Sendable {
             SQLDataColumn(name: $0.name, table: $0.table)
         }
         self.rows = sqlRows.map { row in row.values.map { SQLCellValue($0) } }
+        self._colIndex = Dictionary(uniqueKeysWithValues: self.columns.enumerated().map { ($1.name.lowercased(), $0) })
     }
 
     // MARK: Subscript access
@@ -290,8 +294,7 @@ public struct SQLDataTable: Sendable {
     // MARK: Private helpers
 
     private func columnIndex(for name: String) -> Int? {
-        let lower = name.lowercased()
-        return columns.firstIndex { $0.name.lowercased() == lower }
+        _colIndex[name.lowercased()]
     }
 }
 
@@ -312,6 +315,7 @@ extension SQLDataTable: Codable {
         self.name    = try c.decodeIfPresent(String.self, forKey: .name)
         self.columns = try c.decode([SQLDataColumn].self, forKey: .columns)
         self.rows    = try c.decode([[SQLCellValue]].self, forKey: .rows)
+        self._colIndex = Dictionary(uniqueKeysWithValues: self.columns.enumerated().map { ($1.name.lowercased(), $0) })
     }
 }
 
