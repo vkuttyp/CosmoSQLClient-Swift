@@ -69,7 +69,7 @@ jobs:
           restore-keys: linux-spm-${{ env.SWIFT_VERSION }}-
 
       - name: Build
-        run: swift build --configuration debug 2>&1
+        run: swift build --build-tests --configuration debug 2>&1
 
       - name: SQLite tests
         run: swift test --filter SQLiteNioTests --skip-build 2>&1
