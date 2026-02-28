@@ -97,6 +97,80 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
             self.queryTimeout           = queryTimeout
             self.readOnly               = readOnly
         }
+
+        /// Initialise from a SQL Server connection string.
+        ///
+        /// Supported keys (case-insensitive):
+        /// - `Server` / `Data Source`  — host, or `host,port`
+        /// - `Database` / `Initial Catalog`
+        /// - `User Id` / `UID`
+        /// - `Password` / `PWD`
+        /// - `Domain`                  — enables NTLM/Windows auth
+        /// - `Encrypt`                 — `True` → `.require`, `False` → `.disable`
+        /// - `TrustServerCertificate`  — `True` skips certificate verification
+        /// - `Connect Timeout`         — seconds (default 30)
+        /// - `Application Intent`      — `ReadOnly` sets read-only mode
+        ///
+        /// Example:
+        /// ```
+        /// Server=myServer;Database=myDb;User Id=sa;Password=secret;
+        /// Encrypt=True;TrustServerCertificate=True;
+        /// ```
+        public init(connectionString: String) throws {
+            // Parse key=value pairs separated by semicolons
+            var pairs: [String: String] = [:]
+            for part in connectionString.split(separator: ";", omittingEmptySubsequences: true) {
+                let kv = part.split(separator: "=", maxSplits: 1)
+                guard kv.count == 2 else { continue }
+                let key   = kv[0].trimmingCharacters(in: .whitespaces).lowercased()
+                let value = kv[1].trimmingCharacters(in: .whitespaces)
+                pairs[key] = value
+            }
+
+            func get(_ keys: String...) -> String? {
+                keys.first(where: { pairs[$0.lowercased()] != nil }).flatMap { pairs[$0.lowercased()] }
+            }
+            func bool(_ keys: String...) -> Bool {
+                get(keys[0], keys.dropFirst().joined())?.lowercased() == "true"
+            }
+
+            // Server / Data Source — accepts "host" or "host,port"
+            let serverRaw = get("server", "data source") ?? "localhost"
+            if serverRaw.contains(",") {
+                let parts = serverRaw.split(separator: ",", maxSplits: 1)
+                self.host = String(parts[0]).trimmingCharacters(in: .whitespaces)
+                self.port = Int(parts[1].trimmingCharacters(in: .whitespaces)) ?? 1433
+            } else {
+                self.host = serverRaw
+                self.port = 1433
+            }
+
+            guard let db = get("database", "initial catalog") else {
+                throw SQLError.connectionError("Connection string missing 'Database' / 'Initial Catalog'")
+            }
+            self.database = db
+            self.username = get("user id", "uid") ?? ""
+            self.password = get("password", "pwd") ?? ""
+            self.domain   = get("domain")
+
+            // Encrypt → tls
+            if let enc = get("encrypt") {
+                switch enc.lowercased() {
+                case "true",  "yes", "mandatory": self.tls = .require
+                case "false", "no",  "optional":  self.tls = .prefer
+                case "disable":                    self.tls = .disable
+                default:                           self.tls = .prefer
+                }
+            } else {
+                self.tls = .prefer
+            }
+
+            self.trustServerCertificate = bool("trustservercertificate")
+            self.connectTimeout = get("connect timeout", "connection timeout")
+                .flatMap { Double($0) } ?? 30
+            self.readOnly = get("applicationintent", "application intent")?
+                .lowercased() == "readonly"
+        }
     }
 
     // MARK: - Internal state
