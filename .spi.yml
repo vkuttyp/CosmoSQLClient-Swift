@@ -7,5 +7,3 @@ builder:
         - CosmoPostgres
         - CosmoMySQL
         - CosmoSQLite
-      swift_version: "6.0"
-      platform: macosSpm

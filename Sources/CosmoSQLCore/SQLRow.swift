@@ -37,7 +37,7 @@ public struct SQLRow: Sendable {
 // MARK: - Helpers
 
 public extension SQLValue {
-    /// Throws ``SQLError/columnNotFound`` when the value is `.null` and was
+    /// Throws ``SQLError/columnNotFound(_:)`` when the value is `.null` and was
     /// produced by a missing column lookup.
     func require(column: String = "<unknown>") throws -> SQLValue {
         if case .null = self {
