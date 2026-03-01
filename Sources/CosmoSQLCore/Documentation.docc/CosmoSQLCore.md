@@ -1,6 +1,6 @@
-# ``SQLNioCore``
+# ``CosmoSQLCore``
 
-Shared protocol, types, and utilities for sql-nio — the unified Swift SQL driver.
+Shared protocol, types, and utilities for CosmoSQLClient-Swift — the unified Swift SQL driver.
 
 ## Overview
 

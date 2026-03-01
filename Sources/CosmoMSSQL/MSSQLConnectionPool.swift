@@ -139,6 +139,84 @@ public actor MSSQLConnectionPool {
         // If closed, just let it be garbage collected
     }
 
+    // MARK: - Streaming
+
+    /// Stream rows from a query, holding a pool connection for the duration of iteration.
+    ///
+    /// The connection is released when the stream finishes, throws, or is cancelled.
+    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await row in conn.queryStream(sql, binds) {
+                            cont.yield(row)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Stream JSON objects from a `FOR JSON PATH` query, one complete object per yield.
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await data in conn.queryJsonStream(sql, binds) {
+                            cont.yield(data)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Stream decoded `Decodable` objects from a `FOR JSON PATH` query.
+    public func queryJsonStream<T: Decodable & Sendable>(
+        _ type: T.Type, _ sql: String, _ binds: [SQLValue] = []
+    ) -> AsyncThrowingStream<T, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await obj in conn.queryJsonStream(type, sql, binds) {
+                            cont.yield(obj)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
     // MARK: - withConnection helper
 
     /// Acquire a connection, run `work`, then release it automatically.

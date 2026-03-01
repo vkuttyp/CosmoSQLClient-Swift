@@ -424,6 +424,96 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         try await query(sql, binds)
     }
 
+    // MARK: - Streaming
+
+    /// Stream rows one-by-one as they are decoded from the TDS response.
+    ///
+    /// The full TDS message is received before the first row is yielded (TDS framing
+    /// assembles the complete response), but the caller can process rows without
+    /// buffering the entire result set as an array.
+    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    guard !self.isClosed else { throw SQLError.connectionClosed }
+                    let dec: TDSTokenDecoder
+                    if binds.isEmpty {
+                        dec = try await self.runBatchDecoder(sql)
+                    } else {
+                        dec = try await self.runRPCDecoder(Self.convertPlaceholders(sql), binds: binds)
+                    }
+                    for row in dec.rows {
+                        cont.yield(row)
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    /// Stream individual JSON objects from a `FOR JSON PATH` query.
+    ///
+    /// SQL Server fragments `FOR JSON PATH` output at ~2033-char row boundaries that do
+    /// not align with JSON object boundaries. This method uses ``JSONChunkAssembler`` to
+    /// detect exact object boundaries and yields each `Data` value the moment its closing
+    /// `}` arrives — without ever buffering the full JSON array.
+    ///
+    /// Example:
+    /// ```swift
+    /// for try await data in conn.queryJsonStream(
+    ///     "SELECT Id, Name FROM Products FOR JSON PATH") {
+    ///     let product = try JSONDecoder().decode(Product.self, from: data)
+    /// }
+    /// ```
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    guard !self.isClosed else { throw SQLError.connectionClosed }
+                    let dec: TDSTokenDecoder
+                    if binds.isEmpty {
+                        dec = try await self.runBatchDecoder(sql)
+                    } else {
+                        dec = try await self.runRPCDecoder(Self.convertPlaceholders(sql), binds: binds)
+                    }
+                    var assembler = JSONChunkAssembler()
+                    for row in dec.rows {
+                        if let text = row.values.first?.asString() {
+                            for jsonData in assembler.feed(text) {
+                                cont.yield(jsonData)
+                            }
+                        }
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    /// Stream decoded `Decodable` objects from a `FOR JSON PATH` query.
+    public func queryJsonStream<T: Decodable & Sendable>(
+        _ type: T.Type, _ sql: String, _ binds: [SQLValue] = []
+    ) -> AsyncThrowingStream<T, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    let decoder = JSONDecoder()
+                    for try await data in self.queryJsonStream(sql, binds) {
+                        let obj = try decoder.decode(T.self, from: data)
+                        cont.yield(obj)
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     public func execute(_ sql: String, _ binds: [SQLValue]) async throws -> Int {
         guard !isClosed else { throw SQLError.connectionClosed }
         logger.debug("MSSQL execute: \(sql.prefix(120))")

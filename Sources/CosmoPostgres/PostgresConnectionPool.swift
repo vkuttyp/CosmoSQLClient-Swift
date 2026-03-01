@@ -135,6 +135,82 @@ public actor PostgresConnectionPool {
         }
     }
 
+    // MARK: - Streaming
+
+    /// Stream rows from a query, holding a pool connection for the duration of iteration.
+    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await row in conn.queryStream(sql, binds) {
+                            cont.yield(row)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Stream JSON objects where each row's first column is a JSON value.
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await data in conn.queryJsonStream(sql, binds) {
+                            cont.yield(data)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Stream decoded `Decodable` objects where each row's first column is JSON.
+    public func queryJsonStream<T: Decodable & Sendable>(
+        _ type: T.Type, _ sql: String, _ binds: [SQLValue] = []
+    ) -> AsyncThrowingStream<T, Error> {
+        AsyncThrowingStream { cont in
+            let task = Task { [self] in
+                do {
+                    let conn = try await self.acquire()
+                    do {
+                        for try await obj in conn.queryJsonStream(type, sql, binds) {
+                            cont.yield(obj)
+                        }
+                        self.release(conn)
+                        cont.finish()
+                    } catch {
+                        self.release(conn)
+                        cont.finish(throwing: error)
+                    }
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+            cont.onTermination = { _ in task.cancel() }
+        }
+    }
+
     // MARK: - withConnection helper
 
     /// Acquire a connection, run `work`, then release it automatically.

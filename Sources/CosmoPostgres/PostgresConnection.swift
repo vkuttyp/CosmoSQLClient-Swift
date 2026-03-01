@@ -283,6 +283,106 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         return try await collectResults()
     }
 
+    // MARK: - Streaming
+
+    /// Stream rows one-by-one as Postgres backend messages arrive.
+    ///
+    /// Unlike ``query(_:_:)`` which buffers the full result set, this method yields
+    /// each row immediately after decoding its `DataRow` message from the wire.
+    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    guard !self.isClosed else { throw SQLError.connectionClosed }
+                    let rendered = self.renderQuery(sql, binds: binds)
+                    let msg = PGFrontend.query(rendered, allocator: self.channel.allocator)
+                    self.send(msg)
+
+                    var columns: [PGColumnDesc] = []
+                    var sqlCols: [SQLColumn] = []
+                    loop: while true {
+                        let m = try await self.receiveMessage()
+                        switch m {
+                        case .rowDescription(let cols):
+                            columns = cols
+                            sqlCols = cols.map { SQLColumn(name: $0.name, dataTypeID: $0.typeOID) }
+                        case .dataRow(let rawValues):
+                            let values = zip(columns, rawValues).map { col, raw -> SQLValue in
+                                guard var buf = raw else { return .null }
+                                return pgDecode(typeOID: col.typeOID, buffer: &buf)
+                            }
+                            cont.yield(SQLRow(columns: sqlCols, values: values))
+                        case .commandComplete:
+                            continue
+                        case .readyForQuery:
+                            break loop
+                        case .error(_, _, let message):
+                            throw SQLError.serverError(code: 0, message: message)
+                        case .notice(let msg):
+                            self.onNotice?(msg)
+                        case .emptyQueryResponse:
+                            continue
+                        default:
+                            break
+                        }
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    /// Stream JSON objects from a query where the first column contains JSON.
+    ///
+    /// Use `row_to_json()`, `to_json()`, or any expression that returns a JSON value.
+    /// Each row's first column is interpreted as a JSON value and yielded as `Data`.
+    ///
+    /// Example:
+    /// ```swift
+    /// for try await data in conn.queryJsonStream(
+    ///     "SELECT row_to_json(p) FROM products p") {
+    ///     let product = try JSONDecoder().decode(Product.self, from: data)
+    /// }
+    /// ```
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    for try await row in self.queryStream(sql, binds) {
+                        if let text = row.values.first?.asString() {
+                            cont.yield(Data(text.utf8))
+                        }
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    /// Stream decoded `Decodable` objects from a query where the first column is JSON.
+    public func queryJsonStream<T: Decodable & Sendable>(
+        _ type: T.Type, _ sql: String, _ binds: [SQLValue] = []
+    ) -> AsyncThrowingStream<T, Error> {
+        AsyncThrowingStream { cont in
+            Task { [self] in
+                do {
+                    let decoder = JSONDecoder()
+                    for try await data in self.queryJsonStream(sql, binds) {
+                        let obj = try decoder.decode(T.self, from: data)
+                        cont.yield(obj)
+                    }
+                    cont.finish()
+                } catch {
+                    cont.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     public func execute(_ sql: String, _ binds: [SQLValue]) async throws -> Int {
         guard !isClosed else { throw SQLError.connectionClosed }
         let rendered = renderQuery(sql, binds: binds)

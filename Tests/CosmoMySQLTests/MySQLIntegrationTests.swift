@@ -1560,3 +1560,46 @@ final class MySQLBackupTests: XCTestCase, @unchecked Sendable {
         }
     }
 }
+
+// MARK: - Streaming Tests
+
+final class MySQLStreamingTests: XCTestCase, @unchecked Sendable {
+    override func setUp() async throws { try skipUnlessMySQL() }
+
+    func mysqlRunAsync(_ block: @escaping @Sendable () async throws -> Void) {
+        let exp = expectation(description: "async")
+        Task {
+            do { try await block() } catch { XCTFail("\(error)") }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 30)
+    }
+
+    func testQueryStream() {
+        mysqlRunAsync {
+            let conn = try await MySQLTestDatabase.connect()
+            defer { Task { try? await conn.close() } }
+            var rows: [SQLRow] = []
+            for try await row in conn.queryStream("SELECT id, name FROM departments ORDER BY id", []) {
+                rows.append(row)
+            }
+            XCTAssertEqual(rows.count, 5)
+            XCTAssertNotNil(rows[0]["name"].asString())
+        }
+    }
+
+    func testQueryJsonStream() {
+        mysqlRunAsync {
+            let conn = try await MySQLTestDatabase.connect()
+            defer { Task { try? await conn.close() } }
+            var count = 0
+            for try await data in conn.queryJsonStream(
+                "SELECT JSON_OBJECT('id', id, 'name', name) FROM departments ORDER BY id", []) {
+                count += 1
+                let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                XCTAssertNotNil(obj, "Each yielded Data must be a valid JSON object")
+            }
+            XCTAssertEqual(count, 5)
+        }
+    }
+}

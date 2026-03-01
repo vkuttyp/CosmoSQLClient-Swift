@@ -1561,3 +1561,46 @@ final class PGBackupTests: XCTestCase, @unchecked Sendable {
         }
     }
 }
+
+// MARK: - Streaming Tests
+
+final class PGStreamingTests: XCTestCase, @unchecked Sendable {
+    override func setUp() async throws { try skipUnlessPG() }
+
+    func pgRunAsync(_ block: @escaping @Sendable () async throws -> Void) {
+        let exp = expectation(description: "async")
+        Task {
+            do { try await block() } catch { XCTFail("\(error)") }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 30)
+    }
+
+    func testQueryStream() {
+        pgRunAsync {
+            let conn = try await PGTestDatabase.connect()
+            defer { Task { try? await conn.close() } }
+            var rows: [SQLRow] = []
+            for try await row in conn.queryStream("SELECT id, name FROM departments ORDER BY id", []) {
+                rows.append(row)
+            }
+            XCTAssertEqual(rows.count, 5)
+            XCTAssertNotNil(rows[0]["name"].asString())
+        }
+    }
+
+    func testQueryJsonStream() {
+        pgRunAsync {
+            let conn = try await PGTestDatabase.connect()
+            defer { Task { try? await conn.close() } }
+            var count = 0
+            for try await data in conn.queryJsonStream(
+                "SELECT row_to_json(d) FROM departments d ORDER BY id", []) {
+                count += 1
+                let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                XCTAssertNotNil(obj, "Each yielded Data must be a valid JSON object")
+            }
+            XCTAssertEqual(count, 5)
+        }
+    }
+}

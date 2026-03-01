@@ -249,7 +249,41 @@ final class MSSQLQueryTests: XCTestCase, @unchecked Sendable {
         }
     }
 
+    func testQueryJsonStream() {
+        runAsync {
+            try await TestDatabase.withConnection { conn in
+                var count = 0
+                var firstData: Data?
+                for try await data in conn.queryJsonStream(
+                    "SELECT id, name FROM Departments FOR JSON PATH") {
+                    count += 1
+                    if firstData == nil { firstData = data }
+                    // Verify each chunk is valid JSON object
+                    let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    XCTAssertNotNil(obj, "Each yielded Data must be a valid JSON object")
+                }
+                XCTAssertEqual(count, 5, "Should yield one object per department")
+                XCTAssertNotNil(firstData)
+            }
+        }
+    }
+
+    func testQueryStream() {
+        runAsync {
+            try await TestDatabase.withConnection { conn in
+                var rows: [SQLRow] = []
+                for try await row in conn.queryStream(
+                    "SELECT id, name FROM Departments ORDER BY id") {
+                    rows.append(row)
+                }
+                XCTAssertEqual(rows.count, 5)
+                XCTAssertNotNil(rows[0]["name"].asString())
+            }
+        }
+    }
+
     // ── Aggregation / computed columns ───────────────────────────────────────
+
 
     func testCountAggregation() {
         runAsync {
