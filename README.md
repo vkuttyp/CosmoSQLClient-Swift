@@ -14,6 +14,7 @@ A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL
 
 - [Features](#features)
 - [🏆 JSON Streaming — Industry First](#-json-streaming--industry-first)
+  - [Vapor Web API Integration](#vapor-web-api--true-http-streaming)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
   - [Microsoft SQL Server](#microsoft-sql-server)
@@ -160,6 +161,143 @@ for try await obj in mysqlConn.queryJsonStream(
 ```
 
 All three pool types (`MSSQLConnectionPool`, `PostgresConnectionPool`, `MySQLConnectionPool`) expose the same streaming methods with automatic connection acquire/release and cancellation support.
+
+### Vapor Web API — True HTTP Streaming
+
+Vapor's `Response.Body(stream:)` lets you pipe `queryJsonStream()` directly to the HTTP response. Each JSON object flows to the client the instant its closing `}` arrives — no buffering at any layer.
+
+**Setup — register the pool in `configure.swift`:**
+
+```swift
+import Vapor
+import CosmoMSSQL
+
+public func configure(_ app: Application) async throws {
+    app.mssqlPool = MSSQLConnectionPool(
+        configuration: .init(
+            host: "localhost", port: 1433,
+            database: "MyDb", username: "sa", password: "secret"
+        ),
+        maxConnections: 20
+    )
+    try routes(app)
+}
+
+// Convenience storage key
+private struct MSSQLPoolKey: StorageKey { typealias Value = MSSQLConnectionPool }
+extension Application {
+    var mssqlPool: MSSQLConnectionPool {
+        get { storage[MSSQLPoolKey.self]! }
+        set { storage[MSSQLPoolKey.self] = newValue }
+    }
+}
+```
+
+**Route — stream SQL directly to the HTTP response:**
+
+```swift
+func routes(_ app: Application) throws {
+
+    // Untyped — raw Data chunks piped straight through (most efficient)
+    app.get("products") { req -> Response in
+        let response = Response()
+        response.headers.contentType = .json
+
+        response.body = .init(stream: { writer in
+            Task {
+                do {
+                    _ = writer.write(.buffer(ByteBuffer(string: "[")))
+                    var first = true
+
+                    for try await chunk in req.application.mssqlPool.queryJsonStream(
+                        "SELECT Id, Name, Price FROM Products FOR JSON PATH") {
+
+                        if !first { _ = writer.write(.buffer(ByteBuffer(string: ","))) }
+                        _ = writer.write(.buffer(ByteBuffer(bytes: chunk)))
+                        first = false
+                    }
+
+                    _ = writer.write(.buffer(ByteBuffer(string: "]")))
+                    _ = writer.write(.end)
+                } catch {
+                    _ = writer.write(.error(error))
+                }
+            }
+        })
+
+        return response
+    }
+
+    // Typed + transform — decode then re-encode with extra fields
+    app.get("products", "enriched") { req -> Response in
+        let response = Response()
+        response.headers.contentType = .json
+        let encoder = JSONEncoder()
+
+        response.body = .init(stream: { writer in
+            Task {
+                do {
+                    _ = writer.write(.buffer(ByteBuffer(string: "[")))
+                    var first = true
+
+                    for try await product in req.application.mssqlPool.queryJsonStream(
+                        "SELECT Id, Name, Price FROM Products FOR JSON PATH",
+                        as: Product.self) {
+
+                        let dto = ProductDTO(
+                            id: product.Id,
+                            name: product.Name,
+                            salePrice: product.Price * 0.9   // enrich each item
+                        )
+                        if !first { _ = writer.write(.buffer(ByteBuffer(string: ","))) }
+                        _ = writer.write(.buffer(ByteBuffer(data: try encoder.encode(dto))))
+                        first = false
+                    }
+
+                    _ = writer.write(.buffer(ByteBuffer(string: "]")))
+                    _ = writer.write(.end)
+                } catch {
+                    _ = writer.write(.error(error))
+                }
+            }
+        })
+
+        return response
+    }
+}
+```
+
+**What happens on the wire:**
+
+```
+Client                      Vapor                    SQL Server
+  │                           │                           │
+  │── GET /products ─────────>│                           │
+  │                           │── FOR JSON PATH ─────────>│
+  │<── HTTP 200 (chunked) ────│                           │
+  │<── [{"Id":1,...} ─────────│<── packet 1 ─────────────│
+  │<── ,{"Id":2,...} ─────────│<── packet 2 ─────────────│
+  │<── ,{"Id":3,...}] ────────│<── packet 3 ─────────────│
+```
+
+- Chunked transfer encoding — no `Content-Length`, unbounded result sets work fine
+- First byte reaches the client before SQL Server finishes executing
+- Memory stays flat — `ByteBuffer` for each object is released immediately after write
+
+**Buffered vs streamed — side by side:**
+
+```swift
+// ❌ Buffered — waits for ALL rows, allocates the full array
+app.get("products", "buffered") { req async throws -> [Product] in
+    try await req.application.mssqlPool.query(
+        "SELECT Id, Name, Price FROM Products", as: Product.self)
+}
+
+// ✅ Streamed — first byte reaches client after ~1 packet RTT
+app.get("products", "streamed") { req -> Response in
+    // ... queryJsonStream body above
+}
+```
 
 ---
 
