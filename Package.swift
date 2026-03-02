@@ -7,9 +7,16 @@ let sqliteSystemLibTargets: [Target] = []
 let sqliteNioExtraDeps:       [Target.Dependency] = []
 let sqliteNioLinkerSettings:  [LinkerSetting] = [.linkedLibrary("sqlite3")]
 #else
+// On Linux and Android cross-compilation:
+//   CSQLite.h does `#include <sqlite3.h>` (angle brackets → system search path).
+//   Linux:   resolves to /usr/include/sqlite3.h  (with libsqlite3-dev)
+//   Android: resolves to $(NDK_SYSROOT)/usr/include/sqlite3.h (NDK public API since API 5)
 let sqliteSystemLibTargets: [Target] = [
-    .systemLibrary(name: "CSQLite", pkgConfig: "sqlite3",
-                   providers: [.apt(["libsqlite3-dev"])]),
+    .target(
+        name: "CSQLite",
+        publicHeadersPath: "include",
+        linkerSettings: [.linkedLibrary("sqlite3")]
+    ),
 ]
 let sqliteNioExtraDeps:       [Target.Dependency] = [.target(name: "CSQLite")]
 let sqliteNioLinkerSettings:  [LinkerSetting] = []
