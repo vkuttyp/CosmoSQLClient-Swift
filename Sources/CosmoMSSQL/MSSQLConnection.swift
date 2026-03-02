@@ -197,7 +197,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     private var isClosed:      Bool = false
     /// True when the connection is still open and usable.
     public  var isOpen:        Bool { !isClosed }
-    private var msgReader:     MessageReader?  // AsyncThrowingStream-based; no eventLoop hop per read
+    private var msgReader:     TDSFrameReader?  // AsyncThrowingStream-based; no eventLoop hop per read
     /// Tracks whether we are inside an explicit transaction (BEGIN TRANSACTION).
     private var inTransaction: Bool = false
     /// Current transaction descriptor — updated from ENVCHANGE type 8/9/10 responses.
@@ -240,7 +240,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     private func handshake(sslContext: NIOSSLContext? = nil) async throws {
         // 1. Add pipeline: TDSTLSFramer (pass-through initially) + framing + bridge
-        let bridge = AsyncStreamBridge()
+        let bridge = TDSFrameBridge()
         // Swift 6: ByteToMessageHandler has Sendable marked unavailable (event-loop-bound).
         let bridgeBox = _UnsafeSendable(bridge)
         let frameBox  = _UnsafeSendable(ByteToMessageHandler(TDSFramingHandler()))
@@ -248,7 +248,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
         try await channel.eventLoop.submit {
             try self.channel.pipeline.syncOperations.addHandlers([framer, frameBox.value, bridgeBox.value])
         }.get()
-        msgReader = MessageReader(bridge)
+        msgReader = TDSFrameReader(bridge)
 
         // 2. Pre-Login — negotiate encryption preference
         let preLoginResp = try await sendPreLogin()
@@ -428,23 +428,53 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     /// Stream rows one-by-one as they are decoded from the TDS response.
     ///
-    /// The full TDS message is received before the first row is yielded (TDS framing
-    /// assembles the complete response), but the caller can process rows without
-    /// buffering the entire result set as an array.
+    /// Rows are yielded incrementally as TDS packets arrive — without buffering
+    /// the entire result set.
     public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {
                     guard !self.isClosed else { throw SQLError.connectionClosed }
-                    let dec: TDSTokenDecoder
+
+                    // Send the query
                     if binds.isEmpty {
-                        dec = try await self.runBatchDecoder(sql)
+                        var payload = encodeSQLBatch(sql: sql)
+                        sendPacket(type: .sqlBatch, payload: &payload)
                     } else {
-                        dec = try await self.runRPCDecoder(Self.convertPlaceholders(sql), binds: binds)
+                        let rpc = TDSRPCRequest(sql: Self.convertPlaceholders(sql), binds: binds)
+                        var payload = rpc.encode(allocator: channel.allocator)
+                        sendPacket(type: .rpc, payload: &payload)
                     }
-                    for row in dec.rows {
-                        cont.yield(row)
+
+                    var dec = TDSTokenDecoder()
+                    var remainder: ByteBuffer? = nil
+
+                    outerLoop: while true {
+                        guard let frame = try await msgReader!.next() else {
+                            throw SQLError.connectionClosed
+                        }
+
+                        // Append this packet to any leftover bytes from the previous decode
+                        if remainder == nil || remainder!.readableBytes == 0 {
+                            remainder = frame.payload
+                        } else {
+                            var combined = channel.allocator.buffer(
+                                capacity: remainder!.readableBytes + frame.payload.readableBytes)
+                            combined.writeImmutableBuffer(remainder!)
+                            combined.writeImmutableBuffer(frame.payload)
+                            remainder = combined
+                        }
+
+                        // Decode as many complete tokens as possible
+                        let rows = dec.decodePartial(buffer: &remainder!)
+                        for row in rows { cont.yield(row) }
+
+                        if frame.isEOM { break outerLoop }
                     }
+
+                    if let err = dec.serverError { throw err }
+                    if let td = dec.transactionDescriptor { transactionDescriptor = td }
+                    dispatchInfoMessages(dec)
                     cont.finish()
                 } catch {
                     cont.finish(throwing: error)
@@ -758,10 +788,8 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
 
     /// Receive one complete TDS message via the async stream bridge handler.
     private func receivePacket() async throws -> ByteBuffer {
-        guard let reader = msgReader, let buf = try await reader.next() else {
-            throw SQLError.connectionClosed
-        }
-        return buf
+        guard let reader = msgReader else { throw SQLError.connectionClosed }
+        return try await reader.receiveMessage()
     }
 
     // MARK: - SQL Batch encoding

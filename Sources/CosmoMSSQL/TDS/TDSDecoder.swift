@@ -55,6 +55,34 @@ struct TDSTokenDecoder {
         }
     }
 
+    /// Incrementally decode tokens from a partial buffer.
+    /// Returns rows decoded in this call. Leaves the reader index at the first
+    /// byte of any incomplete token so the caller can prepend more data and retry.
+    mutating func decodePartial(buffer: inout ByteBuffer) -> [SQLRow] {
+        var newRows: [SQLRow] = []
+        while buffer.readableBytes > 0 {
+            let savedIndex = buffer.readerIndex
+            guard let tokenByte: UInt8 = buffer.readInteger() else { break }
+            guard let token = TDSTokenType(rawValue: tokenByte) else {
+                buffer.moveReaderIndex(to: savedIndex)
+                break
+            }
+            let countBefore = currentRows.count
+            do {
+                try decodeToken(token, buffer: &buffer)
+            } catch {
+                // Incomplete — rewind to before the token byte and stop
+                buffer.moveReaderIndex(to: savedIndex)
+                break
+            }
+            let countAfter = currentRows.count
+            if countAfter > countBefore {
+                newRows.append(contentsOf: currentRows[countBefore..<countAfter])
+            }
+        }
+        return newRows
+    }
+
     // MARK: - Token dispatch
 
     private mutating func decodeToken(_ token: TDSTokenType, buffer: inout ByteBuffer) throws {

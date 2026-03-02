@@ -7,13 +7,6 @@ xcuserdata/
 DerivedData/
 .DS_Store
 
-# PosBackend Vapor app (separate project)
-PosBackend/
-
 # Downloaded CI logs
 logs_*/
 frpc.toml
-
-# Local scratch executables (not part of the published package)
-cosmo-swift/
-cosmo/
