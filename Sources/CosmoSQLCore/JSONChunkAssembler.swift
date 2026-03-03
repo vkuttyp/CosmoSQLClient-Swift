@@ -24,10 +24,19 @@ import Foundation
 /// }
 /// ```
 public struct JSONChunkAssembler {
-    private var pending:  String = ""   // partial JSON object buffered across chunks
-    private var depth:    Int    = 0    // current `{` nesting depth
-    private var inString: Bool   = false
-    private var escaped:  Bool   = false
+    // Working buffer — accumulated UTF-8 bytes across calls.
+    // Using Data instead of String avoids per-chunk String concatenation and
+    // the subsequent re-encoding when extracting found objects.
+    private var pending:  Data = Data()
+    private var depth:    Int  = 0      // current { nesting depth
+    private var inString: Bool = false
+    private var escaped:  Bool = false
+
+    // ASCII byte constants — all single-byte, safe to scan in UTF-8.
+    private static let openBrace:  UInt8 = 0x7B  // {
+    private static let closeBrace: UInt8 = 0x7D  // }
+    private static let quote:      UInt8 = 0x22  // "
+    private static let backslash:  UInt8 = 0x5C  // \
 
     public init() {}
 
@@ -35,48 +44,47 @@ public struct JSONChunkAssembler {
     ///
     /// Each returned `Data` value is valid UTF-8 JSON representing one top-level object.
     public mutating func feed(_ chunk: String) -> [Data] {
-        let combined = pending.isEmpty ? chunk : pending + chunk
-        pending = ""
+        // Append UTF-8 bytes directly — one allocation, no intermediate String copy.
+        pending.append(contentsOf: chunk.utf8)
 
-        var results:  [Data]   = []
-        var objStart: String.Index? = nil
-        var i = combined.startIndex
+        var results:  [Data] = []
+        var objStart: Int?   = nil
 
-        while i < combined.endIndex {
-            let ch = combined[i]
+        for i in 0 ..< pending.count {
+            let ch = pending[i]
 
             if escaped {
                 escaped = false
-            } else if inString {
-                switch ch {
-                case "\\": escaped  = true
-                case "\"": inString = false
-                default:   break
-                }
-            } else {
-                switch ch {
-                case "{":
-                    if depth == 0 { objStart = i }
-                    depth += 1
-                case "}":
-                    depth -= 1
-                    if depth == 0, let start = objStart {
-                        let jsonStr = String(combined[start...i])
-                        results.append(Data(jsonStr.utf8))
-                        objStart = nil
-                    }
-                case "\"":
-                    inString = true
-                default:
-                    break
-                }
+                continue
             }
-            i = combined.index(after: i)
+            if inString {
+                if      ch == Self.backslash { escaped  = true  }
+                else if ch == Self.quote     { inString = false }
+                continue
+            }
+            switch ch {
+            case Self.openBrace:
+                if depth == 0 { objStart = i }
+                depth += 1
+            case Self.closeBrace:
+                depth -= 1
+                if depth == 0, let start = objStart {
+                    // Zero-copy slice into the existing buffer — no re-encoding.
+                    results.append(pending[start ... i])
+                    objStart = nil
+                }
+            case Self.quote:
+                inString = true
+            default:
+                break
+            }
         }
 
-        // Buffer any partial object for the next call
+        // Retain only the partial object (if any) for the next call.
         if let start = objStart {
-            pending = String(combined[start...])
+            pending = Data(pending[start...])
+        } else {
+            pending = Data()
         }
 
         return results

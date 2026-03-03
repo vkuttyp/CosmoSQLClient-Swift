@@ -77,6 +77,29 @@ public extension SQLValue {
         default: return nil
         }
     }
+
+    /// Returns the underlying Swift value as `Any`, or `nil` for `.null`.
+    ///
+    /// Useful for JSON serialization, generic containers, and any code that needs
+    /// the unwrapped value without pattern-matching on each `SQLValue` case.
+    func toAny() -> Any? {
+        switch self {
+        case .null:           return nil
+        case .bool(let v):    return v
+        case .int(let v):     return v
+        case .int8(let v):    return v
+        case .int16(let v):   return v
+        case .int32(let v):   return v
+        case .int64(let v):   return v
+        case .float(let v):   return v
+        case .double(let v):  return v
+        case .decimal(let v): return v
+        case .string(let v):  return v
+        case .bytes(let v):   return v
+        case .uuid(let v):    return v
+        case .date(let v):    return v
+        }
+    }
 }
 
 // MARK: - ExpressibleBy literals
