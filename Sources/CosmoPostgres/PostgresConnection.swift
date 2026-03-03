@@ -517,6 +517,83 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
         try await channel.close().get()
     }
 
+    // MARK: - Named parameter API (@name style)
+
+    /// Execute a query with named parameters.
+    ///
+    /// Use `@name` placeholders in SQL; pass values as a dictionary.
+    /// Values are inlined as escaped literals (simple query protocol).
+    ///
+    /// Example:
+    /// ```swift
+    /// let rows = try await conn.query(
+    ///     "SELECT * FROM s3.credentials WHERE accesskey = @ak",
+    ///     params: ["ak": .string("mykey")])
+    /// ```
+    public func query(_ sql: String, params: [String: SQLValue]) async throws -> [SQLRow] {
+        guard !isClosed else { throw SQLError.connectionClosed }
+        let rendered = renderQueryNamed(sql, params: params)
+        logger.debug("PostgreSQL query: \(rendered)")
+        let msg = PGFrontend.query(rendered, allocator: channel.allocator)
+        send(msg)
+        return try await collectResults()
+    }
+
+    /// Execute a DML statement with named parameters and return affected row count.
+    public func execute(_ sql: String, params: [String: SQLValue]) async throws -> Int {
+        guard !isClosed else { throw SQLError.connectionClosed }
+        let rendered = renderQueryNamed(sql, params: params)
+        logger.debug("PostgreSQL execute: \(rendered)")
+        let msg = PGFrontend.query(rendered, allocator: channel.allocator)
+        send(msg)
+        var rowsAffected = 0
+        var pendingError: (any Error)?
+        loop: while true {
+            let m = try await receiveMessage()
+            switch m {
+            case .commandComplete(let tag):
+                rowsAffected = tag.rowsAffected
+            case .readyForQuery:
+                break loop
+            case .error(_, _, let message):
+                pendingError = SQLError.serverError(code: 0, message: message)
+            case .notice(let msg):
+                onNotice?(msg)
+            default:
+                break
+            }
+        }
+        if let err = pendingError { throw err }
+        return rowsAffected
+    }
+
+    /// Translates `@name` placeholders to inlined PostgreSQL literals.
+    /// Scans the SQL string, replacing each `@identifier` with the escaped literal
+    /// for the matching key in `params`. Unknown names are left unchanged.
+    private func renderQueryNamed(_ sql: String, params: [String: SQLValue]) -> String {
+        var result = ""
+        var i = sql.startIndex
+        while i < sql.endIndex {
+            guard sql[i] == "@" else { result.append(sql[i]); i = sql.index(after: i); continue }
+            let afterAt = sql.index(after: i)
+            guard afterAt < sql.endIndex, sql[afterAt].isLetter || sql[afterAt] == "_" else {
+                result.append(sql[i]); i = sql.index(after: i); continue
+            }
+            var end = afterAt
+            while end < sql.endIndex && (sql[end].isLetter || sql[end].isNumber || sql[end] == "_") {
+                end = sql.index(after: end)
+            }
+            let name = String(sql[afterAt..<end])
+            if let value = params[name] {
+                result += value.pgLiteral
+            } else {
+                result += "@"; result += name
+            }
+            i = end
+        }
+        return result
+    }
+
     // MARK: - Result collection
 
     private func collectResults() async throws -> [SQLRow] {

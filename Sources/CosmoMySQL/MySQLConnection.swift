@@ -430,6 +430,75 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
         try await channel.close().get()
     }
 
+    // MARK: - Named parameter API (@name style)
+
+    /// Execute a query with named parameters.
+    ///
+    /// Use `@name` placeholders in SQL; pass values as a dictionary.
+    /// Values are inlined as escaped literals (text protocol), so this is safe for
+    /// all backends without prepared-statement support.
+    ///
+    /// Example:
+    /// ```swift
+    /// let rows = try await conn.query(
+    ///     "SELECT * FROM credentials WHERE accesskey = @ak",
+    ///     params: ["ak": .string("mykey")])
+    /// ```
+    public func query(_ sql: String, params: [String: SQLValue]) async throws -> [SQLRow] {
+        guard !isClosed else { throw SQLError.connectionClosed }
+        let rendered = renderQueryNamed(sql, params: params)
+        logger.debug("MySQL query: \(rendered)")
+        try await sendQuery(rendered)
+        return try await readResultSet()
+    }
+
+    /// Execute a DML statement with named parameters and return affected row count.
+    public func execute(_ sql: String, params: [String: SQLValue]) async throws -> Int {
+        guard !isClosed else { throw SQLError.connectionClosed }
+        let rendered = renderQueryNamed(sql, params: params)
+        logger.debug("MySQL execute: \(rendered)")
+        try await sendQuery(rendered)
+        var packet = try await receivePacket()
+        let resp = try MySQLResponse.decode(packet: &packet, capabilities: capabilities)
+        switch resp {
+        case .ok(let affected, _, _, _):
+            return Int(affected)
+        case .err(let code, _, let message):
+            throw SQLError.serverError(code: Int(code), message: message)
+        default:
+            return 0
+        }
+    }
+
+    /// Translates `@name` placeholders to inlined MySQL literals.
+    /// Scans the SQL string, replacing each `@identifier` with the escaped literal
+    /// for the matching key in `params`. Unknown names are left unchanged.
+    private func renderQueryNamed(_ sql: String, params: [String: SQLValue]) -> String {
+        var result = ""
+        var i = sql.startIndex
+        while i < sql.endIndex {
+            guard sql[i] == "@" else { result.append(sql[i]); i = sql.index(after: i); continue }
+            let afterAt = sql.index(after: i)
+            // Must be followed by a letter or underscore to be an identifier
+            guard afterAt < sql.endIndex, sql[afterAt].isLetter || sql[afterAt] == "_" else {
+                result.append(sql[i]); i = sql.index(after: i); continue
+            }
+            // Read the full identifier
+            var end = afterAt
+            while end < sql.endIndex && (sql[end].isLetter || sql[end].isNumber || sql[end] == "_") {
+                end = sql.index(after: end)
+            }
+            let name = String(sql[afterAt..<end])
+            if let value = params[name] {
+                result += value.mysqlLiteral
+            } else {
+                result += "@"; result += name   // leave unknown names unchanged
+            }
+            i = end
+        }
+        return result
+    }
+
     // MARK: - COM_QUERY
 
     private func sendQuery(_ sql: String) async throws {

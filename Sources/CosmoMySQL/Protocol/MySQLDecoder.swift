@@ -193,6 +193,11 @@ private let _mysqlDateTimeFmt: DateFormatter = {
     let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
     f.dateFormat = "yyyy-MM-dd HH:mm:ss"; return f
 }()
+// MySQL can return microseconds: "2026-03-03 23:07:01.063905"
+private let _mysqlDateTimeFracFmt: DateFormatter = {
+    let f = DateFormatter(); f.locale = Locale(identifier: "en_US_POSIX")
+    f.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSS"; return f
+}()
 
 func mysqlDecode(columnType: UInt8, isUnsigned: Bool, text: String?) -> SQLValue {
     guard let text = text else { return .null }
@@ -219,7 +224,9 @@ func mysqlDecode(columnType: UInt8, isUnsigned: Bool, text: String?) -> SQLValue
     case 0x0A:  // DATE
         return _mysqlDateFmt.date(from: text).map { .date($0) } ?? .string(text)
     case 0x0B, 0x0C, 0x07: // TIME, DATETIME, TIMESTAMP
-        return _mysqlDateTimeFmt.date(from: text).map { .date($0) } ?? .string(text)
+        // Try without fractional seconds first (most common), then with microseconds
+        let date = _mysqlDateTimeFmt.date(from: text) ?? _mysqlDateTimeFracFmt.date(from: text)
+        return date.map { .date($0) } ?? .string(text)
     default:
         return .string(text)
     }
