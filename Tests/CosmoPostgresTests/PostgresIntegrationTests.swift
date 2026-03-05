@@ -1581,7 +1581,7 @@ final class PGStreamingTests: XCTestCase, @unchecked Sendable {
             let conn = try await PGTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             var rows: [SQLRow] = []
-            for try await row in conn.queryStream("SELECT id, name FROM departments ORDER BY id", []) {
+            for try await row in conn.advanced.queryStream("SELECT id, name FROM departments ORDER BY id", []) {
                 rows.append(row)
             }
             XCTAssertEqual(rows.count, 5)
@@ -1594,7 +1594,7 @@ final class PGStreamingTests: XCTestCase, @unchecked Sendable {
             let conn = try await PGTestDatabase.connect()
             defer { Task { try? await conn.close() } }
             var count = 0
-            for try await data in conn.queryJsonStream(
+            for try await data in conn.advanced.queryJsonStream(
                 "SELECT row_to_json(d) FROM departments d ORDER BY id", []) {
                 count += 1
                 let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any]

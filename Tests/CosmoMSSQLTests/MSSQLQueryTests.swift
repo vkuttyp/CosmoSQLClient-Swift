@@ -254,7 +254,7 @@ final class MSSQLQueryTests: XCTestCase, @unchecked Sendable {
             try await TestDatabase.withConnection { conn in
                 var count = 0
                 var firstData: Data?
-                for try await data in conn.queryJsonStream(
+                for try await data in conn.advanced.queryJsonStream(
                     "SELECT id, name FROM Departments FOR JSON PATH") {
                     count += 1
                     if firstData == nil { firstData = data }
@@ -272,7 +272,7 @@ final class MSSQLQueryTests: XCTestCase, @unchecked Sendable {
         runAsync {
             try await TestDatabase.withConnection { conn in
                 var rows: [SQLRow] = []
-                for try await row in conn.queryStream(
+                for try await row in conn.advanced.queryStream(
                     "SELECT id, name FROM Departments ORDER BY id") {
                     rows.append(row)
                 }

@@ -1,45 +1,40 @@
-/// The top-level protocol every database driver must conform to.
-///
-/// Usage:
-/// ```swift
-/// let db: any SQLDatabase = try await MSSQLConnection.connect(...)
-/// let rows = try await db.query("SELECT id, name FROM users WHERE active = @p1", [.bool(true)])
-/// ```
+import Foundation
+
 public protocol SQLDatabase: Sendable {
-    /// Execute a SQL query and return all result rows.
-    ///
-    /// - Parameters:
-    ///   - sql: The SQL statement. Use driver-specific placeholders:
-    ///     * MSSQL  → `@p1`, `@p2`, …
-    ///     * Postgres → `$1`, `$2`, …
-    ///     * MySQL  → `?`
-    ///   - binds: Ordered list of bound values.
     func query(_ sql: String, _ binds: [SQLValue]) async throws -> [SQLRow]
-
-    /// Execute a SQL statement that returns no rows (INSERT/UPDATE/DELETE/DDL).
-    /// Returns the number of rows affected.
-    @discardableResult
     func execute(_ sql: String, _ binds: [SQLValue]) async throws -> Int
-
-    /// Gracefully close the connection.
     func close() async throws
+    var advanced: any AdvancedSQLDatabase { get }
+}
+
+public protocol AdvancedSQLDatabase: Sendable {
+    func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error>
+    func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error>
 }
 
 public extension SQLDatabase {
-    /// Convenience: query with no binds.
-    func query(_ sql: String) async throws -> [SQLRow] {
-        try await query(sql, [])
+    func query(_ sql: String, _ binds: [SQLValue] = []) async throws -> [SQLRow] {
+        return try await query(sql, binds)
     }
-
-    /// Convenience: execute with no binds.
-    @discardableResult
-    func execute(_ sql: String) async throws -> Int {
-        try await execute(sql, [])
+    func execute(_ sql: String, _ binds: [SQLValue] = []) async throws -> Int {
+        return try await execute(sql, binds)
     }
-
-    /// Query and decode results into `T` using ``SQLRowDecoder``.
     func query<T: Decodable>(_ sql: String, _ binds: [SQLValue] = [], as type: T.Type = T.self) async throws -> [T] {
         let rows = try await query(sql, binds)
-        return try rows.map { try SQLRowDecoder().decode(T.self, from: $0) }
+        return try rows.map { row in try SQLRowDecoder().decode(T.self, from: row) }
+    }
+}
+
+public extension AdvancedSQLDatabase {
+    func queryStream(_ sql: String) -> AsyncThrowingStream<SQLRow, any Error> {
+        return queryStream(sql, [])
+    }
+    func queryJsonStream(_ sql: String) -> AsyncThrowingStream<Data, any Error> {
+        return queryJsonStream(sql, [])
+    }
+    func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
+        AsyncThrowingStream { cont in
+            cont.finish(throwing: SQLError.unsupported("JSON streaming not supported by this driver"))
+        }
     }
 }

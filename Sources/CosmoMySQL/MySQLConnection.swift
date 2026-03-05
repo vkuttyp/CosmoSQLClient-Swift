@@ -21,7 +21,9 @@ import Foundation
 // let rows = try await conn.query("SELECT id, name FROM users WHERE active = ?", [.bool(true)])
 // ```
 
-public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
+public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked Sendable {
+
+    public var advanced: any AdvancedSQLDatabase { self }
 
     // MARK: - Configuration
 
@@ -271,7 +273,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     /// The full result set is read before the first row is yielded (MySQL's text
     /// protocol is packet-based), but the caller can process rows without buffering
     /// them all as an array.
-    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+    public func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {
@@ -302,7 +304,7 @@ public final class MySQLConnection: SQLDatabase, @unchecked Sendable {
     ///     let product = try JSONDecoder().decode(Product.self, from: data)
     /// }
     /// ```
-    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {

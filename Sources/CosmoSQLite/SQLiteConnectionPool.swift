@@ -1,196 +1,98 @@
 import Foundation
+import CosmoSQLCore
 import NIOCore
 import NIOPosix
-import CosmoSQLCore
 
-// ── SQLiteConnectionPool ──────────────────────────────────────────────────────
-//
-// A thread-safe async connection pool for SQLiteConnection.
-//
-// Note: For in-memory databases (.memory), all connections share separate
-// in-memory stores. Use a single shared connection or named shared-memory
-// databases if you need to share data across pool connections.
-//
-// Usage:
-// ```swift
-// let pool = SQLiteConnectionPool(
-//     configuration: .init(storage: .file(path: "/var/db/app.sqlite")),
-//     maxConnections: 5
-// )
-//
-// let rows = try await pool.withConnection { conn in
-//     try await conn.query("SELECT * FROM users", [])
-// }
-//
-// await pool.closeAll()
-// ```
-
-public actor SQLiteConnectionPool {
-
-    // MARK: - Configuration
-
+public actor SQLiteConnectionPool: SQLDatabase {
     public let configuration:  SQLiteConnection.Configuration
     public let maxConnections: Int
-    public let threadPool:     NIOThreadPool
     public let eventLoopGroup: any EventLoopGroup
+    private var idle: [SQLiteConnection] = []
+    private var active: Int = 0
+    private var waiters: [CheckedContinuation<SQLiteConnection, any Error>] = []
+    private var isClosed: Bool = false
 
-    // MARK: - State
+    public nonisolated var advanced: any AdvancedSQLDatabase { SQLiteConnectionPoolAdvanced(pool: self) }
 
-    private var idle:           [SQLiteConnection] = []
-    private var active:         Int = 0
-    private var waiters:        [CheckedContinuation<SQLiteConnection, any Error>] = []
-    private var isClosed:       Bool = false
-    private var keepAliveTask:  Task<Void, Never>? = nil
-    private var minIdleTarget:  Int = 0
-
-    // MARK: - Computed stats
-
-    public var idleCount:   Int { idle.count }
-    public var activeCount: Int { active }
-    public var waiterCount: Int { waiters.count }
-
-    // MARK: - Init
-
-    public init(
-        configuration:  SQLiteConnection.Configuration,
-        maxConnections: Int            = 5,
-        threadPool:     NIOThreadPool  = .singleton,
-        eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton
-    ) {
-        self.configuration  = configuration
-        self.maxConnections = max(1, maxConnections)
-        self.threadPool     = threadPool
-        self.eventLoopGroup = eventLoopGroup
+    public init(configuration: SQLiteConnection.Configuration, maxConnections: Int = 5, eventLoopGroup: any EventLoopGroup = MultiThreadedEventLoopGroup.singleton) {
+        self.configuration = configuration; self.maxConnections = max(1, maxConnections); self.eventLoopGroup = eventLoopGroup
     }
-
-    // MARK: - Acquire
 
     public func acquire() async throws -> SQLiteConnection {
         guard !isClosed else { throw SQLError.connectionClosed }
-
-        // Prune dead connections
-        idle.removeAll(where: { !$0.isOpen })
-
-        if let conn = idle.popLast() {
-            active += 1
-            return conn
-        }
-
-        if active < maxConnections {
-            active += 1
-            return try openConnection()
-        }
-
-        // Wait for a connection to become available
-        return try await withCheckedThrowingContinuation { continuation in
-            waiters.append(continuation)
-        }
+        idle.removeAll(where: { c in !c.isOpen })
+        if let conn = idle.popLast() { active += 1; return conn }
+        if active < maxConnections { active += 1; return try await openConnection() }
+        return try await withCheckedThrowingContinuation { cont in waiters.append(cont) }
     }
-
-    // MARK: - Release
 
     public func release(_ conn: SQLiteConnection) {
         active = max(0, active - 1)
-
-        guard !isClosed else {
-            Task { try? await conn.close() }
-            drainWaiters(with: .connectionClosed)
-            return
-        }
-
+        if isClosed { Task { try? await conn.close() }; return }
         if conn.isOpen, !waiters.isEmpty {
-            active += 1
-            waiters.removeFirst().resume(returning: conn)
+            let continuation = waiters.removeFirst()
+            active += 1; continuation.resume(returning: conn)
             return
         }
-
-        if conn.isOpen {
-            idle.append(conn)
-        }
-
-        if !waiters.isEmpty {
-            if let newConn = try? openConnection() {
-                active += 1
-                waiters.removeFirst().resume(returning: newConn)
-            }
-        }
+        if conn.isOpen { idle.append(conn) }
     }
 
-    // MARK: - withConnection
-
-    public func withConnection<T: Sendable>(
-        _ body: @Sendable (SQLiteConnection) async throws -> T
-    ) async throws -> T {
-        let conn = try await acquire()
-        defer { release(conn) }
-        return try await body(conn)
+    public func query(_ sql: String, _ binds: [SQLValue]) async throws -> [SQLRow] {
+        return try await withConnection { c in try await c.query(sql, binds) }
     }
 
-    // MARK: - Close all
+    public func execute(_ sql: String, _ binds: [SQLValue]) async throws -> Int {
+        return try await withConnection { c in try await c.execute(sql, binds) }
+    }
 
-    public func closeAll() async {
+    public func close() async throws {
         isClosed = true
-        keepAliveTask?.cancel()
-        keepAliveTask = nil
-        drainWaiters(with: .connectionClosed)
-        let toClose = idle
-        idle = []
-        for conn in toClose {
-            try? await conn.close()
-        }
+        for c in idle { try? await c.close() }; idle = []
+        for w in waiters { w.resume(throwing: SQLError.connectionClosed) }; waiters = []
     }
 
-    // MARK: - Warm-up / keep-alive
+    public func closeAll() async { try? await close() }
+    public var idleCount: Int { idle.count }
+    public var activeCount: Int { active }
+    public var waiterCount: Int { waiters.count }
 
-    /// Pre-open `minIdle` connections and start a keep-alive ping every `pingInterval` seconds.
-    public func warmUp(minIdle: Int = 2, pingInterval: TimeInterval = 30) async {
-        guard !isClosed else { return }
-        minIdleTarget = minIdle
-        let needed = max(0, minIdle - (idle.count + active))
-        for _ in 0..<needed {
-            guard idle.count + active < maxConnections, !isClosed else { break }
-            if let conn = try? openConnection() { idle.append(conn) }
-        }
-        keepAliveTask?.cancel()
-        keepAliveTask = Task {
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(pingInterval))
-                guard !Task.isCancelled else { break }
-                await self.pingIdleConnections()
+    public func withConnection<T: Sendable>(_ work: @Sendable (SQLiteConnection) async throws -> T) async throws -> T {
+        let conn = try await acquire()
+        do { let res = try await work(conn); release(conn); return res }
+        catch { release(conn); throw error }
+    }
+
+    private func openConnection() async throws -> SQLiteConnection {
+        try SQLiteConnection.open(configuration: configuration, eventLoopGroup: eventLoopGroup)
+    }
+}
+
+struct SQLiteConnectionPoolAdvanced: AdvancedSQLDatabase {
+    let pool: SQLiteConnectionPool
+    func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error> {
+        AsyncThrowingStream { cont in
+            Task {
+                do {
+                    let conn = try await pool.acquire()
+                    do {
+                        for try await row in conn.advanced.queryStream(sql, binds) { cont.yield(row) }
+                        await pool.release(conn); cont.finish()
+                    } catch { await pool.release(conn); cont.finish(throwing: error) }
+                } catch { cont.finish(throwing: error) }
             }
         }
     }
-
-    private func pingIdleConnections() async {
-        guard !isClosed else { return }
-        idle.removeAll(where: { !$0.isOpen })
-        var healthy: [SQLiteConnection] = []
-        for conn in idle {
-            do { _ = try await conn.query("SELECT 1", []); healthy.append(conn) }
-            catch { try? await conn.close() }
+    func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
+        AsyncThrowingStream { cont in
+            Task {
+                do {
+                    let conn = try await pool.acquire()
+                    do {
+                        for try await data in conn.advanced.queryJsonStream(sql, binds) { cont.yield(data) }
+                        await pool.release(conn); cont.finish()
+                    } catch { await pool.release(conn); cont.finish(throwing: error) }
+                } catch { cont.finish(throwing: error) }
+            }
         }
-        idle = healthy
-        let toOpen = max(0, minIdleTarget - idle.count)
-        for _ in 0..<toOpen {
-            guard idle.count + active < maxConnections, !isClosed else { break }
-            if let conn = try? openConnection() { idle.append(conn) }
-        }
-    }
-
-    // MARK: - Private
-
-    private func openConnection() throws -> SQLiteConnection {
-        try SQLiteConnection.open(
-            configuration:  configuration,
-            threadPool:     threadPool,
-            eventLoopGroup: eventLoopGroup
-        )
-    }
-
-    private func drainWaiters(with error: SQLError) {
-        for waiter in waiters {
-            waiter.resume(throwing: error)
-        }
-        waiters = []
     }
 }

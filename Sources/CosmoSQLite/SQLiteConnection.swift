@@ -30,7 +30,15 @@ private let SQLITE_TRANSIENT_DESTRUCTOR = unsafeBitCast(-1 as Int, to: sqlite3_d
 // let rows = try await conn.query("SELECT id, name FROM users WHERE active = ?", [.bool(true)])
 // ```
 
-public final class SQLiteConnection: SQLDatabase, @unchecked Sendable {
+public final class SQLiteConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked Sendable {
+    public var advanced: any AdvancedSQLDatabase { self }
+    public func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error> {
+        AsyncThrowingStream { cont in Task { do { let r = try await self.query(sql, binds); for row in r { cont.yield(row) }; cont.finish() } catch { cont.finish(throwing: error) } } }
+    }
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
+        AsyncThrowingStream { cont in Task { do { for try await r in self.queryStream(sql, binds) { if let t = r.values.first?.asString() { cont.yield(Data(t.utf8)) } }; cont.finish() } catch { cont.finish(throwing: error) } } }
+    }
+
 
     // MARK: - Storage
 

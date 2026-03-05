@@ -24,7 +24,9 @@ import Foundation
 // }
 // ```
 
-public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
+public final class MSSQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked Sendable {
+
+    public var advanced: any AdvancedSQLDatabase { self }
 
     // MARK: - Public configuration
 
@@ -430,7 +432,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     ///
     /// Rows are yielded incrementally as TDS packets arrive — without buffering
     /// the entire result set.
-    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+    public func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {
@@ -497,7 +499,7 @@ public final class MSSQLConnection: SQLDatabase, @unchecked Sendable {
     ///     let product = try JSONDecoder().decode(Product.self, from: data)
     /// }
     /// ```
-    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {

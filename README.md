@@ -12,6 +12,12 @@ A unified Swift package for connecting to **Microsoft SQL Server**, **PostgreSQL
 
 ## Table of Contents
 
+- [🏆 Advanced Features](#-advanced-features)
+  - [JSON Streaming](#json-streaming)
+  - [Reactive Row Streaming](#reactive-row-streaming)
+  - [Connection Pool Warp Speed](#connection-pool-warp-speed)
+- [Unified SQLDatabase API](#unified-sqldatabase-api)
+
 - [Features](#features)
 - [🏆 JSON Streaming — Industry First](#-json-streaming--industry-first)
   - [Vapor Web API Integration](#vapor-web-api--true-http-streaming)
@@ -343,6 +349,40 @@ You can import only the drivers you need — each is an independent library modu
 | `swift-crypto` | MD5 / SHA for auth handshakes |
 
 ---
+
+---
+
+## 🏆 Advanced Features
+
+CosmoSQLClient provides a suite of advanced features designed for high-throughput, low-latency applications. These are accessible via the  property on any connection or pool.
+
+
+
+### JSON Streaming
+
+> **No other Swift SQL library has this.**  delivers each complete JSON object the instant its closing  arrives — without ever buffering the full result array.
+
+SQL Server fragments  output at ~2033-character row boundaries that do **not** align with JSON object boundaries.  uses  — backed by a stateful parser — to detect exact  boundaries across arbitrary chunk splits, yielding each complete JSON object as a  value the moment it is fully received.
+
+
+
+### Reactive Row Streaming
+
+Rows are yielded as they arrive from the socket. This is perfect for reactive processing or pushing data directly to a web socket.
+
+
+
+### Connection Pool Warp Speed
+
+- **Pool Pre-warming**: Call  during application startup so that the very first database request is instant.
+
+---
+
+## Unified SQLDatabase API
+
+For easy migration and general use, all providers implement the core  protocol. This provides a familiar buffered API similar to other Swift database drivers.
+
+
 
 ## Quick Start
 

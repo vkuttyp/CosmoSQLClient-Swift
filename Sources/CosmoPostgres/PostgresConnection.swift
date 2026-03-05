@@ -21,7 +21,9 @@ import Foundation
 // let rows = try await conn.query("SELECT id, email FROM users WHERE active = $1", [.bool(true)])
 // ```
 
-public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
+public final class PostgresConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked Sendable {
+
+    public var advanced: any AdvancedSQLDatabase { self }
 
     // MARK: - Configuration
 
@@ -289,7 +291,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
     ///
     /// Unlike ``query(_:_:)`` which buffers the full result set, this method yields
     /// each row immediately after decoding its `DataRow` message from the wire.
-    public func queryStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<SQLRow, Error> {
+    public func queryStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<SQLRow, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {
@@ -346,7 +348,7 @@ public final class PostgresConnection: SQLDatabase, @unchecked Sendable {
     ///     let product = try JSONDecoder().decode(Product.self, from: data)
     /// }
     /// ```
-    public func queryJsonStream(_ sql: String, _ binds: [SQLValue] = []) -> AsyncThrowingStream<Data, Error> {
+    public func queryJsonStream(_ sql: String, _ binds: [SQLValue]) -> AsyncThrowingStream<Data, any Error> {
         AsyncThrowingStream { cont in
             Task { [self] in
                 do {
