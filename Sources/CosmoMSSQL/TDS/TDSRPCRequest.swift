@@ -45,7 +45,7 @@ struct TDSRPCRequest {
         buf.writeInteger(UInt16(10),     endianness: .little)   // SP_EXECUTESQL = 10
 
         // Option flags: none
-        buf.writeInteger(UInt8(0))
+        buf.writeInteger(UInt16(0), endianness: .little)
 
         // Build the parameter declaration string: "@p1 INT, @p2 NVARCHAR(MAX), ..."
         let decl = binds.enumerated().map { (i, v) in
