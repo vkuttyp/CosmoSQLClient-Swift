@@ -103,7 +103,7 @@ private final class _CellDecoder: Decoder {
     }
 
     private func nameCandidates(for key: String) -> [String] {
-        var result = [key]
+        var result = [key, key.lowercased()]
         if strategy == .convertFromSnakeCase {
             result.append(contentsOf: [toSnakeCase(key), toCamelCase(key)])
         }
@@ -114,8 +114,12 @@ private final class _CellDecoder: Decoder {
         guard !s.isEmpty else { return s }
         var result = ""
         for (i, c) in s.enumerated() {
-            if c.isUppercase, i > 0 { result.append("_") }
-            result.append(c.lowercased())
+            if c.isUppercase {
+                if i > 0 { result.append("_") }
+                result.append(c.lowercased())
+            } else {
+                result.append(c)
+            }
         }
         return result
     }
@@ -167,7 +171,7 @@ private final class _RowDecoder: Decoder {
     }
 
     private func nameCandidates(for key: String) -> [String] {
-        var result = [key]
+        var result = [key, key.lowercased()]
         if strategy == .convertFromSnakeCase {
             result.append(contentsOf: [
                 toSnakeCase(key),       // camelCase → snake_case
