@@ -5,10 +5,14 @@ import Foundation
 public struct MSSQLProcResult: Sendable {
 
     /// All result sets returned by the procedure (one per SELECT statement).
-    public let resultSets: [[SQLRow]]
+    public let resultSets: [SQLResultSet]
 
     /// First result set — convenience shorthand for `resultSets.first ?? []`.
-    public var rows: [SQLRow] { resultSets.first ?? [] }
+    public var rows: [SQLRow] { resultSets.first?.rows ?? [] }
+
+    /// First result set columns.
+    public var columns: [SQLColumn] { resultSets.first?.columns ?? [] }
+
 
     /// Output parameter values keyed by name **including** the leading `@`
     /// (e.g. `outputParameters["@NewId"]`).
@@ -33,6 +37,6 @@ public struct MSSQLProcResult: Sendable {
     /// Decode result set at `index` into an array of `T`.
     public func decode<T: Decodable>(_ index: Int, as type: T.Type = T.self) throws -> [T] {
         guard index < resultSets.count else { return [] }
-        return try resultSets[index].map { try SQLRowDecoder().decode(T.self, from: $0) }
+        return try resultSets[index].rows.map { try SQLRowDecoder().decode(T.self, from: $0) }
     }
 }

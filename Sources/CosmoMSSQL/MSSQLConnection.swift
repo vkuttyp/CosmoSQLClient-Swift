@@ -584,7 +584,18 @@ public final class MSSQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
 
     /// Execute a query and return **all** result sets (e.g. from a stored procedure
     /// that contains multiple SELECT statements).
-    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [[SQLRow]] {
+    /// Execute a query and return the first result set as a ``SQLDataTable``.
+    /// This is the sql-nio equivalent of .NET ``DataTable.Load(reader)``.
+    public func queryTable(_ sql: String, _ binds: [SQLValue] = []) async throws -> SQLDataTable {
+        let sets = try await queryMulti(sql, binds)
+        if let first = sets.first {
+            return SQLDataTable(name: sql, resultSet: first)
+        }
+        return SQLDataTable(name: sql, resultSet: SQLResultSet(columns: [], rows: []))
+    }
+
+
+    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [SQLResultSet] {
         guard !isClosed else { throw SQLError.connectionClosed }
         logger.debug("MSSQL queryMulti: \(sql.prefix(120))")
         return try await withTimeout(config.queryTimeout) {

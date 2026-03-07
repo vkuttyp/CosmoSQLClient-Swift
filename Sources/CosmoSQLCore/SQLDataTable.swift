@@ -175,6 +175,13 @@ public struct SQLDataTable: Sendable {
 
     // MARK: Init from SQLRows
 
+    public init(name: String? = nil, resultSet: SQLResultSet) {
+        self.name    = name
+        self.columns = resultSet.columns.map { SQLDataColumn(name: $0.name, table: $0.table) }
+        self.rows    = resultSet.rows.map { row in row.values.map { SQLCellValue($0) } }
+        self._colIndex = Dictionary(uniqueKeysWithValues: self.columns.enumerated().map { ($1.name.lowercased(), $0) })
+    }
+
     public init(name: String? = nil, rows sqlRows: [SQLRow]) {
         self.name    = name
         self.columns = (sqlRows.first?.columns ?? []).map {
@@ -351,11 +358,11 @@ extension Array where Element == SQLRow {
     }
 }
 
-extension Array where Element == [SQLRow] {
+extension Array where Element == SQLResultSet {
     /// Convert multi-result-set rows to a `SQLDataSet`.
     public func asDataSet(names: [String?]? = nil) -> SQLDataSet {
         let tables = enumerated().map { (i, rows) in
-            SQLDataTable(name: names?[safe: i] ?? nil, rows: rows)
+            SQLDataTable(name: names?[safe: i] ?? nil, resultSet: rows)
         }
         return SQLDataSet(tables: tables)
     }

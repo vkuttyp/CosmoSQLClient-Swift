@@ -418,7 +418,7 @@ public final class PostgresConnection: SQLDatabase, AdvancedSQLDatabase, @unchec
     ///
     /// PostgreSQL allows multiple statements separated by `;` in a single query string.
     /// Each statement that returns rows produces one element in the returned array.
-    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [[SQLRow]] {
+    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [SQLResultSet] {
         guard !isClosed else { throw SQLError.connectionClosed }
         let rendered = renderQuery(sql, binds: binds)
         logger.debug("PostgreSQL queryMulti: \(rendered)")
@@ -426,7 +426,7 @@ public final class PostgresConnection: SQLDatabase, AdvancedSQLDatabase, @unchec
         let msg = PGFrontend.query(rendered, allocator: channel.allocator)
         send(msg)
 
-        var allSets:    [[SQLRow]] = []
+        var allSets: [SQLResultSet] = []
         var current:    [SQLRow]   = []
         var columns:    [PGColumnDesc] = []
         var sqlCols:    [SQLColumn] = []   // computed once per RowDescription
@@ -449,7 +449,7 @@ public final class PostgresConnection: SQLDatabase, AdvancedSQLDatabase, @unchec
                 }
             case .commandComplete:
                 if !current.isEmpty || !columns.isEmpty {
-                    allSets.append(current)
+                    allSets.append(SQLResultSet(columns: sqlCols, rows: current))
                     current  = []
                     columns  = []
                     sqlCols  = []

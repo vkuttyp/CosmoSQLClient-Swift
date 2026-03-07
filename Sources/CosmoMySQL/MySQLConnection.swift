@@ -362,17 +362,17 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
     ///
     /// Note: MySQL requires the `CLIENT_MULTI_STATEMENTS` capability for this to work.
     /// The driver negotiates this automatically during handshake.
-    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [[SQLRow]] {
+    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [SQLResultSet] {
         guard !isClosed else { throw SQLError.connectionClosed }
         let rendered = renderQuery(sql, binds: binds)
         logger.debug("MySQL queryMulti: \(rendered)")
         try await sendQuery(rendered)
 
-        var allSets: [[SQLRow]] = []
+        var allSets: [SQLResultSet] = []
         // MySQL returns one result set at a time; the OK/EOF has a "more results" flag
         while true {
             let resultSet = try await readResultSetMulti()
-            allSets.append(resultSet.rows)
+            allSets.append(resultSet.resultSet)
             if !resultSet.hasMore { break }
         }
         return allSets
@@ -599,7 +599,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
     // MARK: - Wire helpers
 
     private struct ResultSetChunk {
-        let rows: [SQLRow]
+        let resultSet: SQLResultSet
         let hasMore: Bool
     }
 
@@ -609,7 +609,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
         let firstResponse = try MySQLResponse.decode(packet: &firstPacket, capabilities: capabilities)
         switch firstResponse {
         case .ok(_, _, let status, _):
-            return ResultSetChunk(rows: [], hasMore: status.contains(.moreResultsExist))
+            return ResultSetChunk(resultSet: SQLResultSet(columns: [], rows: []), hasMore: status.contains(.moreResultsExist))
         case .err(let code, _, let message):
             throw SQLError.serverError(code: Int(code), message: message)
         case .data(var countPacket):
@@ -617,7 +617,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
             let columnCount = countPacket.readLengthEncodedInt() ?? 0
             return try await readColumnsMulti(count: Int(columnCount))
         default:
-            return ResultSetChunk(rows: [], hasMore: false)
+            return ResultSetChunk(resultSet: SQLResultSet(columns: [], rows: []), hasMore: false)
         }
     }
 
@@ -655,7 +655,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
                 _ = pkt.readInteger(endianness: .little) as UInt16?  // warnings
                 let statusRaw = pkt.readInteger(endianness: .little) as UInt16? ?? 0
                 let status = MySQLServerStatus(rawValue: statusRaw)
-                return ResultSetChunk(rows: rows, hasMore: status.contains(.moreResultsExist))
+                return ResultSetChunk(resultSet: SQLResultSet(columns: sqlCols, rows: rows), hasMore: status.contains(.moreResultsExist))
             }
             if firstByte == 0x00 && capabilities.contains(.deprecateEOF) {
                 // OK (deprecateEOF style)
@@ -664,7 +664,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
                 _ = pkt.readLengthEncodedInt()  // last insert id
                 let statusRaw = pkt.readInteger(endianness: .little) as UInt16? ?? 0
                 let status = MySQLServerStatus(rawValue: statusRaw)
-                return ResultSetChunk(rows: rows, hasMore: status.contains(.moreResultsExist))
+                return ResultSetChunk(resultSet: SQLResultSet(columns: sqlCols, rows: rows), hasMore: status.contains(.moreResultsExist))
             }
 
             // Data row
@@ -683,7 +683,7 @@ public final class MySQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
             }
             rows.append(SQLRow(columns: sqlCols, values: values))
         }
-        return ResultSetChunk(rows: rows, hasMore: false)
+        return ResultSetChunk(resultSet: SQLResultSet(columns: sqlCols, rows: rows), hasMore: false)
     }
 
     private func send(_ buffer: ByteBuffer) {

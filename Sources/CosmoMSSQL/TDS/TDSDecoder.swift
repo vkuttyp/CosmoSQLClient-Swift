@@ -15,12 +15,12 @@ struct TDSTokenDecoder {
     private var currentRows: [SQLRow] = []
 
     // All completed result sets (flushed on COLMETADATA/DONE)
-    private(set) var resultSets: [[SQLRow]] = []
+    private(set) var resultSets: [SQLResultSet] = []
 
     // First result set — convenience alias used by simple query callers.
     // Includes unflushed rows if no result sets were formally closed yet.
     var rows: [SQLRow] {
-        if let first = resultSets.first { return first }
+        if let first = resultSets.first { return first.rows }
         return currentRows
     }
 
@@ -129,8 +129,8 @@ struct TDSTokenDecoder {
             return
         }
         // Flush any rows accumulated from a prior result set before starting a new one
-        if !currentRows.isEmpty {
-            resultSets.append(currentRows)
+        if !columns.isEmpty {
+            resultSets.append(SQLResultSet(columns: columns, rows: currentRows))
             currentRows = []
         }
         columns = []
@@ -191,8 +191,8 @@ struct TDSTokenDecoder {
             let count: UInt64 = buf.readInteger(endianness: .little) // rowCount (8 bytes in TDS 7.2+)
         else { throw TDSError.incomplete }
         // Flush current rows into resultSets on any DONE token
-        if !currentRows.isEmpty {
-            resultSets.append(currentRows)
+        if !columns.isEmpty {
+            resultSets.append(SQLResultSet(columns: columns, rows: currentRows))
             currentRows = []
         }
         // Only trust the rowcount when the DONE_COUNT bit (0x10) is set

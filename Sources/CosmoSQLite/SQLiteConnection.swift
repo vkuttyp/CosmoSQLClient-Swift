@@ -164,16 +164,51 @@ public final class SQLiteConnection: SQLDatabase, AdvancedSQLDatabase, @unchecke
 
     // MARK: - Multi-statement (split on ";")
 
-    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [[SQLRow]] {
+    public func queryTable(_ sql: String, _ binds: [SQLValue] = []) async throws -> SQLDataTable {
+        let stmts = sql.split(separator: ";", omittingEmptySubsequences: true).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+        if let first = stmts.first {
+            let rs = try await _runQuery(String(first), binds: binds)
+            return SQLDataTable(name: String(first), resultSet: rs)
+        }
+        return SQLDataTable(name: sql, resultSet: SQLResultSet(columns: [], rows: []))
+    }
+
+
+    public func queryMulti(_ sql: String, _ binds: [SQLValue] = []) async throws -> [SQLResultSet] {
         let stmts = sql
             .split(separator: ";", omittingEmptySubsequences: true)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-        var results: [[SQLRow]] = []
+        var results: [SQLResultSet] = []
         for stmt in stmts {
-            results.append(try await query(stmt, binds))
+            results.append(try await _runQuery(String(stmt), binds: binds))
         }
         return results
+    }
+
+    private func _runQuery(_ sql: String, binds: [SQLValue]) async throws -> SQLResultSet {
+        let prepared = renderQuery(sql, binds: binds)
+        return try await pool.runIfActive(eventLoop: group.next()) {
+            guard let db = self.db else { throw SQLError.connectionClosed }
+            var stmt: OpaquePointer?
+            let rc = sqlite3_prepare_v2(db, prepared, -1, &stmt, nil)
+            guard rc == SQLITE_OK, let stmt else { throw self.sqliteError(db: db, code: rc, context: "prepare") }
+            defer { sqlite3_finalize(stmt) }
+            try self.bindParams(stmt: stmt, binds: binds, db: db)
+            let colCount = Int(sqlite3_column_count(stmt))
+            let columns  = self.makeColumns(stmt: stmt, count: colCount)
+            var rows: [SQLRow] = []
+            while true {
+                let stepRc = sqlite3_step(stmt)
+                if stepRc == SQLITE_ROW {
+                    let values = (0..<colCount).map { self.readColumn(stmt: stmt, index: Int32($0)) }
+                    rows.append(SQLRow(columns: columns, values: values))
+                } else if stepRc == SQLITE_DONE { break } else {
+                    throw self.sqliteError(db: db, code: stepRc, context: "step")
+                }
+            }
+            return SQLResultSet(columns: columns, rows: rows)
+        }.get()
     }
 
     // MARK: - Blocking internals (run on thread pool)
