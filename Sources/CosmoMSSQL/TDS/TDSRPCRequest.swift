@@ -47,9 +47,9 @@ struct TDSRPCRequest {
         // Option flags: none
         buf.writeInteger(UInt16(0), endianness: .little)
 
-        // Build the parameter declaration string: "@param1 INT, @param2 NVARCHAR(MAX), ..."
+        // Build the parameter declaration string: "@p1 INT, @p2 NVARCHAR(MAX), ..."
         let decl = binds.enumerated().map { (i, v) in
-            "@param\(i+1) \(v.tdsTypeName)"
+            "@p\(i+1) \(v.tdsTypeName)"
         }.joined(separator: ", ")
 
         // Param 1: @stmt — the SQL text (unnamed, NVARCHAR(MAX) PLP)
@@ -58,9 +58,9 @@ struct TDSRPCRequest {
         // Param 2: @params — declaration string (unnamed, NVARCHAR(MAX) PLP)
         writeNVarCharMaxParam(name: "", value: decl, into: &buf)
 
-        // Param 3+: @param1, @param2, ... with typed binary values
+        // Param 3+: @p1, @p2, ... with typed binary values
         for (i, bind) in binds.enumerated() {
-            writeParam(name: "@param\(i+1)", value: bind, into: &buf)
+            writeParam(name: "@p\(i+1)", value: bind, into: &buf)
         }
 
         return buf
@@ -137,8 +137,8 @@ struct TDSRPCRequest {
 
         case .double(let v):
             buf.writeInteger(UInt8(0x6D))
-            buf.writeInteger(UInt8(8))
-            buf.writeInteger(UInt8(8))
+            buf.writeInteger(UInt8(8))       // maxLen
+            buf.writeInteger(UInt8(8))       // actual len
             buf.writeInteger(v.bitPattern, endianness: .little)
 
         case .string(let v):
