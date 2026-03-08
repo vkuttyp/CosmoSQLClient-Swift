@@ -563,15 +563,15 @@ public final class MSSQLConnection: SQLDatabase, AdvancedSQLDatabase, @unchecked
         try await execute(sql, binds)
     }
 
-    /// Replace `?` positional placeholders with `@param1`, `@param2`, ... (SQL Server sp_executesql style).
-    /// If the SQL already uses `@p` or `@param` style, it is returned unchanged.
+    /// Replace `?` positional placeholders with `@p1`, `@p2`, ... (SQL Server sp_executesql style).
+    /// If the SQL already uses `@p` or `@p` style, it is returned unchanged.
     static func convertPlaceholders(_ sql: String) -> String {
         guard sql.contains("?") else { return sql }
         var result = ""
         var index  = 1
         for ch in sql {
             if ch == "?" {
-                result += "@param\(index)"
+                result += "@p\(index)"
                 index  += 1
             } else {
                 result.append(ch)
